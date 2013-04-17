@@ -1,4 +1,4 @@
-Gradle-License-Report
+Gradle License Report
 =====================
 
-A plugin for generating reports about Gradle
+A plugin for generating reports about third party licenses of a Gradle project.
