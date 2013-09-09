@@ -9,7 +9,7 @@ public class DependencyLicensePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.task(ImmutableMap.of("class", DependencyLicenseReport.class),
+		project.task(ImmutableMap.of("type", DependencyLicenseReport.class),
 				"dependencyLicenseReport");
 	}
 }

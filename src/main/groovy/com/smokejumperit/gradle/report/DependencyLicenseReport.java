@@ -9,15 +9,17 @@ import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.sta
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedDependency;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.TaskAction;
 
@@ -25,12 +27,12 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
-public class DependencyLicenseReport extends AbstractTask {
+public class DependencyLicenseReport extends DefaultTask {
 
 	private volatile File outputFile = null;
 
-	private volatile Iterable<String> reportedConfigurations = ImmutableList
-			.of("runtime");
+	private volatile Iterable<String> reportedConfigurations = new LinkedList<>(
+			Arrays.asList("runtime"));
 
 	public Iterable<String> getReportedConfigurations() {
 		return reportedConfigurations;
