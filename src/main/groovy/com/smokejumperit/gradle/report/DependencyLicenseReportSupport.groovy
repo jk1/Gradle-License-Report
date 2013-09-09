@@ -107,11 +107,9 @@ determine what libraries are shipped with the packaged application
 		if(dependency.moduleVersion) outputFile << "<p><strong>Module Version:</strong> $dependency.moduleVersion</p>"
 
 		dependency.moduleArtifacts.each  { ResolvedArtifact artifact ->
-			outputFile << "<h4>$artifact.file.name</h4>"
-			
 			ManifestData manifestData = readManifestData(artifact)
 			if(manifestData) {
-				outputFile << "<h5>Manifest Metadata - $artifact.file.name</h5>"
+				outputFile << "<h4>Manifest Metadata - $artifact.file.name</h4>"
 				if(manifestData.name) outputFile << "<p><strong>Name:</strong> $manifestData.name</p>"
 				if(manifestData.description) outputFile << "<p><strong>Description:</strong> $manifestData.description</p>"
 				if(manifestData.url) {
@@ -130,7 +128,7 @@ determine what libraries are shipped with the packaged application
 
 			PomData pomData = readPomData(artifact)
 			if(pomData) {
-				outputFile << "<h5>Maven Metadata - $artifact.file.name</h5>"
+				outputFile << "<h4>Maven Metadata - $artifact.file.name</h4>"
 				if(pomData.name)  outputFile<< "<p><strong>Name:</strong> $pomData.name</p>"
 				if(pomData.description) outputFile << "<p><strong>Description:</strong> $pomData.description</p>"
 				if(pomData.projectUrl) {
@@ -138,7 +136,7 @@ determine what libraries are shipped with the packaged application
 				}
 				if(pomData.licenses) {
 					pomData.licenses.each { PomData.License license ->
-						outputFile << "<h6>License: $license.name</h6>"
+						outputFile << "<h5>License: $license.name</h5>"
 						if(license.url) {
 							outputFile << "<p><strong>License URL:</strong> <code><a href=\"$license.url\">$license.url</a></code></p>"
 						}
@@ -151,7 +149,7 @@ determine what libraries are shipped with the packaged application
 					}
 				}
 				if(pomData.developers) {
-					outputFile << "<h6>Developers</h6>"
+					outputFile << "<h5>Developers</h5>"
 					outputFile << "<ul>"
 					pomData.developers.each { PomData.Developer developer ->
 						outputFile << "<li>"
@@ -248,7 +246,7 @@ determine what libraries are shipped with the packaged application
 		if(!pomContent) return null
 
 		PomData pomData = new PomData()
-
+		
 		pomData.name = pomContent.name?.text()
 		pomData.description = pomContent.description?.text()
 		pomData.projectUrl = pomContent.url?.text()
