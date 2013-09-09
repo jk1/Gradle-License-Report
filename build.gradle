@@ -1,14 +1,23 @@
 apply plugin:'java'
 apply plugin:'groovy'
 apply plugin:'eclipse'
+apply plugin:'osgi'
+apply plugin:'maven'
+
+group = "RobertFischer"
+version = "0.0.1"
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
 
 repositories {
+	mavenLocal()
 	mavenCentral()
 }
 
 dependencies {
 	compile gradleApi()
-	compile 'org.codehaus.groovy:groovy:2.+'
+	compile 'org.codehaus.groovy:groovy:2.0.+'
 	compile 'org.apache.commons:commons-lang3:3.+'
 	compile 'commons-io:commons-io:2.+'
 	compile 'com.google.guava:guava:14.+'
