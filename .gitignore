@@ -5,8 +5,10 @@
 *.war
 *.ear
 
-build 
+build
 .gradle
 .*.swp
 
 .*
+
+bin
