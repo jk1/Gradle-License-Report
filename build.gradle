@@ -1,5 +1,6 @@
 apply plugin:'java'
 apply plugin:'groovy'
+apply plugin:'eclipse'
 
 repositories {
 	mavenCentral()
@@ -7,17 +8,9 @@ repositories {
 
 dependencies {
 	compile gradleApi()
-	compile localGroovy()
-	compile 'org.apache.commons:commons-lang3:3.1'
-	compile 'commons-io:commons-io:2.4'
-	compile 'com.google.guava:guava:14.0.1'
-}
-
-task wrapper(type:Wrapper) {
-  description = "Generates the Gradle wrapper so people without Gradle installed can use our build"
-  group = "Build Infrastructure"
-
-  gradleVersion = "1.5"
-  jarFile = "gradle-wrapper/wrapper.jar"
+	compile 'org.codehaus.groovy:groovy:2.+'
+	compile 'org.apache.commons:commons-lang3:3.+'
+	compile 'commons-io:commons-io:2.+'
+	compile 'com.google.guava:guava:14.+'
 }
 
