@@ -1,5 +1,6 @@
 package com.smokejumperit.gradle.report
 
+import groovy.transform.*
 import groovy.util.slurpersupport.GPathResult
 
 import java.util.jar.JarFile
@@ -14,6 +15,7 @@ import org.gradle.api.artifacts.ResolvedConfiguration
 import org.gradle.api.artifacts.ResolvedDependency
 
 import com.google.common.io.Files
+
 
 class DependencyLicenseReportSupport {
 
@@ -212,14 +214,11 @@ determine what libraries are shipped with the packaged application
 		return data
 	}
 
-	static PomData readPomData(Collection<ResolvedArtifact> artifacts) {
-		return artifacts.inject(null) { PomData pomData, ResolvedArtifact artifact ->
-			GPathResult pomContent = slurpPom(artifact.file)
-			if(!pomContent) return pomData
-			if(pomContent) {
-				pomData = pomData ?: new PomData()
-				return readPomFile(pomContent, pomData)
-			}
+	static PomData readPomData(ResolvedArtifact artifact) {
+		GPathResult pomContent = slurpPom(artifact.file)
+		if(!pomContent) return null
+		if(pomContent) {
+			return readPomFile(pomContent)
 		}
 	}
 
@@ -252,9 +251,11 @@ determine what libraries are shipped with the packaged application
 		return new XmlSlurper().parse(toSlurp)
 	}
 
-	static PomData readPomFile(GPathResult pomContent, PomData pomData) {
-		if(!pomContent) return pomData
-
+	static PomData readPomFile(GPathResult pomContent) {
+		if(!pomContent) return null
+		
+		PomData pomData = new PomData()
+		
 		pomData.name = pomData.name ?: pomContent.name?.text()
 		pomData.description = pomData.description ?: pomContent.description?.text()
 		pomData.projectUrl = pomData.projectUrl ?: pomContent.url?.text()
