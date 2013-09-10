@@ -9,6 +9,7 @@ import java.util.jar.Manifest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
+import org.apache.commons.lang3.StringUtils
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedArtifact
@@ -121,7 +122,7 @@ determine what libraries are shipped with the packaged application
 			if(!manifestData) {
 				report.logger.info("No manifest data found in $artifact.file");
 			} else {
-				outputFile << "<h4>Manifest Metadata - $artifact.file.name</h4>"
+				outputFile << "<h3>Manifest Metadata - $artifact.file.name</h3>"
 				if(manifestData.name) outputFile << "<p><strong>Name:</strong> $manifestData.name</p>"
 				if(manifestData.description) outputFile << "<p><strong>Description:</strong> $manifestData.description</p>"
 				if(manifestData.url) {
@@ -138,7 +139,7 @@ determine what libraries are shipped with the packaged application
 						writeLicenseFile(report, artifact.file, manifestData.license, licenseFile)
 						outputFile << "<p><strong>Packaged License File:</strong> <a href=\"$path\">$manifestData.license</a></p>"
 					} else {
-						outputFile << "<p><strong>License:</strong> $manifestData.license</p>"
+						outputFile << "<p><strong>License:</strong> $manifestData.license (Not packaged)</p>"
 					}
 				}
 			}
@@ -147,7 +148,7 @@ determine what libraries are shipped with the packaged application
 			if(!pomData) {
 				report.logger.info("No pom data found in $artifact.file")
 			} else {
-				outputFile << "<h4>Maven Metadata - $artifact.file.name</h4>"
+				outputFile << "<h3>Maven Metadata - $artifact.file.name</h3>"
 				if(pomData.name)  outputFile<< "<p><strong>Name:</strong> $pomData.name</p>"
 				if(pomData.description) outputFile << "<p><strong>Description:</strong> $pomData.description</p>"
 				if(pomData.projectUrl) {
@@ -155,9 +156,18 @@ determine what libraries are shipped with the packaged application
 				}
 				if(pomData.licenses) {
 					pomData.licenses.each { PomData.License license ->
-						outputFile << "<h5>License: $license.name</h5>"
+						outputFile << "<h4>License: $license.name</h4>"
 						if(license.url) {
-							outputFile << "<p><strong>License URL:</strong> <code><a href=\"$license.url\">$license.url</a></code></p>"
+							if(license.url.startsWith("http")) {
+								outputFile << "<p><strong>License URL:</strong> <a href=\"$license.url\">$license.url</a></p>"
+							} else if(hasLicenseFile(report, artifact.file, license.url)) {
+								String path = "${artifact.file.name}/${license.url}"
+								File licenseFile = new File(report.outputDir, path)
+								writeLicenseFile(report, artifact.file, license.url, licenseFile)
+								outputFile << "<p><strong>Packaged License File:</strong> <a href=\"$path\">$license.url</a></p>"
+							} else {
+								outputFile << "<p><strong>License:</strong> $license.url</p>"
+							}
 						}
 						if(license.distribution) {
 							outputFile << "<p><strong>Distribution:</strong> $license.distribution</p>"
@@ -168,20 +178,25 @@ determine what libraries are shipped with the packaged application
 					}
 				}
 				if(pomData.developers) {
-					outputFile << "<h5>Developers</h5>"
+					outputFile << "<h4>Developers</h4>"
 					outputFile << "<ul>"
 					pomData.developers.each { PomData.Developer developer ->
-						outputFile << "<li>"
-						if(developer.email) {
-							outputFile << "<a href=\"mailto:$developer.email\">$developer.name</a> "
-						} else {
-							outputFile << "$developer.name "
+						String devName = developer.name ?: developer.email ?: developer.organization
+						if(devName) {
+							outputFile << "<li>"
+							if(developer.email) {
+								outputFile << "<a href=\"mailto:$developer.email\">$devName</a> "
+							} else {
+								outputFile << "$devName "
+							}
+							if(developer.organization && devName != developer.organization) {
+								outputFile << "($developer.organization) "
+							}
+							if(developer.roles) {
+								outputFile << "&mdash; ${developer.roles.join(', ')}"
+							}
+							outputFile << "</li>"
 						}
-						if(developer.organization) outputFile << "($developer.organization) "
-						if(developer.roles) {
-							outputFile << "&mdash; ${developer.roles.join(', ')}"
-						}
-						outputFile << "</li>"
 					}
 					outputFile << "</ul>"
 				}
@@ -190,14 +205,72 @@ determine what libraries are shipped with the packaged application
 			if(!pomData && !manifestData) {
 				outputFile << "<p><strong>No POM or Manifest File Found</strong></p>"
 			}
+
+			Collection<String> licenseFilePaths = readLicenseFiles(report, artifact)
+			if(licenseFilePaths) {
+				outputFile << "<h3>License Files - $artifact.file.name</h3>"
+
+				outputFile << "<ul>"
+				outputFile << licenseFilePaths.collect({ String path -> "<li><a href=\"$path\">$path</a></li>" }).join("")
+				outputFile << "</ul>"
+			}
 		}
 		outputFile << "<hr />"
 	}
 
-	static boolean hasLicenseFile(DependencyLicenseReport report, File artifactFile, String licenseFileName) {
+	static Collection<String> readLicenseFiles(DependencyLicenseReport report, ResolvedArtifact artifact) {
+		String fileExtension = Files.getFileExtension(artifact.file.name)?.toLowerCase()
+		if(!fileExtension) {
+			report.logger.debug("No file extension found for file: $artifact.file")
+			return null
+		}
+		switch(fileExtension) {
+			case "zip":
+			case "jar":
+				return readLicenseFiles(report, artifact, new ZipFile(artifact.file, ZipFile.OPEN_READ))
+				break;
+			default:
+				return null;
+		}
+	}
+
+	static Collection<String> readLicenseFiles(DependencyLicenseReport report, ResolvedArtifact artifact, ZipFile zipFile) {
+		Set<String> licenseFileBaseNames =[
+			"license",
+			"readme",
+			"notice",
+			"copying",
+			"copying.lesser"
+		]
+		Set<ZipEntry> entryNames = zipFile.entries().toList().findAll { ZipEntry entry ->
+			String name = entry.getName()
+			String baseName = StringUtils.substringAfterLast(name, "/") ?: name
+			String fileExtension = Files.getFileExtension(baseName)
+			if(fileExtension?.equalsIgnoreCase("class")) return null // Skip class files
+			if(fileExtension) baseName -= ".$fileExtension"
+			return licenseFileBaseNames.find { it.equalsIgnoreCase(baseName) }
+		}
+		if(!entryNames) return null
+		return entryNames.collect { ZipEntry entry ->
+			String entryName = entry.name
+			if(!entryName.startsWith("/")) entryName = "/$entryName"
+			String path = "${artifact.file.name}${entryName}"
+			File file = new File(report.outputDir, path)
+			file.parentFile.mkdirs()
+			file.text = zipFile.getInputStream(entry).text
+			return path
+		}
+	}
+
+	static String hasLicenseFile(DependencyLicenseReport report, File artifactFile, String licenseFileName) {
 		try {
 			ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
-			return file.getEntry(licenseFileName) != null
+			return [
+				"/$licenseFileName",
+				"/META-INF/$licenseFileName",
+				licenseFileName,
+				"META-INF/$licenseFileName"
+			].find { file.getEntry(it) }
 		} catch(Exception e) {
 			report.logger.info("No license file $licenseFileName found in $artifactFile", e)
 			return false
@@ -206,8 +279,10 @@ determine what libraries are shipped with the packaged application
 
 	static void writeLicenseFile(DependencyLicenseReport report, File artifactFile, String licenseFileName, File destinationFile) {
 		try {
+			String entryName = hasLicenseFile(report, artifactFile, licenseFileName) ?: licenseFileName
 			ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
-			ZipEntry entry = file.getEntry(licenseFileName)
+			ZipEntry entry = file.getEntry(entryName)
+			destinationFile.parentFile.mkdirs()
 			destinationFile.text = file.getInputStream(entry).text
 		} catch(Exception e) {
 			report.logger.warn("Failed to write license file $licenseFileName from $artifactFile", e)
@@ -266,10 +341,27 @@ determine what libraries are shipped with the packaged application
 	static PomData readPomData(DependencyLicenseReport report, ResolvedArtifact artifact) {
 		GPathResult pomContent = slurpPom(report, artifact.file)
 		if(!pomContent) {
+			String pomId = [
+				artifact.moduleVersion.id.group,
+				artifact.moduleVersion.id.name,
+				artifact.moduleVersion.id.version
+			].join(":") + "@pom"
+
+			Collection<ResolvedArtifact> artifacts = report.resolveArtifacts(pomId)
+			pomContent = artifacts?.inject(pomContent) { GPathResult memo, ResolvedArtifact resolved ->
+				try {
+					memo = memo ?: slurpPom(report, resolved.file)
+				} catch(Exception e) {
+					report.logger.warn("Error slurping pom from $resolved.file", e)
+				}
+				return memo
+			}
+		}
+
+		if(!pomContent) {
 			report.logger.info("No POM content found for: $artifact.file")
 			return null
-		}
-		if(pomContent) {
+		} else {
 			return readPomFile(report, pomContent)
 		}
 	}
@@ -286,6 +378,9 @@ determine what libraries are shipped with the packaged application
 			return null
 		}
 		switch(fileSuffix) {
+			case "pom":
+				report.logger.debug("Slurping pom from *.pom file: $toSlurp")
+				return slurpPomItself(toSlurp)
 			case "zip":
 			case "jar":
 				report.logger.debug("Processing pom from archive: $toSlurp")
@@ -299,15 +394,25 @@ determine what libraries are shipped with the packaged application
 	static GPathResult slurpPomFromZip(DependencyLicenseReport report, File archiveToSearch) {
 		ZipFile archive = new ZipFile(archiveToSearch, ZipFile.OPEN_READ)
 		ZipEntry pomEntry = archive.entries().toList().find { ZipEntry entry ->
-			entry.name.endsWith("pom.xml")
+			entry.name.endsWith("pom.xml") || entry.name.endsWith(".pom")
 		}
-		report.logger.debug("Searching for pom.xml in $archiveToSearch -- found ${pomEntry?.name}")
+		report.logger.debug("Searching for POM file in $archiveToSearch -- found ${pomEntry?.name}")
 		if(!pomEntry) return null
 		return new XmlSlurper().parse(archive.getInputStream(pomEntry))
 	}
 
 	static GPathResult slurpPomItself(File toSlurp) {
 		return new XmlSlurper().parse(toSlurp)
+	}
+
+	static Collection<ResolvedArtifact> doResolveArtifact(DependencyLicenseReport report, String spec) {
+		Project project = report.project
+		Thread.sleep(2L) // Ensures a unique name below
+		String configName = "dependencyLicenseReport${Long.toHexString(System.currentTimeMillis())}"
+		project.configurations.create("$configName")
+		project.dependencies."$configName"(spec)
+		Configuration config = project.configurations.getByName(configName)
+		return config.resolvedConfiguration.resolvedArtifacts
 	}
 
 	static PomData readPomFile(DependencyLicenseReport report, GPathResult pomContent) {
@@ -335,14 +440,12 @@ determine what libraries are shipped with the packaged application
 
 			report.logger.debug("Parent to fetch: $parent")
 
-			Project project = report.project
-			String configName = "dependencyLicenseReport${Long.toHexString(System.currentTimeMillis())}"
-			project.configurations.create("$configName")
-			project.dependencies."$configName"(parent)
-			Configuration config = project.configurations.getByName(configName)
-			config.resolvedConfiguration.resolvedArtifacts*.file.each { File file ->
-				report.logger.debug("Processing parent POM file: $file")
-				readPomFile(report, new XmlSlurper().parse(file), pomData)
+			Collection<ResolvedArtifact> parentArtifacts = report.resolveArtifacts(parent)
+			if(parentArtifacts) {
+				(parentArtifacts*.file as Set).each { File file ->
+					report.logger.debug("Processing parent POM file: $file")
+					pomData = readPomFile(report, new XmlSlurper().parse(file), pomData)
+				}
 			}
 		}
 
