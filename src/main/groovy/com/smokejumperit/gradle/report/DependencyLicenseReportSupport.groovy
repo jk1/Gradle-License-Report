@@ -99,7 +99,7 @@ determine what libraries are shipped with the packaged application
 
 	static void reportDependency(DependencyLicenseReport report, Configuration configuration, ResolvedDependency dependency) {
 		if(!dependency.moduleArtifacts) {
-			report.logger.warn("Skipping $dependency -- no module artifacts found: ${dependency.dump()}")
+			report.logger.info("Skipping $dependency -- no module artifacts found: ${dependency.dump()}")
 			return
 		}
 
@@ -144,7 +144,9 @@ determine what libraries are shipped with the packaged application
 			}
 
 			PomData pomData = readPomData(report, artifact)
-			if(pomData) {
+			if(!pomData) {
+				report.logger.info("No pom data found in $artifact.file")
+			} else {
 				outputFile << "<h4>Maven Metadata - $artifact.file.name</h4>"
 				if(pomData.name)  outputFile<< "<p><strong>Name:</strong> $pomData.name</p>"
 				if(pomData.description) outputFile << "<p><strong>Description:</strong> $pomData.description</p>"
@@ -183,6 +185,10 @@ determine what libraries are shipped with the packaged application
 					}
 					outputFile << "</ul>"
 				}
+			}
+
+			if(!pomData && !manifestData) {
+				outputFile << "<p><strong>No POM or Manifest File Found</strong></p>"
 			}
 		}
 		outputFile << "<hr />"
@@ -305,6 +311,10 @@ determine what libraries are shipped with the packaged application
 	}
 
 	static PomData readPomFile(DependencyLicenseReport report, GPathResult pomContent) {
+		return readPomFile(report, pomContent, new PomData())
+	}
+
+	static PomData readPomFile(DependencyLicenseReport report, GPathResult pomContent, PomData pomData) {
 		if(!pomContent) {
 			report.logger.info("No content found in pom")
 			return null
@@ -312,7 +322,29 @@ determine what libraries are shipped with the packaged application
 
 		report.logger.debug("POM content children: ${pomContent.children()*.name() as Set}")
 
-		PomData pomData = new PomData()
+		if(!pomContent.parent.children().isEmpty()) {
+			report.logger.debug("Processing parent POM: ${pomContent.parent.children()*.name()}")
+
+			GPathResult parentContent = pomContent.parent
+
+			String parent = [
+				parentContent.groupId.text(),
+				parentContent.artifactId.text(),
+				parentContent.version.text()
+			].join(":") + "@pom"
+
+			report.logger.debug("Parent to fetch: $parent")
+
+			Project project = report.project
+			String configName = "dependencyLicenseReport${Long.toHexString(System.currentTimeMillis())}"
+			project.configurations.create("$configName")
+			project.dependencies."$configName"(parent)
+			Configuration config = project.configurations.getByName(configName)
+			config.resolvedConfiguration.resolvedArtifacts*.file.each { File file ->
+				report.logger.debug("Processing parent POM file: $file")
+				readPomFile(report, new XmlSlurper().parse(file), pomData)
+			}
+		}
 
 		pomData.name = pomContent.name?.text()
 		pomData.description = pomContent.description?.text()
