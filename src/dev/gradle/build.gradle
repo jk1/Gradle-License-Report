@@ -17,8 +17,6 @@ repositories {
 }
 
 dependencies {
-	compile gradleApi()
-	compile 'com.google.guava:guava:14.+'
 	compile 'org.springframework:spring-tx:3.2.3.RELEASE'
 }
 
