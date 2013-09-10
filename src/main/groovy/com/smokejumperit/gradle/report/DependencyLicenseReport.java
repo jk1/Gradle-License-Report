@@ -2,6 +2,7 @@ package com.smokejumperit.gradle.report;
 
 import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.completeConfiguration;
 import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.completeProject;
+import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.doResolveArtifact;
 import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.linkProjectToConfiguration;
 import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.reportDependency;
 import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.startConfiguration;
@@ -10,6 +11,7 @@ import static com.smokejumperit.gradle.report.DependencyLicenseReportSupport.sta
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,11 +21,15 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedDependency;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.TaskAction;
 
 import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
@@ -156,6 +162,43 @@ public class DependencyLicenseReport extends DefaultTask {
 
 	protected File getOutputDir() {
 		return getOutputFile().getParentFile();
+	}
+
+	protected final LoadingCache<String, Collection<ResolvedArtifact>> resolvedArtifactCache = CacheBuilder
+			.newBuilder().concurrencyLevel(1)
+			.build(new CacheLoader<String, Collection<ResolvedArtifact>>() {
+				@Override
+				public Collection<ResolvedArtifact> load(String key)
+						throws Exception {
+					Collection<ResolvedArtifact> artifacts = doResolveArtifact(
+							DependencyLicenseReport.this, key);
+					if (artifacts != null) {
+						// Exercise #getFile() to download the file and catch
+						// exceptions here
+						for (ResolvedArtifact artifact : artifacts) {
+							artifact.getFile();
+						}
+					}
+					return artifacts;
+				}
+			});
+
+	protected Collection<ResolvedArtifact> resolveArtifacts(String key) {
+		try {
+			return resolvedArtifactCache.getUnchecked(key);
+		} catch (Exception e) {
+			if (getLogger().isInfoEnabled()) {
+				getLogger().info("Failure to retrieve artifacts for " + key, e);
+			} else {
+				getLogger().warn(
+						"Could not retrieve artifacts for "
+								+ key
+								+ " -- "
+								+ StringUtils.defaultIfBlank(e.getMessage(), e
+										.getClass().getSimpleName()));
+			}
+			return Collections.emptyList();
+		}
 	}
 
 	public void reportConfiguration(Configuration configuration) {
