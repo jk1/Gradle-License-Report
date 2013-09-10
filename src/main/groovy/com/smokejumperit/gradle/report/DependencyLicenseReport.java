@@ -86,6 +86,7 @@ public class DependencyLicenseReport extends DefaultTask {
 				|| !fileNameLooksLikeHtml(this.outputFile)) {
 			this.outputFile = new File(this.outputFile, "index.html");
 		}
+		getLogger().debug("Setting output file to " + this.outputFile);
 	}
 
 	private static boolean fileNameLooksLikeHtml(File file) {
@@ -102,7 +103,9 @@ public class DependencyLicenseReport extends DefaultTask {
 	@TaskAction
 	public void report() {
 		ensureOutputFile();
+		getLogger().info("Writing report index file to " + this.outputFile);
 
+		getLogger().info("Writing out project header");
 		startProject(this);
 
 		// Get the configurations matching the name: that's our base set
@@ -128,11 +131,18 @@ public class DependencyLicenseReport extends DefaultTask {
 			}
 		}
 
+		getLogger().info("Configurations: " + StringUtils.join(toReport, ", "));
+
 		for (Configuration configuration : toReport) {
+			getLogger().info("Writing out configuration: " + configuration);
 			reportConfiguration(configuration);
+
+			getLogger().debug(
+					"Linking project to configuration: " + configuration);
 			linkProjectToConfiguration(this, configuration);
 		}
 
+		getLogger().info("Writing out project footer");
 		completeProject(this);
 	}
 
@@ -149,6 +159,8 @@ public class DependencyLicenseReport extends DefaultTask {
 	}
 
 	public void reportConfiguration(Configuration configuration) {
+		getLogger().info(
+				"Writing out configuration header for: " + configuration);
 		startConfiguration(this, configuration);
 
 		// TODO Make this a TreeSet to get a nice ordering to the print-out
@@ -159,10 +171,17 @@ public class DependencyLicenseReport extends DefaultTask {
 			dependencies.addAll(dependency.getChildren());
 		}
 
+		getLogger().info(
+				"Processing dependencies for configuration[" + configuration
+						+ "]: " + StringUtils.join(dependencies, ", "));
+
 		for (ResolvedDependency dependency : dependencies) {
+			getLogger().debug("Processing dependency: " + dependency);
 			reportDependency(this, configuration, dependency);
 		}
 
+		getLogger().info(
+				"Writing out configuration footer for: " + configuration);
 		completeConfiguration(this, configuration);
 	}
 }

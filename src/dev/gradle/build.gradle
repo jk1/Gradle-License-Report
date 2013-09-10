@@ -1,5 +1,15 @@
 apply plugin:'java'
-apply plugin:'groovy'
+apply plugin:'license-report'
+
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'RobertFischer:Gradle-License-Report:0.+'
+	}
+}
 
 repositories {
 	mavenLocal()
@@ -8,10 +18,8 @@ repositories {
 
 dependencies {
 	compile gradleApi()
-	compile localGroovy()
-	compile 'org.apache.commons:commons-lang3:3.+'
-	compile 'commons-io:commons-io:2.+'
 	compile 'com.google.guava:guava:14.+'
+	compile 'org.springframework:spring-tx:3.2.3.RELEASE'
 }
 
 task printDependencies << {
