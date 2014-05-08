@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,6 +32,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 
 public class DependencyLicenseReport extends DefaultTask {
@@ -164,11 +166,12 @@ public class DependencyLicenseReport extends DefaultTask {
 		return getOutputFile().getParentFile();
 	}
 
-	protected final LoadingCache<String, Collection<ResolvedArtifact>> resolvedArtifactCache = CacheBuilder
-			.newBuilder().concurrencyLevel(1)
-			.build(new CacheLoader<String, Collection<ResolvedArtifact>>() {
+	protected final LoadingCache<Map<String, String>, Collection<ResolvedArtifact>> resolvedArtifactCache = CacheBuilder
+			.newBuilder()
+			.concurrencyLevel(1)
+			.build(new CacheLoader<Map<String, String>, Collection<ResolvedArtifact>>() {
 				@Override
-				public Collection<ResolvedArtifact> load(String key)
+				public Collection<ResolvedArtifact> load(Map<String, String> key)
 						throws Exception {
 					Collection<ResolvedArtifact> artifacts = doResolveArtifact(
 							DependencyLicenseReport.this, key);
@@ -183,16 +186,19 @@ public class DependencyLicenseReport extends DefaultTask {
 				}
 			});
 
-	protected Collection<ResolvedArtifact> resolveArtifacts(String key) {
+	protected Collection<ResolvedArtifact> resolveArtifacts(
+			Map<String, String> spec) {
 		try {
-			return resolvedArtifactCache.getUnchecked(key);
+			return resolvedArtifactCache
+					.getUnchecked(ImmutableMap.copyOf(spec));
 		} catch (Exception e) {
 			if (getLogger().isInfoEnabled()) {
-				getLogger().info("Failure to retrieve artifacts for " + key, e);
+				getLogger()
+						.info("Failure to retrieve artifacts for " + spec, e);
 			} else {
 				getLogger().warn(
 						"Could not retrieve artifacts for "
-								+ key
+								+ spec
 								+ " -- "
 								+ StringUtils.defaultIfBlank(e.getMessage(), e
 										.getClass().getSimpleName()));

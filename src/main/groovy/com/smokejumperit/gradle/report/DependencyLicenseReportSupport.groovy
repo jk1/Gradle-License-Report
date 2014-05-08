@@ -341,11 +341,12 @@ determine what libraries are shipped with the packaged application
 	static PomData readPomData(DependencyLicenseReport report, ResolvedArtifact artifact) {
 		GPathResult pomContent = slurpPom(report, artifact.file)
 		if(!pomContent) {
-			String pomId = [
-				artifact.moduleVersion.id.group,
-				artifact.moduleVersion.id.name,
-				artifact.moduleVersion.id.version
-			].join(":") + "@pom"
+			Map pomId = [
+				"group":artifact.moduleVersion.id.group,
+				"name":artifact.moduleVersion.id.name,
+				"version":artifact.moduleVersion.id.version,
+				"ext":"pom"
+			]
 
 			Collection<ResolvedArtifact> artifacts = report.resolveArtifacts(pomId)
 			pomContent = artifacts?.inject(pomContent) { GPathResult memo, ResolvedArtifact resolved ->
@@ -405,7 +406,7 @@ determine what libraries are shipped with the packaged application
 		return new XmlSlurper().parse(toSlurp)
 	}
 
-	static Collection<ResolvedArtifact> doResolveArtifact(DependencyLicenseReport report, String spec) {
+	static Collection<ResolvedArtifact> doResolveArtifact(DependencyLicenseReport report, spec) {
 		Project project = report.project
 		Thread.sleep(2L) // Ensures a unique name below
 		String configName = "dependencyLicenseReport${Long.toHexString(System.currentTimeMillis())}"
@@ -432,11 +433,12 @@ determine what libraries are shipped with the packaged application
 
 			GPathResult parentContent = pomContent.parent
 
-			String parent = [
-				parentContent.groupId.text(),
-				parentContent.artifactId.text(),
-				parentContent.version.text()
-			].join(":") + "@pom"
+			Map<String,String> parent = [
+				"group":parentContent.groupId.text(),
+				"name":parentContent.artifactId.text(),
+				"version":parentContent.version.text(),
+				"ext":"pom"
+			]
 
 			report.logger.debug("Parent to fetch: $parent")
 
