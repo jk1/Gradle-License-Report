@@ -16,11 +16,11 @@ buildscript {
     }   
     dependencies {
 			// Replace $version with the current version
-			classpath "com.smokejumperit.gradle.license:license-plugin:$version"
+			classpath "com.smokejumperit.gradle.license:Gradle-License-Report:$version"
     }   
 }
 
 apply plugin:com.smokejumperit.gradle.report.DependencyLicensePlugin
 ```
 
-Then run `gradle dependencyLicenseReport` to generate your report in `build/reports/license`.
+Then run `gradle dependencyLicenseReport` to generate your report in `build/reports/dependency-license`.

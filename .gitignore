@@ -1,14 +1,2 @@
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
-
-build
 .gradle
-.*.swp
-
-.*
-
-bin
+build

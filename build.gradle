@@ -1,9 +1,11 @@
 buildscript {
     repositories {
-      maven { url 'http://jcenter.bintray.com' }
+      jcenter()
+			maven { url 'http://dl.bintray.com/smokejumperit/maven/' }
     }   
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
+			classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
+			classpath 'com.smokejumperit.gradle.license:Gradle-License-Report:[0,)'
     }   
 }
 
@@ -13,6 +15,7 @@ apply plugin:'eclipse'
 apply plugin:'osgi'
 apply plugin:'maven-publish'
 apply plugin:'bintray'
+apply plugin:com.smokejumperit.gradle.report.DependencyLicensePlugin
 
 group = "com.smokejumperit.gradle.license"
 version = "0.0.2"
