@@ -26,7 +26,7 @@ buildscript {
     }   
 }
 
-apply plugin:com.smokejumperit.gradle.report.DependencyLicensePlugin
+apply plugin:'license-report'
 ```
 
 Then run `gradle dependencyLicenseReport` to generate your report in `build/reports/dependency-license`.
