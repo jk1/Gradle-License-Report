@@ -31,6 +31,35 @@ apply plugin:'license-report'
 
 Then run `gradle dependencyLicenseReport` to generate your report in `build/reports/dependency-license`.
 
+Included Details
+-----------------
+
+For each dependency, these details are included in the report, assuming that the information exists within the dependency archives:
+
+* Module Name
+* Module Group
+* Module Version
+* Manifest Name
+* Manifest Description
+* Manifest Project URL
+* Manifest Vendor
+* Manifest Version
+* Manifest License(s) -- could be license names, URLs, and/or embedded files
+* POM Name
+* POM Description
+* POM Project URL
+* POM License(s) -- could be license names, URLs, and/or embedded files
+** POM License(s) Distribution
+** POM License(s) Comments
+* POM Developer(s) -- name, e-mail, organization, role
+* Packaged License Files, which is any file with the following base name:
+** `license`
+** `unlicense`
+** `readme`
+** `notice`
+** `copying`
+** `copying.lesser`
+
 License
 --------
 
