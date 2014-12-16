@@ -15,7 +15,7 @@ Usage
 First, look up the most recent version [here](http://jcenter.bintray.com/com/smokejumperit/gradle/).
 
 Then add this to your `build.gradle` file:
-```
+```groovy
 buildscript {
     repositories {
       jcenter()
