@@ -15,14 +15,14 @@ Usage
 First, look up the most recent version [here](http://jcenter.bintray.com/com/smokejumperit/gradle/).
 
 Then add this to your `build.gradle` file:
-```
+```groovy
 buildscript {
     repositories {
-      jcenter()
+        jcenter()
     }   
     dependencies {
-			// Replace $version with the current version
-			classpath "com.smokejumperit.gradle.license:Gradle-License-Report:$version"
+        // Replace $version with the current version
+        classpath "com.smokejumperit.gradle.license:Gradle-License-Report:$version"
     }   
 }
 
