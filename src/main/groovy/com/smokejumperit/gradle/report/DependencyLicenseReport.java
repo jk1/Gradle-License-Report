@@ -39,7 +39,7 @@ public class DependencyLicenseReport extends DefaultTask {
 
 	private volatile File outputFile = null;
 
-	private volatile Iterable<String> reportedConfigurations = new LinkedList<>(
+	private volatile Iterable<String> reportedConfigurations = new LinkedList<String>(
 			Arrays.asList("runtime"));
 
 	public Iterable<String> getReportedConfigurations() {
@@ -117,7 +117,7 @@ public class DependencyLicenseReport extends DefaultTask {
 		startProject(this);
 
 		// Get the configurations matching the name: that's our base set
-		final Set<Configuration> toReport = new HashSet<>(getProject()
+		final Set<Configuration> toReport = new HashSet<Configuration>(getProject()
 				.getConfigurations().matching(new Spec<Configuration>() {
 					@Override
 					public boolean isSatisfiedBy(Configuration configuration) {
@@ -134,7 +134,7 @@ public class DependencyLicenseReport extends DefaultTask {
 		// Now, keep adding extensions until we don't change the set size
 		for (int previousRoundSize = 0; toReport.size() != previousRoundSize; previousRoundSize = toReport
 				.size()) {
-			for (Configuration configuration : new ArrayList<>(toReport)) {
+			for (Configuration configuration : new ArrayList<Configuration>(toReport)) {
 				toReport.addAll(configuration.getExtendsFrom());
 			}
 		}
@@ -213,7 +213,7 @@ public class DependencyLicenseReport extends DefaultTask {
 		startConfiguration(this, configuration);
 
 		// TODO Make this a TreeSet to get a nice ordering to the print-out
-		Set<ResolvedDependency> dependencies = new HashSet<>();
+		Set<ResolvedDependency> dependencies = new HashSet<ResolvedDependency>();
 		for (ResolvedDependency dependency : configuration
 				.getResolvedConfiguration().getFirstLevelModuleDependencies()) {
 			dependencies.add(dependency);

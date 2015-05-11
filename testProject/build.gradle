@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.github.jk1:Gradle-License-Report:0.+'
+    }
+}
+
+apply plugin:'java'
+apply plugin:'license-report'
+
+repositories { mavenCentral() }
+
+dependencies {
+    compile 'org.springframework:spring-tx:3.2.3.RELEASE'
+}
+
+task printDependencies << {
+    configurations.compile.allDependencies*.each { Dependency dep ->
+        println "${dep.getClass().simpleName}[${dep.getClass().interfaces*.simpleName.join(', ')}] group[$dep.group] name[$dep.name] $dep"
+    }
+}
+
+task printResolvedFiles << {
+    def resolved = configurations.compile.resolvedConfiguration
+    resolved.firstLevelModuleDependencies.each { ResolvedDependency resolvedDep ->
+        resolvedDep.moduleArtifacts.each { println "$it.name - $it.classifier - $it.type: $it.file" }
+    }
+}

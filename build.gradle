@@ -1,109 +1,68 @@
-buildscript {
-    repositories {
-      jcenter()
-			maven { url 'http://dl.bintray.com/smokejumperit/maven/' }
-    }   
-    dependencies {
-			classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
-			classpath 'com.smokejumperit.gradle.license:Gradle-License-Report:[0,)'
-    }   
+plugins{
+    id 'java'
+    id 'groovy'
+    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.9.0'
 }
 
-apply plugin:'java'
-apply plugin:'groovy'
-apply plugin:'eclipse'
-apply plugin:'osgi'
-apply plugin:'maven-publish'
-apply plugin:'bintray'
-apply plugin:com.smokejumperit.gradle.report.DependencyLicensePlugin
+group = "com.github.jk1"
+version = "0.1"
 
-group = "com.smokejumperit.gradle.license"
-version = "0.0.2"
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 repositories {
-	jcenter()
-	mavenLocal()
-	mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
-	compile gradleApi()
-	compile 'org.codehaus.groovy:groovy:[2,3)'
-	compile 'org.apache.commons:commons-lang3:[3,4)'
-	compile 'commons-io:commons-io:[2,3)'
-	compile 'com.google.guava:guava:[14,)'
+    compile gradleApi()
+    compile 'org.codehaus.groovy:groovy:[2,3)'
+    compile 'org.apache.commons:commons-lang3:[3,4)'
+    compile 'commons-io:commons-io:[2,3)'
+    compile 'com.google.guava:guava:[14,)'
 }
 
-def binTrayKeyFile = new File(System.properties["user.home"], "bintray-api.key")
-
-if(binTrayKeyFile.file) {
-	logger.info("Found Bintray key at: $binTrayKeyFile")
-	def project = project // needs to be localized for variable dereferencing to work
-	bintray {
-		user = "smokejumperit"
-		key = binTrayKeyFile.text.trim()
-		publications = ['mavenJava'] // see publications closure
-		pkg {
-			repo = "maven"
-			name = project.group
-			desc = "Gradle plugin for generating a report about the dependencies' licenses"
-			licenses = ["Unlicense"]
-			labels = [
-				"Groovy", "Gradle", "legal", "license", "reporting", "reports"
-			]
-		}
-	}
-} else {
-	logger.info("Could NOT find Bintray key at: $binTrayKeyFile -- skipping Bintray upload configuration")
-}
 
 task('sourcesJar', type: Jar, dependsOn: classes) {
-		classifier = 'sources'
-		sourceSets.each { SourceSet ss ->
-			from ss.allSource
-		}
+    classifier = 'sources'
+    sourceSets.each { SourceSet ss ->
+        from ss.allSource
+    }
 }
 
 task('javadocJar', type: Jar, dependsOn: javadoc) {
-		classifier = 'javadoc'
-		from javadoc.destinationDir
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 artifacts {
-		archives sourcesJar, javadocJar
+    archives sourcesJar, javadocJar
 }
 
+// local maven publishing to ease development
 publishing {
-		publications {
-				mavenJava(MavenPublication) {
-						if (plugins.hasPlugin('war')) {
-								from components.web
-						} else {
-								from components.java
-						}
-
-						artifact sourcesJar {
-								classifier "sources"
-						}
-
-						artifact javadocJar {
-								classifier "javadoc"
-						}
-				}
-		}
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar { classifier "sources" }
+            artifact javadocJar { classifier "javadoc" }
+        }
+    }
 }
 
-
-tasks.bintrayUpload.dependsOn tasks.jar, tasks.sourcesJar, tasks.javadocJar
-
-tasks.javadoc {
-	options.links(
-		"http://docs.oracle.com/javase/8/docs/api/",
-		"https://google-guice.googlecode.com/git/javadoc/"
-	)
-	options.linkSource true
+// release publishing to gradle plugin repo
+pluginBundle {
+    website = 'https://github.com/jk1/Gradle-License-Report'
+    vcsUrl = 'https://github.com/jk1/Gradle-License-Report'
+    description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
+    tags = ['dependency-management', 'license', 'reporting']
+    plugins {
+        licenseReportPlugin {
+            id = 'com.github.jk1.dependency-license-report'
+            displayName = 'Gradle dependency license report plugin'
+        }
+    }
 }
 
