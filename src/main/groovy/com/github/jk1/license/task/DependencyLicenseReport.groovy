@@ -59,8 +59,7 @@ public class DependencyLicenseReport extends DefaultTask {
                 reportedConfigurations, new Function<Object, String>() {
             @Override
             public String apply(Object input) {
-                Objects.requireNonNull(input,
-                        "reportedConfigurations element");
+                Objects.requireNonNull(input, "reportedConfigurations element");
                 if (input instanceof Configuration) {
                     return ((Configuration) input).getName();
                 } else {
@@ -87,7 +86,6 @@ public class DependencyLicenseReport extends DefaultTask {
         ensureOutputFile();
         getLogger().info("Writing report index file to " + this.outputFile);
 
-        getLogger().info("Writing out project header");
         renderer.startProject(this);
 
         // Get the configurations matching the name: that's our base set
@@ -106,24 +104,18 @@ public class DependencyLicenseReport extends DefaultTask {
         }));
 
         // Now, keep adding extensions until we don't change the set size
-        for (int previousRoundSize = 0; toReport.size() != previousRoundSize; previousRoundSize = toReport
-                .size()) {
+        for (int previousRoundSize = 0; toReport.size() != previousRoundSize; previousRoundSize = toReport.size()) {
             for (Configuration configuration : new ArrayList<Configuration>(toReport)) {
                 toReport.addAll(configuration.getExtendsFrom());
             }
         }
-
         getLogger().info("Configurations: " + StringUtils.join(toReport, ", "));
-
         for (Configuration configuration : toReport) {
             getLogger().info("Writing out configuration: " + configuration);
             reportConfiguration(configuration);
-
-            getLogger().debug(
-                    "Linking project to configuration: " + configuration);
+            getLogger().debug("Linking project to configuration: " + configuration);
             renderer.addConfiguration(this, configuration);
         }
-
         getLogger().info("Writing out project footer");
         renderer.completeProject(this);
     }
@@ -159,7 +151,7 @@ public class DependencyLicenseReport extends DefaultTask {
         }
     });
 
-    static Collection<ResolvedArtifact> doResolveArtifact(DependencyLicenseReport report, Object spec) {
+    protected Collection<ResolvedArtifact> doResolveArtifact(DependencyLicenseReport report, Object spec) {
         Project project = report.getProject();
         Thread.sleep(2L) // Ensures a unique name below
         String configName = "dependencyLicenseReport${Long.toHexString(System.currentTimeMillis())}"

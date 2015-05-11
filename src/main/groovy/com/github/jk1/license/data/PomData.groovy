@@ -1,4 +1,4 @@
-package com.github.jk1.license.task
+package com.github.jk1.license.data
 
 import groovy.transform.Canonical
 

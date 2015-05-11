@@ -1,25 +1,22 @@
 package com.github.jk1.license.render
 
-import com.google.common.io.Files
+import com.github.jk1.license.reader.LicenseFilesReader
+import com.github.jk1.license.reader.ManifestReader
+import com.github.jk1.license.reader.PomReader
 import com.github.jk1.license.task.DependencyLicenseReport
-import com.github.jk1.license.task.ManifestData
-import com.github.jk1.license.task.PomData
-import groovy.util.slurpersupport.GPathResult
-import org.apache.commons.lang3.StringUtils
+import com.github.jk1.license.data.ManifestData
+import com.github.jk1.license.data.PomData
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedConfiguration
 import org.gradle.api.artifacts.ResolvedDependency
 
-import java.util.jar.Attributes
-import java.util.jar.JarFile
-import java.util.jar.Manifest
-import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
-
 class DetailedHtmlRenderer implements ReportRenderer {
 
+    private PomReader pomReader = new PomReader()
+    private ManifestReader manifestReader = new ManifestReader()
+    private LicenseFilesReader filesReader = new LicenseFilesReader()
 
     void startProject(DependencyLicenseReport report) {
         Project project = report.getProject()
@@ -30,7 +27,7 @@ class DetailedHtmlRenderer implements ReportRenderer {
 <title>Dependency License Report for $project.name</title>
 <head>
 <body>
-<h1>Dependency SLicense Report for $project.name</h1>
+<h1>Dependency License Report for $project.name</h1>
 """
 
         if (project.description) {
@@ -118,7 +115,7 @@ determine what libraries are shipped with the packaged application
 
         dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
             report.logger.info("Processing artifact: $artifact ($artifact.file)")
-            ManifestData manifestData = readManifestData(report, artifact)
+            ManifestData manifestData = manifestReader.readManifestData(report, artifact)
             if (!manifestData) {
                 report.logger.info("No manifest data found in $artifact.file");
             } else {
@@ -133,10 +130,10 @@ determine what libraries are shipped with the packaged application
                 if (manifestData.license) {
                     if (manifestData.license.startsWith("http")) {
                         outputFile << "<p><strong>License URL:</strong> <a href=\"$manifestData.license\">$manifestData.license</a></p>"
-                    } else if (hasLicenseFile(report, artifact.file, manifestData.license)) {
+                    } else if (filesReader.hasLicenseFile(report, artifact.file, manifestData.license)) {
                         String path = "${artifact.file.name}/${manifestData.license}.html"
                         File licenseFile = new File(report.outputDir, path)
-                        writeLicenseFile(report, artifact.file, manifestData.license, licenseFile)
+                        filesReader.writeLicenseFile(report, artifact.file, manifestData.license, licenseFile)
                         outputFile << "<p><strong>Packaged License File:</strong> <a href=\"$path\">$manifestData.license</a></p>"
                     } else {
                         outputFile << "<p><strong>License:</strong> $manifestData.license (Not packaged)</p>"
@@ -144,7 +141,7 @@ determine what libraries are shipped with the packaged application
                 }
             }
 
-            PomData pomData = readPomData(report, artifact)
+            PomData pomData = pomReader.readPomData(report, artifact)
             if (!pomData) {
                 report.logger.info("No pom data found in $artifact.file")
             } else {
@@ -160,10 +157,10 @@ determine what libraries are shipped with the packaged application
                         if (license.url) {
                             if (license.url.startsWith("http")) {
                                 outputFile << "<p><strong>License URL:</strong> <a href=\"$license.url\">$license.url</a></p>"
-                            } else if (hasLicenseFile(report, artifact.file, license.url)) {
+                            } else if (filesReader.hasLicenseFile(report, artifact.file, license.url)) {
                                 String path = "${artifact.file.name}/${license.url}"
                                 File licenseFile = new File(report.outputDir, path)
-                                writeLicenseFile(report, artifact.file, license.url, licenseFile)
+                                filesReader.writeLicenseFile(report, artifact.file, license.url, licenseFile)
                                 outputFile << "<p><strong>Packaged License File:</strong> <a href=\"$path\">$license.url</a></p>"
                             } else {
                                 outputFile << "<p><strong>License:</strong> $license.url</p>"
@@ -183,7 +180,7 @@ determine what libraries are shipped with the packaged application
                 outputFile << "<p><strong>No POM or Manifest File Found</strong></p>"
             }
 
-            Collection<String> licenseFilePaths = readLicenseFiles(report, artifact)
+            Collection<String> licenseFilePaths = filesReader.readLicenseFiles(report, artifact)
             if (licenseFilePaths) {
                 outputFile << "<h3>License Files - $artifact.file.name</h3>"
 
@@ -194,250 +191,4 @@ determine what libraries are shipped with the packaged application
         }
         outputFile << "<hr />"
     }
-
-    static Collection<String> readLicenseFiles(DependencyLicenseReport report, ResolvedArtifact artifact) {
-        String fileExtension = Files.getFileExtension(artifact.file.name)?.toLowerCase()
-        if (!fileExtension) {
-            report.logger.debug("No file extension found for file: $artifact.file")
-            return null
-        }
-        switch (fileExtension) {
-            case "zip":
-            case "jar":
-                return readLicenseFiles(report, artifact, new ZipFile(artifact.file, ZipFile.OPEN_READ))
-                break;
-            default:
-                return null;
-        }
-    }
-
-    static Collection<String> readLicenseFiles(DependencyLicenseReport report, ResolvedArtifact artifact, ZipFile zipFile) {
-        Set<String> licenseFileBaseNames = [
-                "license",
-                "readme",
-                "notice",
-                "copying",
-                "copying.lesser"
-        ]
-        Set<ZipEntry> entryNames = zipFile.entries().toList().findAll { ZipEntry entry ->
-            String name = entry.getName()
-            String baseName = StringUtils.substringAfterLast(name, "/") ?: name
-            String fileExtension = Files.getFileExtension(baseName)
-            if (fileExtension?.equalsIgnoreCase("class")) return null // Skip class files
-            if (fileExtension) baseName -= ".$fileExtension"
-            return licenseFileBaseNames.find { it.equalsIgnoreCase(baseName) }
-        }
-        if (!entryNames) return null
-        return entryNames.collect { ZipEntry entry ->
-            String entryName = entry.name
-            if (!entryName.startsWith("/")) entryName = "/$entryName"
-            String path = "${artifact.file.name}${entryName}"
-            File file = new File(report.outputDir, path)
-            file.parentFile.mkdirs()
-            file.text = zipFile.getInputStream(entry).text
-            return path
-        }
-    }
-
-    static String hasLicenseFile(DependencyLicenseReport report, File artifactFile, String licenseFileName) {
-        try {
-            ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
-            return [
-                    "/$licenseFileName",
-                    "/META-INF/$licenseFileName",
-                    licenseFileName,
-                    "META-INF/$licenseFileName"
-            ].find { file.getEntry(it) }
-        } catch (Exception e) {
-            report.logger.info("No license file $licenseFileName found in $artifactFile", e)
-            return false
-        }
-    }
-
-    static void writeLicenseFile(DependencyLicenseReport report, File artifactFile, String licenseFileName, File destinationFile) {
-        try {
-            String entryName = hasLicenseFile(report, artifactFile, licenseFileName) ?: licenseFileName
-            ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
-            ZipEntry entry = file.getEntry(entryName)
-            destinationFile.parentFile.mkdirs()
-            destinationFile.text = file.getInputStream(entry).text
-        } catch (Exception e) {
-            report.logger.warn("Failed to write license file $licenseFileName from $artifactFile", e)
-        }
-    }
-
-
-    static ManifestData readManifestData(DependencyLicenseReport report, ResolvedArtifact artifact) {
-        String fileExtension = Files.getFileExtension(artifact.file.name)?.toLowerCase()
-        if (!fileExtension) {
-            report.logger.debug("No file extension found for file: $artifact.file")
-            return null
-        }
-        switch (fileExtension) {
-            case "mf":
-                report.logger.debug("Processing manifest file: $artifact.file")
-                Manifest mf = new Manifest(artifact.file.newInputStream())
-                return manifestToData(report, mf)
-            case "jar":
-            case "zip":
-                report.logger.debug("Processing manifest from archive file: $artifact.file")
-                Manifest mf = lookupManifest(report, artifact.file)
-                if (mf) return manifestToData(report, mf)
-                break
-        }
-        report.logger.debug("No manifest found for file extension: $fileExtension")
-        return null
-    }
-
-    static Manifest lookupManifest(DependencyLicenseReport report, File file) {
-        try {
-            return new JarFile(file).manifest
-        } catch (Exception e) {
-            report.logger.info("No manifest found for file: $file", e)
-            return null
-        }
-    }
-
-    static ManifestData manifestToData(DependencyLicenseReport report, Manifest mf) {
-        Attributes attr = mf.mainAttributes
-
-        report.logger.debug("Manifest main attributes: " + attr.dump())
-
-        ManifestData data = new ManifestData()
-        data.name = attr.getValue('Bundle-Name') ?: attr.getValue('Implementation-Title') ?: attr.getValue('Bundle-SymbolicName')
-        data.version = attr.getValue('Bundle-Version') ?: attr.getValue('Implementation-Version') ?: attr.getValue('Specification-Version')
-        data.description = attr.getValue('Bundle-Description')
-        data.license = attr.getValue('Bundle-License')
-        data.vendor = attr.getValue('Bundle-Vendor') ?: attr.getValue('Implementation-Vendor')
-        data.url = attr.getValue('Bundle-DocURL')
-
-        report.logger.info("Returning manifest data: " + data.dump())
-        return data
-    }
-
-    static PomData readPomData(DependencyLicenseReport report, ResolvedArtifact artifact) {
-        GPathResult pomContent = slurpPom(report, artifact.file)
-        if (!pomContent) {
-            Map pomId = [
-                    "group"  : artifact.moduleVersion.id.group,
-                    "name"   : artifact.moduleVersion.id.name,
-                    "version": artifact.moduleVersion.id.version,
-                    "ext"    : "pom"
-            ]
-
-            Collection<ResolvedArtifact> artifacts = report.resolveArtifacts(pomId)
-            pomContent = artifacts?.inject(pomContent) { GPathResult memo, ResolvedArtifact resolved ->
-                try {
-                    memo = memo ?: slurpPom(report, resolved.file)
-                } catch (Exception e) {
-                    report.logger.warn("Error slurping pom from $resolved.file", e)
-                }
-                return memo
-            }
-        }
-
-        if (!pomContent) {
-            report.logger.info("No POM content found for: $artifact.file")
-            return null
-        } else {
-            return readPomFile(report, pomContent)
-        }
-    }
-
-    static GPathResult slurpPom(DependencyLicenseReport report, File toSlurp) {
-        if (toSlurp.name == "pom.xml") {
-            report.logger.debug("Slurping pom from pom.xml file: $toSlurp")
-            return slurpPomItself(toSlurp)
-        }
-
-        String fileSuffix = Files.getFileExtension(toSlurp.name)?.toLowerCase()
-        if (!fileSuffix) {
-            report.logger.debug("No file suffix on potential pom-containing file: $toSlurp")
-            return null
-        }
-        switch (fileSuffix) {
-            case "pom":
-                report.logger.debug("Slurping pom from *.pom file: $toSlurp")
-                return slurpPomItself(toSlurp)
-            case "zip":
-            case "jar":
-                report.logger.debug("Processing pom from archive: $toSlurp")
-                return slurpPomFromZip(report, toSlurp)
-        }
-
-        report.logger.debug("No idea how to process a pom from: $toSlurp")
-        return null
-    }
-
-    static GPathResult slurpPomFromZip(DependencyLicenseReport report, File archiveToSearch) {
-        ZipFile archive = new ZipFile(archiveToSearch, ZipFile.OPEN_READ)
-        ZipEntry pomEntry = archive.entries().toList().find { ZipEntry entry ->
-            entry.name.endsWith("pom.xml") || entry.name.endsWith(".pom")
-        }
-        report.logger.debug("Searching for POM file in $archiveToSearch -- found ${pomEntry?.name}")
-        if (!pomEntry) return null
-        return new XmlSlurper().parse(archive.getInputStream(pomEntry))
-    }
-
-    static GPathResult slurpPomItself(File toSlurp) {
-        return new XmlSlurper().parse(toSlurp)
-    }
-
-
-
-    static PomData readPomFile(DependencyLicenseReport report, GPathResult pomContent) {
-        return readPomFile(report, pomContent, new PomData())
-    }
-
-    static PomData readPomFile(DependencyLicenseReport report, GPathResult pomContent, PomData pomData) {
-        if (!pomContent) {
-            report.logger.info("No content found in pom")
-            return null
-        }
-
-        report.logger.debug("POM content children: ${pomContent.children()*.name() as Set}")
-
-        if (!pomContent.parent.children().isEmpty()) {
-            report.logger.debug("Processing parent POM: ${pomContent.parent.children()*.name()}")
-
-            GPathResult parentContent = pomContent.parent
-
-            Map<String, String> parent = [
-                    "group"  : parentContent.groupId.text(),
-                    "name"   : parentContent.artifactId.text(),
-                    "version": parentContent.version.text(),
-                    "ext"    : "pom"
-            ]
-
-            report.logger.debug("Parent to fetch: $parent")
-
-            Collection<ResolvedArtifact> parentArtifacts = report.resolveArtifacts(parent)
-            if (parentArtifacts) {
-                (parentArtifacts*.file as Set).each { File file ->
-                    report.logger.debug("Processing parent POM file: $file")
-                    pomData = readPomFile(report, new XmlSlurper().parse(file), pomData)
-                }
-            }
-        }
-
-        pomData.name = pomContent.name?.text()
-        pomData.description = pomContent.description?.text()
-        pomData.projectUrl = pomContent.url?.text()
-
-        report.logger.debug("POM license : ${pomContent.licenses.children()*.name() as Set}")
-
-        pomContent.licenses?.license?.each { GPathResult license ->
-            report.logger.debug("Processing license: ${license.name.text()}")
-            pomData.licenses << new PomData.License(
-                    name: license.name?.text(),
-                    url: license.url?.text(),
-                    distribution: license.distribution?.text(),
-                    comments: license.comments?.text()
-            )
-        }
-
-        report.logger.info("Returning pom data: ${pomData.dump()}")
-        return pomData
-    }
-
 }

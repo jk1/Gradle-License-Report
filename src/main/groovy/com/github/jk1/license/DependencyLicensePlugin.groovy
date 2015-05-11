@@ -10,11 +10,6 @@ public class DependencyLicensePlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-        project.extensions.create("licenseReport", LicenseReportExtension)
 		project.task(ImmutableMap.of("type", DependencyLicenseReport.class), "licenseReport");
 	}
-}
-
-class LicenseReportExtension{
-
 }
