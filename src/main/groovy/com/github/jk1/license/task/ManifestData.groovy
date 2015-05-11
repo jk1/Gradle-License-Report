@@ -1,4 +1,4 @@
-package com.smokejumperit.gradle.report
+package com.github.jk1.license.task
 
 import groovy.transform.Canonical;
 

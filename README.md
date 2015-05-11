@@ -13,21 +13,12 @@ retrieved to see an example.
 Usage
 -------
 
-First, look up the most recent version [here](http://jcenter.bintray.com/com/smokejumperit/gradle/).
+Add this to your `build.gradle` file:
 
-Then add this to your `build.gradle` file:
 ```groovy
-buildscript {
-    repositories {
-        jcenter()
-    }   
-    dependencies {
-        // Replace $version with the current version
-        classpath "com.smokejumperit.gradle.license:Gradle-License-Report:$version"
-    }   
+plugins {
+  id 'com.github.jk1.dependency-license-report' version '0.1'
 }
-
-apply plugin:'license-report'
 ```
 
 Then run `gradle dependencyLicenseReport` to generate your report in `build/reports/dependency-license`.
@@ -64,4 +55,4 @@ For each dependency, these details are included in the report, assuming that the
 License
 --------
 
-This plugin is released under the Unlicense. See the `LICENSE` file for details.
+This plugin is released under the Apache 2.0 license. See the `LICENSE` file for details.

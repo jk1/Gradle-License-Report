@@ -4,12 +4,12 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.github.jk1:Gradle-License-Report:0.+'
+        classpath 'com.github.jk1:gradle-license-report:0.+'
     }
 }
 
 apply plugin:'java'
-apply plugin:'license-report'
+apply plugin:'com.github.jk1.dependency-license-report'
 
 repositories { mavenCentral() }
 

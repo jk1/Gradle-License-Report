@@ -1,4 +1,4 @@
-package com.smokejumperit.gradle.report
+package com.github.jk1.license.task
 
 import groovy.transform.Canonical
 
@@ -6,17 +6,10 @@ import groovy.transform.Canonical
 class PomData {
 
 	String name, description, projectUrl
-	Collection<Developer> developers = []
 	Collection<License> licenses = []
 
 	@Canonical
 	static class License {
 		String name, url, distribution, comments
-	}
-
-	@Canonical
-	static class Developer {
-		String name, email, organization
-		Collection<String> roles = []
 	}
 }
