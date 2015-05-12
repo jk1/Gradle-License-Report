@@ -1,32 +1,21 @@
 package com.github.jk1.license.task;
 
 import com.github.jk1.license.render.DetailedHtmlRenderer;
+import com.github.jk1.license.render.SimpleHtmlRenderer;
 import com.github.jk1.license.render.ReportRenderer;
-import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
-import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedDependency;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.TaskAction;
 
-import com.google.common.base.Function;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
 
 public class DependencyLicenseReport extends DefaultTask {
 
-    private volatile File outputFile = null;
-
-    private volatile Iterable<String> reportedConfigurations = new LinkedList<String>(Arrays.asList("runtime"));
-
-    private volatile ReportRenderer renderer = new DetailedHtmlRenderer();
+    private File outputFile = null;
+    private Iterable<String> reportedConfigurations = new LinkedList<String>(Arrays.asList("runtime"));
+    private ReportRenderer renderer = new SimpleHtmlRenderer();
 
     public Iterable<String> getReportedConfigurations() {
         return reportedConfigurations;
@@ -38,7 +27,7 @@ public class DependencyLicenseReport extends DefaultTask {
 
     public void setReportedConfigurations(String reportedConfiguration) {
         Objects.requireNonNull(reportedConfiguration, "configuration to report");
-        this.reportedConfigurations = ImmutableList.of(reportedConfiguration);
+        this.reportedConfigurations = Collections.singletonList(reportedConfiguration);
     }
 
     public void setReportedConfiguration(Configuration configuration) {
@@ -55,18 +44,9 @@ public class DependencyLicenseReport extends DefaultTask {
             this.reportedConfigurations = Collections.emptyList();
             return;
         }
-        this.reportedConfigurations = Iterables.transform(
-                reportedConfigurations, new Function<Object, String>() {
-            @Override
-            public String apply(Object input) {
-                Objects.requireNonNull(input, "reportedConfigurations element");
-                if (input instanceof Configuration) {
-                    return ((Configuration) input).getName();
-                } else {
-                    return input.toString();
-                }
-            }
-        });
+        this.reportedConfigurations = reportedConfigurations.collect {
+            it instanceof Configuration ? ((Configuration) it).getName() : it.toString()
+        }
     }
 
     public File getOutputFile() {
@@ -94,8 +74,7 @@ public class DependencyLicenseReport extends DefaultTask {
             @Override
             public boolean isSatisfiedBy(Configuration configuration) {
                 for (String configurationName : reportedConfigurations) {
-                    if (configuration.getName().equalsIgnoreCase(
-                            configurationName)) {
+                    if (configuration.getName().equalsIgnoreCase(configurationName)) {
                         return true;
                     }
                 }
@@ -109,7 +88,7 @@ public class DependencyLicenseReport extends DefaultTask {
                 toReport.addAll(configuration.getExtendsFrom());
             }
         }
-        getLogger().info("Configurations: " + StringUtils.join(toReport, ", "));
+        getLogger().info("Configurations: " + toReport.join(','));
         for (Configuration configuration : toReport) {
             getLogger().info("Writing out configuration: " + configuration);
             reportConfiguration(configuration);
@@ -132,76 +111,24 @@ public class DependencyLicenseReport extends DefaultTask {
         return getOutputFile().getParentFile();
     }
 
-    protected final LoadingCache<Map<String, String>, Collection<ResolvedArtifact>> resolvedArtifactCache = CacheBuilder
-            .newBuilder()
-            .concurrencyLevel(1)
-            .build(new CacheLoader<Map<String, String>, Collection<ResolvedArtifact>>() {
-        @Override
-        public Collection<ResolvedArtifact> load(Map<String, String> key)
-                throws Exception {
-            Collection<ResolvedArtifact> artifacts = doResolveArtifact(
-                    DependencyLicenseReport.this, key);
-            if (artifacts != null) {
-                // Exercise #getFile() to download the file and catch exceptions here
-                for (ResolvedArtifact artifact : artifacts) {
-                    artifact.getFile();
-                }
-            }
-            return artifacts;
-        }
-    });
-
-    protected Collection<ResolvedArtifact> doResolveArtifact(DependencyLicenseReport report, Object spec) {
-        Project project = report.getProject();
-        Thread.sleep(2L) // Ensures a unique name below
-        String configName = "dependencyLicenseReport${Long.toHexString(System.currentTimeMillis())}"
-        project.configurations.create("$configName")
-        project.dependencies."$configName"(spec)
-        Configuration config = project.configurations.getByName(configName)
-        return config.resolvedConfiguration.resolvedArtifacts
-    }
-
-    protected Collection<ResolvedArtifact> resolveArtifacts(Map<String, String> spec) {
-        try {
-            return resolvedArtifactCache.getUnchecked(ImmutableMap.copyOf(spec));
-        } catch (Exception e) {
-            if (getLogger().isInfoEnabled()) {
-                getLogger().info("Failure to retrieve artifacts for " + spec, e);
-            } else {
-                getLogger().warn(
-                        "Could not retrieve artifacts for "
-                                + spec
-                                + " -- "
-                                + StringUtils.defaultIfBlank(e.getMessage(), e
-                                .getClass().getSimpleName()));
-            }
-            return Collections.emptyList();
-        }
-    }
-
     public void reportConfiguration(Configuration configuration) {
         getLogger().info("Writing out configuration header for: " + configuration);
         renderer.startConfiguration(this, configuration);
 
         // TODO Make this a TreeSet to get a nice ordering to the print-out
         Set<ResolvedDependency> dependencies = new HashSet<ResolvedDependency>();
-        for (ResolvedDependency dependency : configuration
-                .getResolvedConfiguration().getFirstLevelModuleDependencies()) {
+        for (ResolvedDependency dependency : configuration.getResolvedConfiguration().getFirstLevelModuleDependencies()) {
             dependencies.add(dependency);
             dependencies.addAll(dependency.getChildren());
         }
 
-        getLogger().info(
-                "Processing dependencies for configuration[" + configuration
-                        + "]: " + StringUtils.join(dependencies, ", "));
-
+        getLogger().info("Processing dependencies for configuration[$configuration]: " + dependencies.join(','));
         for (ResolvedDependency dependency : dependencies) {
             getLogger().debug("Processing dependency: " + dependency);
             renderer.addDependency(this, configuration, dependency);
         }
-
-        getLogger().info(
-                "Writing out configuration footer for: " + configuration);
+        getLogger().info("Writing out configuration footer for: " + configuration);
         renderer.completeConfiguration(this, configuration);
     }
+
 }

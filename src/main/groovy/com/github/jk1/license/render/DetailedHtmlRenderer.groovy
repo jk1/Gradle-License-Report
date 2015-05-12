@@ -141,7 +141,7 @@ determine what libraries are shipped with the packaged application
                 }
             }
 
-            PomData pomData = pomReader.readPomData(report, artifact)
+            PomData pomData = pomReader.readPomData(report.getProject(), artifact)
             if (!pomData) {
                 report.logger.info("No pom data found in $artifact.file")
             } else {

@@ -2,7 +2,6 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.task.DependencyLicenseReport
 import com.google.common.io.Files
-import org.apache.commons.lang3.StringUtils
 import org.gradle.api.artifacts.ResolvedArtifact
 
 import java.util.zip.ZipEntry
@@ -37,7 +36,7 @@ class LicenseFilesReader {
         ]
         Set<ZipEntry> entryNames = zipFile.entries().toList().findAll { ZipEntry entry ->
             String name = entry.getName()
-            String baseName = StringUtils.substringAfterLast(name, "/") ?: name
+            String baseName = substringAfterLast(name, "/") ?: name
             String fileExtension = Files.getFileExtension(baseName)
             if (fileExtension?.equalsIgnoreCase("class")) return null // Skip class files
             if (fileExtension) baseName -= ".$fileExtension"
@@ -53,6 +52,17 @@ class LicenseFilesReader {
             file.text = zipFile.getInputStream(entry).text
             return path
         }
+    }
+
+    private String substringAfterLast(String str, String separator) {
+        if (!str || !separator) {
+            return "";
+        }
+        int pos = str.lastIndexOf(separator);
+        if (pos == -1 || pos == str.length() - separator.length()) {
+            return "";
+        }
+        return str.substring(pos + separator.length());
     }
 
     String hasLicenseFile(DependencyLicenseReport report, File artifactFile, String licenseFileName) {
