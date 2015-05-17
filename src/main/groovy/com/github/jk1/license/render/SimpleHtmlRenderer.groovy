@@ -1,11 +1,12 @@
 package com.github.jk1.license.render
 
+import com.github.jk1.license.License
 import com.github.jk1.license.reader.LicenseFilesReader
 import com.github.jk1.license.reader.ManifestReader
 import com.github.jk1.license.reader.PomReader
-import com.github.jk1.license.task.DependencyLicenseReport
-import com.github.jk1.license.data.ManifestData
-import com.github.jk1.license.data.PomData
+import com.github.jk1.license.task.LicenseReportTask
+import com.github.jk1.license.ManifestData
+import com.github.jk1.license.PomData
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedArtifact
@@ -19,7 +20,7 @@ class SimpleHtmlRenderer implements ReportRenderer {
     private LicenseFilesReader filesReader = new LicenseFilesReader()
     private File outputFile;
 
-    void startProject(DependencyLicenseReport report) {
+    void startProject(LicenseReportTask report) {
         Project project = report.getProject()
         outputFile = report.getOutputFile()
         outputFile.text = """
@@ -32,9 +33,9 @@ class SimpleHtmlRenderer implements ReportRenderer {
 """
     }
 
-    void addConfiguration(DependencyLicenseReport report, Configuration configuration) {}
+    void addConfiguration(LicenseReportTask report, Configuration configuration) {}
 
-    void completeProject(DependencyLicenseReport report) {
+    void completeProject(LicenseReportTask report) {
         outputFile << """
 <hr />
 <p id="timestamp">This report was generated at <em>${new Date()}</em>.</p>
@@ -44,11 +45,11 @@ class SimpleHtmlRenderer implements ReportRenderer {
         report.logger.debug("Wrote project footer into output file ($outputFile)");
     }
 
-    void startConfiguration(DependencyLicenseReport report, Configuration configuration) {}
+    void startConfiguration(LicenseReportTask report, Configuration configuration) {}
 
-    void completeConfiguration(DependencyLicenseReport report, Configuration configuration) {}
+    void completeConfiguration(LicenseReportTask report, Configuration configuration) {}
 
-    void addDependency(DependencyLicenseReport report, Configuration configuration, ResolvedDependency dependency) {
+    void addDependency(LicenseReportTask report, Configuration configuration, ResolvedDependency dependency) {
         if (!dependency.moduleArtifacts) {
             report.logger.info("Skipping $dependency -- no module artifacts found: ${dependency.dump()}")
             return
@@ -66,7 +67,7 @@ class SimpleHtmlRenderer implements ReportRenderer {
         outputFile << "</p>"
         ResolvedArtifact artifact = dependency.moduleArtifacts.iterator().next()
         report.logger.info("Processing artifact: $artifact ($artifact.file)")
-        ManifestData manifestData = manifestReader.readManifestData(report, artifact)
+        ManifestData manifestData = manifestReader.readManifestData(artifact)
         if (!manifestData) {
             report.logger.info("No manifest data found in $artifact.file");
         } else {
@@ -95,7 +96,7 @@ class SimpleHtmlRenderer implements ReportRenderer {
                 outputFile << "<p><strong>Project URL:</strong> <code><a href=\"$pomData.projectUrl\">$pomData.projectUrl</a></code></p>"
             }
             if (pomData.licenses) {
-                pomData.licenses.each { PomData.License license ->
+                pomData.licenses.each { License license ->
                     outputFile << "<h4>License: $license.name</h4>"
                     if (license.url) {
                         if (license.url.startsWith("http")) {

@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class CachingArtifactResolver {
 
-    private static Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class);
 
     private static AtomicInteger counter = new AtomicInteger();
     private Map<Map<String, String>, Collection<ResolvedArtifact>> cache =

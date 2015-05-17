@@ -1,8 +1,9 @@
 package com.github.jk1.license.reader
 
-import com.github.jk1.license.data.PomData
+import com.github.jk1.license.License
+import com.github.jk1.license.PomData
 import com.github.jk1.license.util.CachingArtifactResolver
-import com.google.common.io.Files
+import com.github.jk1.license.util.Files
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -16,7 +17,7 @@ import java.util.zip.ZipFile
 
 class PomReader {
 
-    private static Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class);
     private CachingArtifactResolver resolver;
 
     public PomData readPomData(Project project, ResolvedArtifact artifact) {
@@ -49,13 +50,13 @@ class PomReader {
         }
     }
 
-    GPathResult slurpPom(File toSlurp) {
+    private GPathResult slurpPom(File toSlurp) {
         if (toSlurp.name == "pom.xml") {
             LOGGER.debug("Slurping pom from pom.xml file: $toSlurp")
             return slurpPomItself(toSlurp)
         }
 
-        String fileSuffix = Files.getFileExtension(toSlurp.name)?.toLowerCase()
+        String fileSuffix = Files.getExtension(toSlurp.name)?.toLowerCase()
         if (!fileSuffix) {
             LOGGER.debug("No file suffix on potential pom-containing file: $toSlurp")
             return null
@@ -74,7 +75,7 @@ class PomReader {
         return null
     }
 
-    GPathResult slurpPomFromZip(File archiveToSearch) {
+    private GPathResult slurpPomFromZip(File archiveToSearch) {
         ZipFile archive = new ZipFile(archiveToSearch, ZipFile.OPEN_READ)
         ZipEntry pomEntry = archive.entries().toList().find { ZipEntry entry ->
             entry.name.endsWith("pom.xml") || entry.name.endsWith(".pom")
@@ -84,38 +85,32 @@ class PomReader {
         return new XmlSlurper().parse(archive.getInputStream(pomEntry))
     }
 
-    GPathResult slurpPomItself(File toSlurp) {
+    private GPathResult slurpPomItself(File toSlurp) {
         return new XmlSlurper().parse(toSlurp)
     }
 
 
-
-    PomData readPomFile(GPathResult pomContent) {
+    private PomData readPomFile(GPathResult pomContent) {
         return readPomFile(pomContent, new PomData())
     }
 
-    PomData readPomFile(GPathResult pomContent, PomData pomData) {
+    private PomData readPomFile(GPathResult pomContent, PomData pomData) {
         if (!pomContent) {
             LOGGER.info("No content found in pom")
             return null
         }
 
         LOGGER.debug("POM content children: ${pomContent.children()*.name() as Set}")
-
         if (!pomContent.parent.children().isEmpty()) {
             LOGGER.debug("Processing parent POM: ${pomContent.parent.children()*.name()}")
-
             GPathResult parentContent = pomContent.parent
-
             Map<String, String> parent = [
                     "group"  : parentContent.groupId.text(),
                     "name"   : parentContent.artifactId.text(),
                     "version": parentContent.version.text(),
                     "ext"    : "pom"
             ]
-
             LOGGER.debug("Parent to fetch: $parent")
-
             Collection<ResolvedArtifact> parentArtifacts = resolver.resolveArtifacts(parent)
             if (parentArtifacts) {
                 (parentArtifacts*.file as Set).each { File file ->
@@ -133,7 +128,7 @@ class PomReader {
 
         pomContent.licenses?.license?.each { GPathResult license ->
             LOGGER.debug("Processing license: ${license.name.text()}")
-            pomData.licenses << new PomData.License(
+            pomData.licenses << new License(
                     name: license.name?.text(),
                     url: license.url?.text(),
                     distribution: license.distribution?.text(),

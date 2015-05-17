@@ -11,7 +11,7 @@ import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.TaskAction;
 
 
-public class DependencyLicenseReport extends DefaultTask {
+public class LicenseReportTask extends DefaultTask {
 
     private File outputFile = null;
     private Iterable<String> reportedConfigurations = new LinkedList<String>(Arrays.asList("runtime"));
