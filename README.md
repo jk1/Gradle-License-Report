@@ -17,11 +17,11 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '0.1'
+  id 'com.github.jk1.dependency-license-report' version '0.2'
 }
 ```
 
-Then run `gradle dependencyLicenseReport` to generate your report in `build/reports/dependency-license`.
+Then run `gradle generateLicenseReport` to generate your report in `build/reports/dependency-license`.
 
 Included Details
 -----------------
