@@ -12,7 +12,7 @@ import org.gradle.api.logging.Logging
 
 class ConfigurationReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class)
     private ModuleReader dependencyReader = new ModuleReader()
     private LicenseReportPlugin.LicenseReportExtension config
 
@@ -20,7 +20,7 @@ class ConfigurationReader {
         config = project.licenseReport
         configuration.resolvedConfiguration // force configuration resolution
         ConfigurationData data = new ConfigurationData()
-        Set<ResolvedDependency> dependencies = new TreeSet<ResolvedDependency>(new ResolvedDependencyComparator());
+        Set<ResolvedDependency> dependencies = new TreeSet<ResolvedDependency>(new ResolvedDependencyComparator())
         for (ResolvedDependency dependency : configuration.resolvedConfiguration.getFirstLevelModuleDependencies()) {
             collectDependencies(dependencies, dependency)
         }

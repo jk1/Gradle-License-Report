@@ -7,13 +7,8 @@ import com.github.jk1.license.ProjectData
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.PomData
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
-class SimpleRenderer {
-
-    private Logger LOGGER = Logging.getLogger(Task.class);
+class SimpleHtmlReportRenderer implements ReportRenderer {
 
     private Project project
     private LicenseReportExtension config

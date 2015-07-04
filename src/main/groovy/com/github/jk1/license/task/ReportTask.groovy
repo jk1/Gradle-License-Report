@@ -11,7 +11,7 @@ import org.gradle.api.tasks.TaskAction
 
 class ReportTask extends DefaultTask {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class)
 
     @TaskAction
     public void generateReport() {

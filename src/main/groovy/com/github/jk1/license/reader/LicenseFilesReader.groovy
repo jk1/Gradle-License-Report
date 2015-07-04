@@ -15,7 +15,7 @@ import java.util.zip.ZipFile
 
 class LicenseFilesReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class)
     private LicenseReportExtension config
 
     LicenseFileData read(Project project, ResolvedArtifact artifact) {
@@ -28,11 +28,11 @@ class LicenseFilesReader {
         switch (fileExtension) {
             case "zip":
             case "jar":
-                Collection<String> files = readLicenseFiles(artifact, new ZipFile(artifact.file, ZipFile.OPEN_READ));
+                Collection<String> files = readLicenseFiles(artifact, new ZipFile(artifact.file, ZipFile.OPEN_READ))
                 return files.isEmpty() ? null : new LicenseFileData(files)
-                break;
+                break
             default:
-                return null;
+                return null
         }
     }
 
@@ -66,13 +66,13 @@ class LicenseFilesReader {
 
     private String substringAfterLast(String str, String separator) {
         if (!str || !separator) {
-            return "";
+            return ""
         }
-        int pos = str.lastIndexOf(separator);
+        int pos = str.lastIndexOf(separator)
         if (pos == -1 || pos == str.length() - separator.length()) {
-            return "";
+            return ""
         }
-        return str.substring(pos + separator.length());
+        return str.substring(pos + separator.length())
     }
 
 }

@@ -13,7 +13,7 @@ import org.gradle.api.specs.Spec
  */
 class ProjectReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class)
     private ConfigurationReader configurationReader = new ConfigurationReader()
 
     ProjectData read(Project project) {
@@ -26,12 +26,12 @@ class ProjectReader {
             public boolean isSatisfiedBy(Configuration configuration) {
                 for (String configurationName : project.licenseReport.configurations) {
                     if (configuration.getName().equalsIgnoreCase(configurationName)) {
-                        return true;
+                        return true
                     }
                 }
-                return false;
+                return false
             }
-        }));
+        }))
 
         // Now, keep adding extensions until we don't change the set size
         for (int previousRoundSize = 0; toReport.size() != previousRoundSize; previousRoundSize = toReport.size()) {
@@ -41,7 +41,7 @@ class ProjectReader {
         }
         LOGGER.info("Configurations: " + toReport.join(','))
         for (Configuration configuration : toReport) {
-            LOGGER.info("Reading configuration: " + configuration);
+            LOGGER.info("Reading configuration: " + configuration)
             data.configurations.add(configurationReader.read(project, configuration))
         }
         return data

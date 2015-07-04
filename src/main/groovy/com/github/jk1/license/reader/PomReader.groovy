@@ -17,8 +17,8 @@ import java.util.zip.ZipFile
 
 class PomReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
-    private CachingArtifactResolver resolver;
+    private Logger LOGGER = Logging.getLogger(Task.class)
+    private CachingArtifactResolver resolver
 
     public PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)

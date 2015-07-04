@@ -18,7 +18,7 @@ import java.util.zip.ZipFile
 
 class ManifestReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class)
 
     private LicenseReportExtension config
 

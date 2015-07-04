@@ -10,7 +10,7 @@ import org.gradle.api.logging.Logging
 
 class ModuleReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class)
 
     private PomReader pomReader = new PomReader()
     private ManifestReader manifestReader = new ManifestReader()

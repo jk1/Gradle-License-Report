@@ -11,12 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class CachingArtifactResolver {
 
-    private Logger LOGGER = Logging.getLogger(Task.class);
+    private Logger LOGGER = Logging.getLogger(Task.class)
 
-    private static AtomicInteger counter = new AtomicInteger();
+    private static AtomicInteger counter = new AtomicInteger()
     private Map<Map<String, String>, Collection<ResolvedArtifact>> cache =
             new HashMap<Map<String, String>, Collection<ResolvedArtifact>>()
-    private Project project;
+    private Project project
 
     public CachingArtifactResolver(Project project) {
         this.project = project
@@ -30,8 +30,8 @@ class CachingArtifactResolver {
             }
             return cache.get(copy)
         } catch (Exception e) {
-            LOGGER.warn("Failed to retrieve artifacts for " + spec, e);
-            return Collections.emptyList();
+            LOGGER.warn("Failed to retrieve artifacts for " + spec, e)
+            return Collections.emptyList()
         }
     }
 
@@ -44,9 +44,9 @@ class CachingArtifactResolver {
         if (artifacts != null) {
             // Exercise #getFile() to download the file and catch exceptions here
             for (ResolvedArtifact artifact : artifacts) {
-                artifact.getFile();
+                artifact.getFile()
             }
         }
-        return artifacts;
+        return artifacts
     }
 }

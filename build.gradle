@@ -19,7 +19,6 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'commons-io:commons-io:[2,3)'
 }
 
 

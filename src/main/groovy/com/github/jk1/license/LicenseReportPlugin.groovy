@@ -1,21 +1,22 @@
 package com.github.jk1.license
 
-import com.github.jk1.license.render.SimpleRenderer
-import com.github.jk1.license.task.ReportTask;
-import org.gradle.api.Plugin;
+import com.github.jk1.license.render.ReportRenderer
+import com.github.jk1.license.render.SimpleHtmlReportRenderer
+import com.github.jk1.license.task.ReportTask
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging;
+import org.gradle.api.logging.Logging
 
 public class LicenseReportPlugin implements Plugin<Project> {
 
-    private Logger LOGGER = Logging.getLogger(Plugin.class);
+    private Logger LOGGER = Logging.getLogger(Plugin.class)
 
 	@Override
 	public void apply(Project project) {
 		LicenseReportExtension ext = new LicenseReportExtension()
         project.extensions.add('licenseReport', ext)
-		project.task(['type': ReportTask.class], "generateLicenseReport");
+		project.task(['type': ReportTask.class], "generateLicenseReport")
 		project.afterEvaluate {
             ext.afterEvaluate(project)
         }
@@ -23,12 +24,12 @@ public class LicenseReportPlugin implements Plugin<Project> {
 
     static class LicenseReportExtension {
 
-        private Logger LOGGER = Logging.getLogger(Plugin.class);
+        private Logger LOGGER = Logging.getLogger(Plugin.class)
 
         String outputDir
-        SimpleRenderer renderer
-        String[] configurations;
-        String[] excludeGroups;
+        ReportRenderer renderer
+        String[] configurations
+        String[] excludeGroups
 
         void afterEvaluate(Project project){
             if (outputDir == null){
@@ -36,7 +37,7 @@ public class LicenseReportPlugin implements Plugin<Project> {
             }
             LOGGER.debug("Using dependency license report output dir: $outputDir")
             if (renderer == null){
-                renderer = new SimpleRenderer()
+                renderer = new SimpleHtmlReportRenderer()
             }
             if (configurations == null){
                 configurations = ['runtime']
