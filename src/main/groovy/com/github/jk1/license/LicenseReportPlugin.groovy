@@ -1,5 +1,6 @@
 package com.github.jk1.license
 
+import com.github.jk1.license.importer.DependencyDataImporter
 import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import com.github.jk1.license.task.ReportTask
@@ -12,15 +13,15 @@ public class LicenseReportPlugin implements Plugin<Project> {
 
     private Logger LOGGER = Logging.getLogger(Plugin.class)
 
-	@Override
-	public void apply(Project project) {
-		LicenseReportExtension ext = new LicenseReportExtension()
+    @Override
+    public void apply(Project project) {
+        LicenseReportExtension ext = new LicenseReportExtension()
         project.extensions.add('licenseReport', ext)
-		project.task(['type': ReportTask.class], "generateLicenseReport")
-		project.afterEvaluate {
+        project.task(['type': ReportTask.class], "generateLicenseReport")
+        project.afterEvaluate {
             ext.afterEvaluate(project)
         }
-	}
+    }
 
     static class LicenseReportExtension {
 
@@ -28,26 +29,30 @@ public class LicenseReportPlugin implements Plugin<Project> {
 
         String outputDir
         ReportRenderer renderer
+        DependencyDataImporter[] importers
         String[] configurations
         String[] excludeGroups
 
-        void afterEvaluate(Project project){
-            if (outputDir == null){
+        void afterEvaluate(Project project) {
+            if (outputDir == null) {
                 outputDir = "${project.buildDir}/reports/dependency-license"
             }
             LOGGER.debug("Using dependency license report output dir: $outputDir")
-            if (renderer == null){
+            if (renderer == null) {
                 renderer = new SimpleHtmlReportRenderer()
             }
-            if (configurations == null){
+            if (configurations == null) {
                 configurations = ['runtime']
             }
-            if (excludeGroups == null){
+            if (excludeGroups == null) {
                 excludeGroups = [project.group]
+            }
+            if (importers == null) {
+                importers = new DependencyDataImporter[0]
             }
         }
 
-        void beforeExecute(){
+        void beforeExecute() {
             new File(outputDir).mkdirs()
         }
     }

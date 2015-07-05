@@ -44,6 +44,10 @@ class ProjectReader {
             LOGGER.info("Reading configuration: " + configuration)
             data.configurations.add(configurationReader.read(project, configuration))
         }
+        // import external dependency information, if any
+        project.licenseReport.importers.each{
+            data.importedModules.addAll(it.doImport())
+        }
         return data
     }
 }

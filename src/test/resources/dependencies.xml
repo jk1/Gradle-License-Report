@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="Libraries" id="Libs">
+    <table>
+        <tr>
+            <td>Project</td>
+            <td>Version</td>
+            <td>License</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="http://commons.apache.org/exec/">commons-exec</a>
+            </td>
+            <td>1.1</td>
+            <td>
+                <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache-2.0</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a>commons-lang3</a>
+            </td>
+            <td>3.1.0</td>
+            <td>
+                <a>Apache-2.0</a>
+            </td>
+        </tr>
+    </table>
+</chapter>

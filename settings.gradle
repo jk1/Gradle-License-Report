@@ -1,2 +1,2 @@
 rootProject.name = 'gradle-license-report'
-include 'testProject', 'oneMoreTestProject'
+include 'testProject'

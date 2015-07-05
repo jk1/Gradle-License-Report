@@ -15,7 +15,6 @@ repositories { mavenCentral() }
 
 dependencies {
     compile 'org.springframework:spring-tx:3.2.3.RELEASE'
-    compile project(':oneMoreTestProject')
 }
 
 task printDependencies << {
