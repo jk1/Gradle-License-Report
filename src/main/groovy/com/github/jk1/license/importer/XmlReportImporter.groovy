@@ -17,12 +17,12 @@ class XmlReportImporter implements DependencyDataImporter {
     @Override
     Collection<ImportedModuleData> doImport() {
         def gPath = new XmlSlurper().parse(externalReport)
-        def importedModules = gPath.table.tr.'*'.collect {
+        def importedModules = gPath.table.tr.collect {
             new ImportedModuleData(
-                    name: it.td[0].a.text,
-                    version: it.td[1].text,
+                    name: it.td[0].a,
+                    version: it.td[1],
                     projectUrl: it.td[0].a.@href,
-                    license: it.td[2].a.text,
+                    license: it.td[2].a,
                     licenseUrl: it.td[2].a.@href
             )
         }
