@@ -17,13 +17,18 @@ class ConfigurationData {
 }
 
 @Canonical
-class ModuleData {
+class ModuleData implements Comparable<ModuleData> {
     String group, name, version
     Set<ManifestData> manifests = new HashSet<ManifestData>()
     Set<LicenseFileData> licenseFiles = new HashSet<LicenseFileData>()
     Set<PomData> poms = new HashSet<PomData>()
 
-    boolean isEmpty() { manifests.isEmpty() && poms.isEmpty() && licenseFiles.isEmpty()}
+    boolean isEmpty() { manifests.isEmpty() && poms.isEmpty() && licenseFiles.isEmpty() }
+
+    @Override
+    int compareTo(ModuleData o) {
+        group <=> o.group ?: name <=> o.name ?: version <=> o.version
+    }
 }
 
 @Canonical
@@ -35,7 +40,7 @@ class ManifestData {
 @Canonical
 class PomData {
     String name, description, projectUrl
-    Set<License> licenses =  new HashSet<License>()
+    Set<License> licenses = new HashSet<License>()
 }
 
 @Canonical

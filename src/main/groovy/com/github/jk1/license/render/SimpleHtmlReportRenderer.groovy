@@ -2,10 +2,10 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
-import com.github.jk1.license.ModuleData
-import com.github.jk1.license.ProjectData
 import com.github.jk1.license.ManifestData
+import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
+import com.github.jk1.license.ProjectData
 import org.gradle.api.Project
 
 class SimpleHtmlReportRenderer implements ReportRenderer {
@@ -37,7 +37,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     }
 
     private void printDependencies(ProjectData data) {
-        data.configurations.collect { it.dependencies }.flatten().sort{ it.group }.each {
+        data.configurations.collect { it.dependencies }.flatten().sort().each {
             printDependency(it)
         }
     }
@@ -55,7 +55,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
             return
         }
 
-         if (!data.manifests.isEmpty()) {
+        if (!data.manifests.isEmpty()) {
             ManifestData manifest = data.manifests.first()
             if (manifest.url) {
                 output << "<p><strong>Project URL:</strong> <code><a href=\"$manifest.url\">$manifest.url</a></code></p>"
@@ -71,7 +71,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
             }
         }
 
-        if (!data.poms.isEmpty())  {
+        if (!data.poms.isEmpty()) {
             PomData pomData = data.poms.first()
             if (pomData.projectUrl) {
                 output << "<p><strong>Project URL:</strong> <code><a href=\"$pomData.projectUrl\">$pomData.projectUrl</a></code></p>"
@@ -96,7 +96,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         }
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().files.isEmpty()) {
             output << '<p><strong>Embedded license files:</strong> '
-            output << data.licenseFiles.first().files.collect({"<a href=\"$it\">$it</a> " }).join('')
+            output << data.licenseFiles.first().files.collect({ "<a href=\"$it\">$it</a> " }).join('')
             output << '</p>'
         }
     }

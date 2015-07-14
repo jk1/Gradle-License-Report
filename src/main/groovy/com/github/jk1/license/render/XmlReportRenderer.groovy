@@ -1,7 +1,9 @@
 package com.github.jk1.license.render
 
-import com.github.jk1.license.*
+import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
+import com.github.jk1.license.ModuleData
+import com.github.jk1.license.ProjectData
 import org.gradle.api.Project
 
 /**
@@ -37,7 +39,7 @@ class XmlReportRenderer implements ReportRenderer {
         output << '<chapter title="Hub Back-end Libraries" id="Back_End_Libs">\n'
         output << '<table>\n'
         output << '<tr><td>Project</td><td>Version</td><td>License</td></tr>\n'
-        data.configurations.collect { it.dependencies }.flatten().sort { it.group }.each {
+        data.configurations.collect { it.dependencies }.flatten().sort().each {
             printDependency(it)
         }
         data.importedModules.each { printImportedModule(it) }
