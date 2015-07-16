@@ -45,6 +45,7 @@ class CsvReportRenderer extends SingleInfoReportRenderer {
     void render(ProjectData data) {
         LicenseReportPlugin.LicenseReportExtension config = data.project.licenseReport
         File output = new File(config.outputDir, filename)
+        output.write('')
 
         if (includeHeaderLine) {
             output << "${quote('artifact')}$separator${quote('moduleUrl')}$separator${quote('moduleLicense')}$separator${quote('moduleLicenseUrl')}$separator$nl"
