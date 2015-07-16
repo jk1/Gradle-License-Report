@@ -1,6 +1,10 @@
 package com.github.jk1.license.importer
 
+import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.ImportedModuleData
+import groovy.util.slurpersupport.GPathResult
+import org.gradle.api.GradleException
+import org.xml.sax.SAXParseException
 
 
 class XmlReportImporter implements DependencyDataImporter {
@@ -15,9 +19,33 @@ class XmlReportImporter implements DependencyDataImporter {
     }
 
     @Override
-    Collection<ImportedModuleData> doImport() {
-        def gPath = new XmlSlurper().parse(externalReport)
-        def importedModules = gPath.table.tr.collect {
+    Collection<ImportedModuleBundle> doImport() {
+        def bundles= new HashSet<ImportedModuleBundle>()
+        try {
+            def root = createParser().parse(externalReport)
+            if ("topic".equals(root.name())){
+                bundles.addAll(parseTopic(root))
+            } else if ("chapter"){
+                bundles.add(parseChapter(root))
+            } else {
+                throw new GradleException("Dependency data importer: don't know how to parse ${root.name()} root tag")
+            }
+        } catch (SAXParseException e){
+            // malformed xml?
+            def topic = createParser().parseText("<topic><chunk>${externalReport.text}</chunk></topic>")
+            return parseTopic(topic)
+        }
+        return bundles
+    }
+
+    private Collection<ImportedModuleBundle> parseTopic(GPathResult topic){
+        return topic.chunk.chapter.collect{
+            parseChapter(it)
+        }
+    }
+
+    private ImportedModuleBundle parseChapter(GPathResult chapter){
+        def importedModules = chapter.table.tr.collect {
             new ImportedModuleData(
                     name: it.td[0].a,
                     version: it.td[1],
@@ -29,6 +57,12 @@ class XmlReportImporter implements DependencyDataImporter {
         if (!importedModules.isEmpty()) {
             importedModules = importedModules.tail() // strip meaningless header
         }
-        return importedModules
+        return new ImportedModuleBundle(chapter.@title.toString(), importedModules)
+    }
+
+    private XmlSlurper createParser(){
+        def parser = new XmlSlurper()
+        parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+        return parser
     }
 }

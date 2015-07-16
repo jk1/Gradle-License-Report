@@ -34,20 +34,20 @@ public class LicenseReportPlugin implements Plugin<Project> {
         String[] excludeGroups
 
         void afterEvaluate(Project project) {
-            if (outputDir == null) {
+            if (!outputDir) {
                 outputDir = "${project.buildDir}/reports/dependency-license"
             }
             LOGGER.debug("Using dependency license report output dir: $outputDir")
-            if (renderer == null) {
+            if (!renderer) {
                 renderer = new SimpleHtmlReportRenderer()
             }
-            if (configurations == null) {
+            if (!configurations) {
                 configurations = ['runtime']
             }
-            if (excludeGroups == null) {
+            if (!excludeGroups) {
                 excludeGroups = [project.group]
             }
-            if (importers == null) {
+            if (!importers) {
                 importers = new DependencyDataImporter[0]
             }
         }

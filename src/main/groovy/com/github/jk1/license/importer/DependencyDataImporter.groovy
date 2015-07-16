@@ -1,11 +1,11 @@
 package com.github.jk1.license.importer
 
-import com.github.jk1.license.ImportedModuleData
+import com.github.jk1.license.ImportedModuleBundle
 
 interface DependencyDataImporter  {
 
     String getImporterName()
 
-    Collection<ImportedModuleData> doImport()
+    Collection<ImportedModuleBundle> doImport()
 
 }

@@ -7,7 +7,7 @@ import org.gradle.api.Project
 class ProjectData {
     Project project
     Set<ConfigurationData> configurations = new HashSet<ConfigurationData>()
-    List<ImportedModuleData> importedModules = new ArrayList<ImportedModuleData>()
+    List<ImportedModuleBundle> importedModules = new ArrayList<ImportedModuleBundle>()
 }
 
 @Canonical
@@ -56,6 +56,12 @@ class License {
 @Canonical
 class LicenseFileData {
     Collection<String> files = []
+}
+
+@Canonical
+class ImportedModuleBundle {
+    String name
+    Collection<ImportedModuleData> modules = new HashSet<ImportedModuleData>()
 }
 
 @Canonical
