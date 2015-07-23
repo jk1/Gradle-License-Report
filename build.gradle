@@ -2,7 +2,7 @@ plugins{
     id 'java'
     id 'groovy'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.9.0'
+    id 'com.gradle.plugin-publish' version '0.9.1'
 }
 
 group = "com.github.jk1"

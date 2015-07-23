@@ -15,6 +15,7 @@ repositories { mavenCentral() }
 
 dependencies {
     compile 'org.springframework:spring-tx:3.2.3.RELEASE'
+    compile 'com.sun.mail:javax.mail:1.5.4'
 }
 
 task printDependencies << {

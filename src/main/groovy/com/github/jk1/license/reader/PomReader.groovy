@@ -82,11 +82,11 @@ class PomReader {
         }
         LOGGER.debug("Searching for POM file in $archiveToSearch -- found ${pomEntry?.name}")
         if (!pomEntry) return null
-        return new XmlSlurper().parse(archive.getInputStream(pomEntry))
+        return createParser().parse(archive.getInputStream(pomEntry))
     }
 
     private GPathResult slurpPomItself(File toSlurp) {
-        return new XmlSlurper().parse(toSlurp)
+        return createParser().parse(toSlurp)
     }
 
 
@@ -115,7 +115,7 @@ class PomReader {
             if (parentArtifacts) {
                 (parentArtifacts*.file as Set).each { File file ->
                     LOGGER.debug("Processing parent POM file: $file")
-                    pomData = readPomFile(new XmlSlurper().parse(file), pomData)
+                    pomData = readPomFile(createParser().parse(file), pomData)
                 }
             }
         }
@@ -138,5 +138,10 @@ class PomReader {
 
         LOGGER.info("Returning pom data: ${pomData.dump()}")
         return pomData
+    }
+
+    private XmlSlurper createParser(){
+        // non-validating, non-namespace aware
+        return new XmlSlurper(false, false)
     }
 }
