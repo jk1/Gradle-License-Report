@@ -32,15 +32,21 @@ licenseReport {
     // Set output directory for the report data. 
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = "$projectDir/build/licenses"
+
     // List the groups ids to exclude from dependency report.
     // By default project's own group is excluded.
     excludeGroups = ['do.not.want'] 
+
     // Set custom report renderer, implementing ReportRenderer.
     // Yes, you can write your own to support any format necessary.
     renderer = new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')
+
     // Set importers to import any external dependency information, i.e. from npm.
     // Custom importer should implement DependencyDataImporter interface.
     importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
+
+    // Adjust the configurations to use, e.g. for Android projects.
+    configurations = ['compile']
 }
 ```
 
