@@ -6,7 +6,7 @@ plugins{
 }
 
 group = "com.github.jk1"
-version = "0.3.2"
+version = "0.3.3-snapshot"
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
