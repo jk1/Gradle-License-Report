@@ -51,7 +51,7 @@ class CsvReportRenderer extends SingleInfoReportRenderer {
             output << "${quote('artifact')}$separator${quote('moduleUrl')}$separator${quote('moduleLicense')}$separator${quote('moduleLicenseUrl')}$separator$nl"
         }
 
-        data.configurations.collect { it.dependencies }.flatten().sort().each {
+        data.allDependencies.sort().each {
             renderDependency(output, config, it)
         }
     }

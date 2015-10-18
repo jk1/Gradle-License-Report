@@ -8,6 +8,9 @@ class ProjectData {
     Project project
     Set<ConfigurationData> configurations = new HashSet<ConfigurationData>()
     List<ImportedModuleBundle> importedModules = new ArrayList<ImportedModuleBundle>()
+    Set<ModuleData> getAllDependencies() {
+        new HashSet<ModuleData>(configurations.collect { it.dependencies }.flatten())
+    }
 }
 
 @Canonical

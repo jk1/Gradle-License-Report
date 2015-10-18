@@ -37,7 +37,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     }
 
     private void printDependencies(ProjectData data) {
-        data.configurations.collect { it.dependencies }.flatten().sort().each {
+        data.allDependencies.sort().each {
             printDependency(it)
         }
     }

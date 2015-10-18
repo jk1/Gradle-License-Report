@@ -55,7 +55,7 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
         output << "<chapter title=\"$chapterName\" id=\"${chapterName.replaceAll(' ', '_')}\">\n"
         output << '<table>\n'
         output << '<tr><td>Project</td><td>Version</td><td>License</td></tr>\n'
-        data.configurations.collect { it.dependencies }.flatten().sort().each {
+        data.allDependencies.sort().each {
             printDependency(it)
         }
         output << '</table>\n'
