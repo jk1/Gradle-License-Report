@@ -32,6 +32,7 @@ public class LicenseReportPlugin implements Plugin<Project> {
         DependencyDataImporter[] importers
         String[] configurations
         String[] excludeGroups
+        String[] excludes
 
         void afterEvaluate(Project project) {
             if (!outputDir) {
@@ -46,6 +47,9 @@ public class LicenseReportPlugin implements Plugin<Project> {
             }
             if (!excludeGroups) {
                 excludeGroups = [project.group]
+            }
+            if (!excludes) {
+                excludes = []
             }
             if (!importers) {
                 importers = new DependencyDataImporter[0]

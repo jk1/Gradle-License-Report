@@ -33,7 +33,7 @@ class ConfigurationReader {
     }
 
     private Set<ResolvedDependency> collectDependencies(Set<ResolvedDependency> accumulator, ResolvedDependency root){
-        if (!config.excludeGroups.contains(root.moduleGroup)) {
+        if (!config.excludeGroups.contains(root.moduleGroup) && !config.excludes.contains("${root.moduleGroup}:${root.moduleName}".toString())) {
             accumulator.add(root)
         }
         root.children.each {collectDependencies(accumulator, it)}

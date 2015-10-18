@@ -35,7 +35,12 @@ licenseReport {
 
     // List the groups ids to exclude from dependency report.
     // By default project's own group is excluded.
+    // For finer granularity, see: excludes.
     excludeGroups = ['do.not.want'] 
+
+    // List the ids (in module:name format) to exclude from dependency report.
+    // By default excludes is empty.
+    excludes = ['moduleGroup:moduleName']
 
     // Set custom report renderer, implementing ReportRenderer.
     // Yes, you can write your own to support any format necessary.
