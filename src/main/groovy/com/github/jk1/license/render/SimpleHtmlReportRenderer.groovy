@@ -43,6 +43,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     }
 
     private String printDependency(ModuleData data) {
+        boolean projectUrlDone = false
         output << "<hr />"
         output << "<p><strong> ${++counter}.</strong> "
         if (data.group) output << "<strong>Group:</strong> $data.group "
@@ -55,10 +56,19 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
             return
         }
 
+        if (!data.manifests.isEmpty() && !data.poms.isEmpty()) {
+            ManifestData manifest = data.manifests.first()
+            PomData pomData = data.poms.first()
+            if (manifest.url && pomData.projectUrl && manifest.url == pomData.projectUrl) {
+                output << "<p><strong>Project URL:</strong> <code><a href=\"$manifest.url\">$manifest.url</a></code></p>"
+                projectUrlDone = true
+            }
+        }
+
         if (!data.manifests.isEmpty()) {
             ManifestData manifest = data.manifests.first()
-            if (manifest.url) {
-                output << "<p><strong>Project URL:</strong> <code><a href=\"$manifest.url\">$manifest.url</a></code></p>"
+            if (manifest.url && !projectUrlDone) {
+                output << "<p><strong>Manifest Project URL:</strong> <code><a href=\"$manifest.url\">$manifest.url</a></code></p>"
             }
             if (manifest.license) {
                 if (manifest.license.startsWith("http")) {
@@ -73,8 +83,8 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
 
         if (!data.poms.isEmpty()) {
             PomData pomData = data.poms.first()
-            if (pomData.projectUrl) {
-                output << "<p><strong>Project URL:</strong> <code><a href=\"$pomData.projectUrl\">$pomData.projectUrl</a></code></p>"
+            if (pomData.projectUrl && !projectUrlDone) {
+                output << "<p><strong>POM Project URL:</strong> <code><a href=\"$pomData.projectUrl\">$pomData.projectUrl</a></code></p>"
             }
             if (pomData.licenses) {
                 pomData.licenses.each { License license ->
