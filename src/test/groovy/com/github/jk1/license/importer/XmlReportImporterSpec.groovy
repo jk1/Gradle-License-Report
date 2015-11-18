@@ -12,4 +12,11 @@ class XmlReportImporterSpec extends Specification {
         expect:
         !importer.doImport().isEmpty()
     }
+
+    def "Importer should be able to handle lazy closures"() {
+        def importer = new XmlReportImporter('Importer', { externalReport })
+
+        expect:
+        !importer.doImport().isEmpty()
+    }
 }

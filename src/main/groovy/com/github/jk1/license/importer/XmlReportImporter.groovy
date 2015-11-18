@@ -11,9 +11,14 @@ class XmlReportImporter implements DependencyDataImporter {
 
     def String importerName
 
-    private File externalReport
+    private Closure<File> externalReport
 
     public XmlReportImporter(String name, File externalReport) {
+        this.importerName = name
+        this.externalReport = { externalReport }
+    }
+
+    public XmlReportImporter(String name, Closure<File> externalReport) {
         this.importerName = name
         this.externalReport = externalReport
     }
@@ -22,7 +27,7 @@ class XmlReportImporter implements DependencyDataImporter {
     Collection<ImportedModuleBundle> doImport() {
         def bundles= new HashSet<ImportedModuleBundle>()
         try {
-            def root = createParser().parse(externalReport)
+            def root = createParser().parse(externalReport.call())
             if ("topic".equals(root.name())){
                 bundles.addAll(parseTopic(root))
             } else if ("chapter"){
