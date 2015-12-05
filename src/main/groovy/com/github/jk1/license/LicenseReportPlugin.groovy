@@ -38,6 +38,7 @@ public class LicenseReportPlugin implements Plugin<Project> {
             if (!outputDir) {
                 outputDir = "${project.buildDir}/reports/dependency-license"
             }
+            project.tasks.generateLicenseReport.outputs.dir(outputDir)
             LOGGER.debug("Using dependency license report output dir: $outputDir")
             if (!renderer) {
                 renderer = new SimpleHtmlReportRenderer()
