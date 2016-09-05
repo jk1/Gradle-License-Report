@@ -37,7 +37,7 @@ class XmlReportImporter implements DependencyDataImporter {
             }
         } catch (SAXParseException e){
             // malformed xml?
-            def topic = createParser().parseText("<topic><chunk>${externalReport.text}</chunk></topic>")
+            def topic = createParser().parseText("<topic><chunk>${externalReport.call().text}</chunk></topic>")
             return parseTopic(topic)
         }
         return bundles
