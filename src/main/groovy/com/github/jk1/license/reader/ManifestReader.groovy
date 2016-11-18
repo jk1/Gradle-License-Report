@@ -2,6 +2,7 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
 import com.github.jk1.license.ManifestData
+import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.Files
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -18,7 +19,7 @@ import java.util.zip.ZipFile
 
 class ManifestReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class)
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     private LicenseReportExtension config
 
@@ -87,9 +88,12 @@ class ManifestReader {
                     "/META-INF/$licenseFileName",
                     licenseFileName,
                     "META-INF/$licenseFileName"
-            ].find { file.getEntry(it) }
+            ].find {
+                // licenseFileName may be null
+                it != null && file.getEntry(it)
+            }
         } catch (Exception e) {
-            LOGGER.info("No license file $licenseFileName found in $artifactFile", e)
+            LOGGER.warn("No license file $licenseFileName found in $artifactFile", e)
             return null
         }
     }
