@@ -68,6 +68,7 @@ class XmlReportImporter implements DependencyDataImporter {
     private XmlSlurper createParser(){
         def parser = new XmlSlurper()
         parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+        parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
         return parser
     }
 }

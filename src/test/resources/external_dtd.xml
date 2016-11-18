@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="http://server.domain.com/help/topic.v2.xsd"
+       id="third-party-libs">
+  <chunk>
+    <chapter title="Libraries" id="Libs">
+      <table>
+        <tr>
+          <td>Project</td>
+          <td>Version</td>
+          <td>License</td>
+        </tr>
+        <tr>
+          <td>
+            <a>commons-lang3</a>
+          </td>
+          <td>3.1.0</td>
+          <td>
+            <a>Apache-2.0</a>
+          </td>
+        </tr>
+      </table>
+    </chapter>
+  </chunk>
+</topic>
