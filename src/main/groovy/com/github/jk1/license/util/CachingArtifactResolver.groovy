@@ -1,5 +1,6 @@
 package com.github.jk1.license.util
 
+import com.github.jk1.license.task.ReportTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
@@ -11,18 +12,18 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class CachingArtifactResolver {
 
-    private Logger LOGGER = Logging.getLogger(Task.class)
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     private static AtomicInteger counter = new AtomicInteger()
     private Map<Map<String, String>, Collection<ResolvedArtifact>> cache =
             new HashMap<Map<String, String>, Collection<ResolvedArtifact>>()
     private Project project
 
-    public CachingArtifactResolver(Project project) {
+    CachingArtifactResolver(Project project) {
         this.project = project
     }
 
-    public Collection<ResolvedArtifact> resolveArtifacts(Map<String, String> spec) {
+    Collection<ResolvedArtifact> resolveArtifacts(Map<String, String> spec) {
         try {
             Map<String, String> copy = new HashMap<String, String>(spec)
             if (!cache.containsKey(copy)){

@@ -3,7 +3,7 @@ package com.github.jk1.license.util
 
 class Files {
 
-    public static String getExtension(String fullName) {
+    static String getExtension(String fullName) {
         String fileName = new File(fullName).getName()
         int dotIndex = fileName.lastIndexOf('.')
         return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1)

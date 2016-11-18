@@ -4,5 +4,5 @@ import com.github.jk1.license.ProjectData
 
 
 interface ReportRenderer {
-    def void render(ProjectData data)
+    void render(ProjectData data)
 }

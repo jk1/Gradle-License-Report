@@ -11,10 +11,10 @@ import org.gradle.api.tasks.TaskAction
 
 class ReportTask extends DefaultTask {
 
-    private Logger LOGGER = Logging.getLogger(Task.class)
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     @TaskAction
-    public void generateReport() {
+     void generateReport() {
         LOGGER.info("Processing dependencies for project ${getProject().name}")
         LicenseReportExtension config = getProject().licenseReport
         config.beforeExecute()

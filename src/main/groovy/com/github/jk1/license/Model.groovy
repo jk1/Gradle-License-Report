@@ -52,7 +52,7 @@ class License {
 
     @Override
     boolean equals(Object other) {
-        name.equals(other.name)
+        name == other.name
     }
 }
 

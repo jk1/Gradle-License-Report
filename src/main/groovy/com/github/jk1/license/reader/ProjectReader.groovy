@@ -1,6 +1,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.task.ReportTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
@@ -13,7 +14,7 @@ import org.gradle.api.specs.Spec
  */
 class ProjectReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class)
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
     private ConfigurationReader configurationReader = new ConfigurationReader()
 
     ProjectData read(Project project) {
@@ -23,7 +24,7 @@ class ProjectReader {
         final Set<Configuration> toReport = new HashSet<Configuration>(project
                 .getConfigurations().matching(new Spec<Configuration>() {
             @Override
-            public boolean isSatisfiedBy(Configuration configuration) {
+             boolean isSatisfiedBy(Configuration configuration) {
                 for (String configurationName : project.licenseReport.configurations) {
                     if (configuration.getName().equalsIgnoreCase(configurationName)) {
                         return true

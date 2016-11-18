@@ -1,6 +1,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ModuleData
+import com.github.jk1.license.task.ReportTask
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.ResolvedArtifact
@@ -10,7 +11,7 @@ import org.gradle.api.logging.Logging
 
 class ModuleReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class)
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     private PomReader pomReader = new PomReader()
     private ManifestReader manifestReader = new ManifestReader()

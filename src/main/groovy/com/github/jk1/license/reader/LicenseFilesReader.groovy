@@ -2,6 +2,7 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.LicenseFileData
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
+import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.Files
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -15,7 +16,7 @@ import java.util.zip.ZipFile
 
 class LicenseFilesReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class)
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
     private LicenseReportExtension config
 
     LicenseFileData read(Project project, ResolvedArtifact artifact) {

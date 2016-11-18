@@ -6,15 +6,16 @@ import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import com.github.jk1.license.task.ReportTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-public class LicenseReportPlugin implements Plugin<Project> {
+class LicenseReportPlugin implements Plugin<Project> {
 
     private Logger LOGGER = Logging.getLogger(Plugin.class)
 
     @Override
-    public void apply(Project project) {
+     void apply(Project project) {
         LicenseReportExtension ext = new LicenseReportExtension()
         project.extensions.add('licenseReport', ext)
         project.task(['type': ReportTask.class], "generateLicenseReport")
@@ -59,6 +60,11 @@ public class LicenseReportPlugin implements Plugin<Project> {
 
         void beforeExecute() {
             new File(outputDir).mkdirs()
+        }
+
+        boolean isExcluded(ResolvedDependency module){
+            return excludeGroups.contains(module.moduleGroup) ||
+                    excludes.contains("$module.moduleGroup:$module.moduleName")
         }
     }
 }

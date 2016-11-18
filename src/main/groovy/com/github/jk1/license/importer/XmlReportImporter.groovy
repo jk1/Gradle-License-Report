@@ -9,16 +9,16 @@ import org.xml.sax.SAXParseException
 
 class XmlReportImporter implements DependencyDataImporter {
 
-    def String importerName
+    String importerName
 
     private Closure<File> externalReport
 
-    public XmlReportImporter(String name, File externalReport) {
+    XmlReportImporter(String name, File externalReport) {
         this.importerName = name
         this.externalReport = { externalReport }
     }
 
-    public XmlReportImporter(String name, Closure<File> externalReport) {
+    XmlReportImporter(String name, Closure<File> externalReport) {
         this.importerName = name
         this.externalReport = externalReport
     }

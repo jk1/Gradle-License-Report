@@ -36,7 +36,7 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
     private LicenseReportExtension config
     private File output
 
-    public XmlReportRenderer() {
+    XmlReportRenderer() {
     }
 
     XmlReportRenderer(String fileName, String chapterName) {
@@ -44,7 +44,7 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
         this.chapterName = chapterName
     }
 
-    def void render(ProjectData data) {
+    void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
         output = new File(config.outputDir, fileName)
@@ -72,7 +72,7 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
         output << '</topic>'
     }
 
-    private def void printDependency(ModuleData data) {
+    private void printDependency(ModuleData data) {
         def moduleName = "${data.group}:${data.name}"
         def moduleVersion = data.version
         def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = moduleLicenseInfo(config, data)
@@ -97,7 +97,7 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
         output << "</tr>\n"
     }
 
-    private def void printImportedModule(ImportedModuleData data) {
+    private void printImportedModule(ImportedModuleData data) {
         output << "<tr>\n"
         if (data.projectUrl) {
             output << "<td><a href='$data.projectUrl'>$data.name</a></td>\n"

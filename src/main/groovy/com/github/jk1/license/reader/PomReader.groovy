@@ -2,6 +2,7 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.License
 import com.github.jk1.license.PomData
+import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.CachingArtifactResolver
 import com.github.jk1.license.util.Files
 import groovy.util.slurpersupport.GPathResult
@@ -17,10 +18,10 @@ import java.util.zip.ZipFile
 
 class PomReader {
 
-    private Logger LOGGER = Logging.getLogger(Task.class)
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
     private CachingArtifactResolver resolver
 
-    public PomData readPomData(Project project, ResolvedArtifact artifact) {
+    PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = slurpPom(artifact.file)
         if (!pomContent) {
