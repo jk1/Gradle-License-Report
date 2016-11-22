@@ -35,9 +35,12 @@ class ConfigurationReader {
 
     private Set<ResolvedDependency> collectDependencies(Set<ResolvedDependency> accumulator, ResolvedDependency root){
         // avoiding dependency cycles
-        if (!accumulator.contains(root) && !config.isExcluded(root)) {
+        if (!accumulator.contains(root)) {
             LOGGER.debug("Collecting dependency ${root.name}")
-            accumulator.add(root)
+            if (!config.isExcluded(root)) {
+                LOGGER.debug("Not collecting dependency ${root.name} due to explicit exclude configured")
+                accumulator.add(root)
+            }
             root.children.each {collectDependencies(accumulator, it)}
         }
         accumulator

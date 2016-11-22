@@ -21,6 +21,6 @@ class ReportTask extends DefaultTask {
         ProjectData data = new ProjectReader().read(getProject())
         LOGGER.info("Building report for project ${getProject().name}")
         config.renderer.render(data)
-        LOGGER.info("Dependency license report for project ${getProject().name} is ready")
+        LOGGER.info("Dependency license report for project ${getProject().name} created in ${config.outputDir}")
     }
 }
