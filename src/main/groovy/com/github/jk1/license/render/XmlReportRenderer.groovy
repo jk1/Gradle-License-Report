@@ -11,7 +11,7 @@ import org.gradle.api.Project
  *
  * <?xml version="1.0" encoding="UTF-8"?>
  * <!DOCTYPE topic SYSTEM "http://helpserver.labs.intellij.net/help/html-entities.dtd">
- * <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://helpserver.labs.intellij.net/help/topic.v2.xsd"  id="third-party-libs">
+ * <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://helpserver.labs.intellij.net/help/topic.v2.xsd"  id="third-party-libs" title="Third Party Libraries">
  *   <chapter title="Libraries" id="Libs">
  *     <table>
  *       <tr>
@@ -50,7 +50,7 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
         output = new File(config.outputDir, fileName)
         output.text = '<?xml version="1.0" encoding="UTF-8"?>\n'
         output << '<!DOCTYPE topic SYSTEM "http://helpserver.labs.intellij.net/help/html-entities.dtd">\n'
-        output << '<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://helpserver.labs.intellij.net/help/topic.v2.xsd"  id="third-party-libs">\n'
+        output << '<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://helpserver.labs.intellij.net/help/topic.v2.xsd"  id="third-party-libs" title="Third Party Libraries">\n'
         output << '<chunk include-id="third-party-libs-tables">\n'
         output << "<chapter title=\"$chapterName\" id=\"${chapterName.replaceAll(' ', '_')}\">\n"
         output << '<table>\n'
