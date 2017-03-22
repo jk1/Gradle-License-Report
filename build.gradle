@@ -2,11 +2,11 @@ plugins{
     id 'java'
     id 'groovy'
     id 'maven-publish'
-    id 'com.gradle.plugin-publish' version '0.9.1'
+    id 'com.gradle.plugin-publish' version '0.9.7'
 }
 
 group = "com.github.jk1"
-version = "0.3.8"
+version = "0.3.10"
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
