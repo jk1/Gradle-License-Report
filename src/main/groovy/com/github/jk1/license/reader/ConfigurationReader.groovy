@@ -21,6 +21,7 @@ class ConfigurationReader {
         LOGGER.info("Processing configuration [$configuration], configuration will be resolved")
         configuration.resolvedConfiguration // force configuration resolution
         ConfigurationData data = new ConfigurationData()
+        data.name = configuration.name
         Set<ResolvedDependency> dependencies = new TreeSet<ResolvedDependency>(new ResolvedDependencyComparator())
         for (ResolvedDependency dependency : configuration.resolvedConfiguration.getFirstLevelModuleDependencies()) {
             collectDependencies(dependencies, dependency)
