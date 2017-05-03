@@ -69,9 +69,9 @@ class ImportedModuleBundle {
 
 @Canonical
 class ImportedModuleData {
-    def name
-    def version
-    def projectUrl
-    def license
-    def licenseUrl
+    String name
+    String version
+    String projectUrl
+    String license
+    String licenseUrl
 }

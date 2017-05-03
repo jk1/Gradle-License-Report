@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter title="Libraries" id="Libs">
+    <table>
+        <tr>
+            <td>Project</td>
+            <td>Version</td>
+            <td>License</td>
+        </tr>
+        <tr>
+            <td>commons-codec</td>
+            <td>1.0</td>
+            <td>Apache-2.0</td>
+        </tr>
+    </table>
+</chapter>
