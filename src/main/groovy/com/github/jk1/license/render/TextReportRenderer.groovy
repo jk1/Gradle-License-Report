@@ -15,11 +15,22 @@ class TextReportRenderer implements ReportRenderer{
     private LicenseReportPlugin.LicenseReportExtension config
     private File output
     private int counter
+    private String fileName
+
+    public TextReportRenderer() {
+    }
+
+    public TextReportRenderer(String filename) {
+        this.fileName = filename
+    }
 
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
-        output = new File(config.outputDir, 'THIRD-PARTY-NOTICES.txt')
+        if (fileName == null) {
+            fileName = config.outputDir + "/THIRD-PARTY-NOTICES.txt"
+        }
+        output = new File(fileName)
         output.text = """
 Dependency License Report for $project.name
 
@@ -104,3 +115,4 @@ This report was generated at ${new Date()}.
         output << "--------------------------------------------------------------------------------\n\n"
     }
 }
+
