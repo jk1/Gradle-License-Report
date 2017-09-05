@@ -74,7 +74,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
                 if (manifest.license.startsWith("http")) {
                     output << "<p><strong>Manifest license URL:</strong> <a href=\"$manifest.license\">$manifest.license</a></p>"
                 } else if (manifest.hasPackagedLicense) {
-                    output << "<p><strong>Packaged License File:</strong> <a href=\"$path\">$manifest.license</a></p>"
+                    output << "<p><strong>Packaged License File:</strong> <a href=\"$manifest.url\">$manifest.license</a></p>"
                 } else {
                     output << "<p><strong>Manifest License:</strong> $manifest.license (Not packaged)</p>"
                 }
@@ -92,11 +92,6 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
                     if (license.url) {
                         if (license.url.startsWith("http")) {
                             output << " - <a href=\"$license.url\">$license.url</a>"
-                        } else if (false) {//filesReader.hasLicenseFile(report, artifact.file, license.url)) {
-                            //String path = "${artifact.file.name}/${license.url}"
-                            //File licenseFile = new File(report.outputDir, path)
-                            //filesReader.writeLicenseFile(report, artifact.file, license.url, licenseFile)
-                            output << "<p><strong>Packaged License File:</strong> <a href=\"$path\">$license.url</a></p>"
                         } else {
                             output << "<p><strong>License:</strong> $license.url</p>"
                         }

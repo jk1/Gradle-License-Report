@@ -45,6 +45,7 @@ class ManifestReader {
                     if (path != null){
                         data.hasPackagedLicense = true
                         File dest = new File(config.outputDir, "${artifact.file.name}/${data.license}.html")
+                        data.url="${artifact.file.name}/${data.license}.html"
                         writeLicenseFile(artifact.file, path, dest)
                     }
                     return data
