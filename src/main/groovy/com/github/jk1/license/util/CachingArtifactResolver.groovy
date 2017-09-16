@@ -24,7 +24,8 @@ class CachingArtifactResolver {
 
     Collection<ResolvedArtifact> resolveArtifacts(Map<String, String> spec) {
         try {
-            Map<String, String> copy = new HashMap<String, String>(spec)
+            Map<String, String> copy = new HashMap<String, String>()
+            spec.each { copy.put(it.key.trim(), it.value.trim())}
             if (!cache.containsKey(copy)){
                 cache.put(copy, doResolveArtifact(copy))
             }
