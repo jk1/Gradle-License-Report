@@ -20,6 +20,24 @@ plugins {
 }
 ```
 
+or via a 
+
+`buildscript` block
+-------
+
+```
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.3.14'
+    }
+}
+apply plugin: 'com.github.jk1.dependency-license-report'
+```
+
 Then run `gradle generateLicenseReport` to generate your report in `build/reports/dependency-license`.
 
 Configuration
