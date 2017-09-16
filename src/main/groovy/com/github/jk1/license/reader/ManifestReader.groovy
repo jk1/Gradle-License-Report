@@ -5,7 +5,6 @@ import com.github.jk1.license.ManifestData
 import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.Files
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -101,10 +100,8 @@ class ManifestReader {
 
     private void writeLicenseFile(File artifactFile, String licenseFileName, File destinationFile) {
         try {
-            println(licenseFileName)
             ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
             ZipEntry entry = file.getEntry(licenseFileName)
-            println(entry)
             destinationFile.parentFile.mkdirs()
             destinationFile.text = file.getInputStream(entry).text
         } catch (Exception e) {
