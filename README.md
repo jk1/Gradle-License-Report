@@ -1,7 +1,7 @@
 Gradle License Report
 =====================
 
-[![Build Status](https://travis-ci.org/jk1/Gradle-License-Report.svg?branch=master)](https://travis-ci.org/jk1/gradle-license-report)
+[![Build Status](https://travis-ci.org/jk1/Gradle-License-Report.svg?branch=master)](https://travis-ci.org/jk1/Gradle-License-Report)
 
 A plugin for generating reports about the licenses of the dependencies for your Gradle project.
 This plugin is a fork of https://github.com/RobertFischer/Gradle-License-Report.
