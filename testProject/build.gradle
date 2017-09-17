@@ -1,3 +1,5 @@
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+
 buildscript {
     repositories {
         mavenCentral()
@@ -18,6 +20,10 @@ dependencies {
     compile 'com.sun.mail:javax.mail:1.5.4'
     compile 'org.ehcache:ehcache:3.3.1'
     compile 'org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1'
+}
+
+licenseReport {
+    renderer = new InventoryHtmlReportRenderer()
 }
 
 task printDependencies {
