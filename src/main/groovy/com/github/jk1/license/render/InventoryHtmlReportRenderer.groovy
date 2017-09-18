@@ -1,5 +1,7 @@
 package com.github.jk1.license.render
 
+import com.github.jk1.license.ImportedModuleBundle
+import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
 import com.github.jk1.license.ManifestData
@@ -10,10 +12,15 @@ import org.gradle.api.Project
 
 class InventoryHtmlReportRenderer implements ReportRenderer {
 
+    private String name
     private Project project
     private LicenseReportExtension config
     private File output
     private int counter
+
+    InventoryHtmlReportRenderer(String name = null) {
+        this.name = name
+    }
 
     void render(ProjectData data) {
         project = data.project
@@ -64,6 +71,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         top: 0;
         height: 100%;
         width: 300px;
+        overflow: auto;
     }
 
     .inventory ul {
@@ -82,12 +90,25 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         box-sizing: border-box;
         color: #ddd;
         text-decoration: none;
-        display: block;
+        display: flex;
+        flex-direction: row;
         padding: 15px 12px;
     }
 
     .inventory li a:hover {
         background: #383f45;
+        color: white;
+    }
+
+    .license .name {
+        flex-grow: 1;
+
+    }
+
+    .license .badge {
+        background: #ff5588;
+        padding: 10px 15px;
+        border-radius: 20px;
         color: white;
     }
 
@@ -105,14 +126,22 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         margin-bottom: 1em;
     }
 
+    .dependency label {
+        font-weight: bold;
+    }
+
+    .dependency-value {
+    }
+
 </style>
 <head>
 <body>
 <div class="container">
 """
         def inventory = buildLicenseInventory(data)
-        printInventory( inventory )
-        printDependencies( inventory )
+        def externalInventories = buildExternalInventories(data)
+        printInventory( name, inventory, externalInventories )
+        printDependencies( inventory, externalInventories )
         output << """
 </div>
 </body>
@@ -139,32 +168,72 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         return inventory
     }
 
+    private Map<String,Map<String,List<ImportedModuleData>>> buildExternalInventories( ProjectData data ) {
+        Map<String,Map<String,List<ImportedModuleData>>> results = [:]
+        data.importedModules.each { ImportedModuleBundle module ->
+            Map<String,List<ImportedModuleData>> bundle = [:]
+            module.modules.each { ImportedModuleData moduleData ->
+                if( !bundle.containsKey(moduleData.license) ) bundle[ moduleData.license ] = []
+                bundle[ moduleData.license ] << moduleData
+            }
+            results[ module.name ] = bundle
+        }
+        return results
+    }
+
     private void addModule( Map<String,List<ModuleData>> inventory, String key, ModuleData module ) {
         if( !inventory.containsKey(key) ) inventory[ key ] = []
         inventory[key] << module
     }
 
-    private void printInventory( Map<String,List<ModuleData>> inventory ) {
+    private void printInventory( String title, Map<String,List<ModuleData>> inventory, Map<String,Map<String,List<ImportedModuleData>>> externalInventories ) {
         output << "<div class='inventory'>\n"
         output << "<div class='header'>\n"
         output << "<h1>$project.name ${ !'unspecified'.equals(project.version) ? project.version : ''}</h1>\n"
         output << "<h2>Dependency License Report</h2>\n"
+        output << "<h2 class='timestamp'><em>${new Date().format('yyyy-MM-dd HH:mm:ss z')}</em>.</h2>"
         output << "</div>\n"
+
+        output << "<h3>${title}</h3>\n"
         output << "<ul>\n"
         inventory.keySet().sort().each { String license ->
-            output << "<li><a href='#${license}'>${license} (${inventory[license].size()})</a></li>\n"
+            output << "<li><a class='license' href='#${sanitize(title, license)}'><span class='name'>${license}</span> <span class='badge'>${inventory[license].size()}</span></a></li>\n"
         }
         output << "</ul>\n"
-        output << "<p class='timestamp'>This report was generated at <em>${new Date()}</em>.</p>"
+
+        externalInventories.each { String name, Map<String,List<ImportedModuleData>> modules ->
+            output << "<h3>${name}</h3>\n"
+            output << "<ul>\n"
+            modules.each { String license, List<ImportedModuleData> dependencies ->
+                output << "<li><a class='license' href='#${sanitize(name,license)}'><span class='name'>${license}</span> <span class='badge'>${dependencies.size()}</span></a></li>\n"
+            }
+            output << "</ul>\n"
+        }
+
         output << "</div>\n"
     }
 
-    private void printDependencies(Map<String,List<ModuleData>> inventory) {
+    String sanitize(String... values) {
+        values.collect { it.replaceAll(/\s/, '_') }.join('_')
+    }
+
+    private void printDependencies(Map<String,List<ModuleData>> inventory, Map<String,Map<String,List<ImportedModuleData>>> externalInventories) {
         output << "<div class='content'>\n"
+        output << "<h1>${name}</h1>\n"
         inventory.keySet().sort().each { String license ->
-            output << "<a id='${license}'></a>\n"
+            output << "<a id='${sanitize(name,license)}'></a>\n"
             inventory[license].each { ModuleData data ->
                 printDependency( data )
+            }
+        }
+
+        externalInventories.keySet().sort().each { String name ->
+            output << "<h1>${name}</h1>\n"
+            externalInventories[ name ].each { String license, List<ImportedModuleData> dependencies ->
+                output << "<a id='${sanitize(name,license)}'></a>\n"
+                dependencies.each { ImportedModuleData importedData ->
+                    printImportedDependency( importedData )
+                }
             }
         }
         output << "</div>\n"
@@ -188,7 +257,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
             ManifestData manifest = data.manifests.first()
             PomData pomData = data.poms.first()
             if (manifest.url && pomData.projectUrl && manifest.url == pomData.projectUrl) {
-                output << "<p><strong>Project URL:</strong> <code><a href='$manifest.url'>$manifest.url</a></code></p>"
+                output << sectionLink( "Project URL", manifest.url, manifest.url )
                 projectUrlDone = true
             }
         }
@@ -196,15 +265,15 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         if (!data.manifests.isEmpty()) {
             ManifestData manifest = data.manifests.first()
             if (manifest.url && !projectUrlDone) {
-                output << "<p><strong>Manifest Project URL:</strong> <code><a href='$manifest.url'>$manifest.url</a></code></p>"
+                output << sectionLink( "Manifest Project URL", manifest.url, manifest.url )
             }
             if (manifest.license) {
                 if (manifest.license.startsWith("http")) {
-                    output << "<p><strong>Manifest license URL:</strong> <a href='$manifest.license'>$manifest.license</a></p>"
+                    output << sectionLink( "Manifest license URL", manifest.license, manifest.license )
                 } else if (manifest.hasPackagedLicense) {
-                    output << "<p><strong>Packaged License File:</strong> <a href='$manifest.url'>$manifest.license</a></p>"
+                    output << sectionLink( "Packaged License File", manifest.license, manifest.url )
                 } else {
-                    output << "<p><strong>Manifest License:</strong> $manifest.license (Not packaged)</p>"
+                    output << section( "Manifest License", "${manifest.license} (Not Packaged)" )
                 }
             }
         }
@@ -212,26 +281,41 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         if (!data.poms.isEmpty()) {
             PomData pomData = data.poms.first()
             if (pomData.projectUrl && !projectUrlDone) {
-                output << "<p><strong>POM Project URL:</strong> <code><a href='$pomData.projectUrl'>$pomData.projectUrl</a></code></p>"
+                output << sectionLink( "POM Project URL", pomData.projectUrl, pomData.projectUrl )
             }
             if (pomData.licenses) {
                 pomData.licenses.each { License license ->
-                    output << "<p><strong>POM License: $license.name</strong>"
                     if (license.url) {
-                        if (license.url.startsWith("http")) {
-                            output << " - <a href='$license.url'>$license.url</a>"
-                        } else {
-                            output << "<p><strong>License:</strong> $license.url</p>"
-                        }
+                        output << section( "POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}" )
+                    } else {
+                        output << section( "POM License", license.name )
                     }
                 }
             }
         }
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().files.isEmpty()) {
-            output << '<p><strong>Embedded license files:</strong> '
-            output << data.licenseFiles.first().files.collect({ "<a href='$it'>$it</a> " }).join('')
-            output << '</p>'
+            output << section("Embedded license files", data.licenseFiles.first().files.collect { link(it, it ) }.join(''))
         }
         output << "</div>\n"
+    }
+
+    private printImportedDependency( ImportedModuleData data ) {
+        output << "<div class='dependency'>\n"
+        output << "<p>${++counter}. <strong>${data.name} v${data.version}</strong></p>"
+        output << sectionLink( "Project URL", data.projectUrl, data.projectUrl )
+        output << sectionLink( "License URL", data.license, data.licenseUrl )
+        output << "</div>\n"
+    }
+
+    private GString section( String label, String value ) {
+        "<label>${label}</label>\n<div class='dependency-value'>${value}</div>\n"
+    }
+
+    private GString link( String name, String url ) {
+        "<a href='${url}'>${name}</a>"
+    }
+
+    private GString sectionLink( String label, String name, String url ) {
+        section( label, link(name,url) )
     }
 }
