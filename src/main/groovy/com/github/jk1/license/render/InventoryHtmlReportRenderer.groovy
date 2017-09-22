@@ -155,14 +155,14 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
             if( !module.poms.isEmpty() ) {
                 PomData pom = module.poms.first()
                 if( pom.licenses.isEmpty() ) {
-                    addModule(inventory, "Unknown", module)
+                    addModule(inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module)
                 } else {
                     pom.licenses.each { License license ->
                         addModule( inventory, license.name, module )
                     }
                 }
             } else {
-                addModule( inventory, "Unknown", module )
+                addModule( inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module )
             }
         }
         return inventory
@@ -221,8 +221,8 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         output << "<div class='content'>\n"
         output << "<h1>${name}</h1>\n"
         inventory.keySet().sort().each { String license ->
-            output << "<a id='${sanitize(name,license)}'></a>\n"
-            inventory[license].each { ModuleData data ->
+            output << "<a id='${sanitize(name,license)}'></a>\n" << "<h2>${license}</h2>\n"
+            inventory[license].sort({ ModuleData a, ModuleData b -> a.group <=> b.group }).each { ModuleData data ->
                 printDependency( data )
             }
         }
@@ -247,11 +247,6 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         if (data.name) output << "<strong>Name:</strong> $data.name "
         if (data.version) output << "<strong>Version:</strong> $data.version "
         output << "</p>"
-
-        if (data.poms.isEmpty() && data.manifests.isEmpty()) {
-            output << "<p><strong>No license information found</strong></p>"
-            return
-        }
 
         if (!data.manifests.isEmpty() && !data.poms.isEmpty()) {
             ManifestData manifest = data.manifests.first()
