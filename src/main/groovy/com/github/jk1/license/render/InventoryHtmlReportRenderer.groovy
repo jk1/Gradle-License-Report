@@ -17,9 +17,24 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
     private LicenseReportExtension config
     private File output
     private int counter
+    private Map<String,Map<String,String>> overrides = [:]
 
-    InventoryHtmlReportRenderer(String name = null) {
+    InventoryHtmlReportRenderer(String name = null, File overridesFilename = null ) {
         this.name = name
+        if( overridesFilename ) overrides = parseOverrides( overridesFilename )
+    }
+
+    private Map<String,Map<String,String>> parseOverrides( File file ) {
+        overrides = [:]
+        file.withReader { Reader reader ->
+            String line
+            while( (line = reader.readLine()) != null ) {
+                String[] columns = line.split(/\|/)
+                String groupNameVersion = columns[0]
+                overrides[groupNameVersion] = [projectUrl: safeGet(columns,1), license: safeGet(columns,2), licenseUrl: safeGet(columns,3)]
+            }
+        }
+        return overrides
     }
 
     void render(ProjectData data) {
@@ -182,8 +197,14 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
     }
 
     private void addModule( Map<String,List<ModuleData>> inventory, String key, ModuleData module ) {
-        if( !inventory.containsKey(key) ) inventory[ key ] = []
-        inventory[key] << module
+        String gnv = "${module.group}:${module.name}:${module.version}"
+        if( key == "Unknown" && overrides.containsKey(gnv) ) {
+            if( !inventory.containsKey(overrides[gnv].license) ) inventory[ overrides[gnv].license ] = []
+            inventory[overrides[gnv].license] << module
+        } else {
+            if( !inventory.containsKey(key) ) inventory[ key ] = []
+            inventory[key] << module
+        }
     }
 
     private void printInventory( String title, Map<String,List<ModuleData>> inventory, Map<String,Map<String,List<ImportedModuleData>>> externalInventories ) {
@@ -248,46 +269,53 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         if (data.version) output << "<strong>Version:</strong> $data.version "
         output << "</p>"
 
-        if (!data.manifests.isEmpty() && !data.poms.isEmpty()) {
-            ManifestData manifest = data.manifests.first()
-            PomData pomData = data.poms.first()
-            if (manifest.url && pomData.projectUrl && manifest.url == pomData.projectUrl) {
-                output << sectionLink( "Project URL", manifest.url, manifest.url )
-                projectUrlDone = true
-            }
-        }
-
-        if (!data.manifests.isEmpty()) {
-            ManifestData manifest = data.manifests.first()
-            if (manifest.url && !projectUrlDone) {
-                output << sectionLink( "Manifest Project URL", manifest.url, manifest.url )
-            }
-            if (manifest.license) {
-                if (manifest.license.startsWith("http")) {
-                    output << sectionLink( "Manifest license URL", manifest.license, manifest.license )
-                } else if (manifest.hasPackagedLicense) {
-                    output << sectionLink( "Packaged License File", manifest.license, manifest.url )
-                } else {
-                    output << section( "Manifest License", "${manifest.license} (Not Packaged)" )
+        String gnv = "${data.group}:${data.name}:${data.version}"
+        if( overrides.containsKey(gnv) ) {
+            output << sectionLink( "Project URL", overrides[gnv].projectUrl, overrides[gnv].projectUrl )
+            output << sectionLink( "License URL", overrides[gnv].license, overrides[gnv].licenseUrl )
+        } else {
+            if (!data.manifests.isEmpty() && !data.poms.isEmpty()) {
+                ManifestData manifest = data.manifests.first()
+                PomData pomData = data.poms.first()
+                if (manifest.url && pomData.projectUrl && manifest.url == pomData.projectUrl) {
+                    output << sectionLink( "Project URL", manifest.url, manifest.url )
+                    projectUrlDone = true
                 }
             }
-        }
 
-        if (!data.poms.isEmpty()) {
-            PomData pomData = data.poms.first()
-            if (pomData.projectUrl && !projectUrlDone) {
-                output << sectionLink( "POM Project URL", pomData.projectUrl, pomData.projectUrl )
-            }
-            if (pomData.licenses) {
-                pomData.licenses.each { License license ->
-                    if (license.url) {
-                        output << section( "POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}" )
+            if (!data.manifests.isEmpty()) {
+                ManifestData manifest = data.manifests.first()
+                if (manifest.url && !projectUrlDone) {
+                    output << sectionLink( "Manifest Project URL", manifest.url, manifest.url )
+                }
+                if (manifest.license) {
+                    if (manifest.license.startsWith("http")) {
+                        output << sectionLink( "Manifest license URL", manifest.license, manifest.license )
+                    } else if (manifest.hasPackagedLicense) {
+                        output << sectionLink( "Packaged License File", manifest.license, manifest.url )
                     } else {
-                        output << section( "POM License", license.name )
+                        output << section( "Manifest License", "${manifest.license} (Not Packaged)" )
+                    }
+                }
+            }
+
+            if (!data.poms.isEmpty()) {
+                PomData pomData = data.poms.first()
+                if (pomData.projectUrl && !projectUrlDone) {
+                    output << sectionLink( "POM Project URL", pomData.projectUrl, pomData.projectUrl )
+                }
+                if (pomData.licenses) {
+                    pomData.licenses.each { License license ->
+                        if (license.url) {
+                            output << section( "POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}" )
+                        } else {
+                            output << section( "POM License", license.name )
+                        }
                     }
                 }
             }
         }
+
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().files.isEmpty()) {
             output << section("Embedded license files", data.licenseFiles.first().files.collect { link(it, it ) }.join(''))
         }
@@ -313,4 +341,9 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
     private GString sectionLink( String label, String name, String url ) {
         section( label, link(name,url) )
     }
+
+    private String safeGet( String[] arr, int index ) {
+        arr.length > index ? arr[index] : null
+    }
+
 }
