@@ -54,8 +54,8 @@ publishing {
 
 // release publishing to gradle plugin repo
 pluginBundle {
-    website = 'https://github.com/chubbard/Gradle-License-Report'
-    vcsUrl = 'https://github.com/chubbard/Gradle-License-Report'
+    website = 'https://github.com/jk1/Gradle-License-Report'
+    vcsUrl = 'https://github.com/jk1/Gradle-License-Report'
     description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
     tags = ['dependency-management', 'license', 'reporting']
     plugins {
