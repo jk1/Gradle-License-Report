@@ -34,12 +34,16 @@ import com.github.jk1.license.ProjectData
  */
 class CsvReportRenderer extends SingleInfoReportRenderer {
 
-    String filename = 'licenses.csv'
+    String filename
     boolean includeHeaderLine = true
 
     String quote = '\"'
     String separator = ','
     String nl = '\r\n'
+
+    CsvReportRenderer(String filename = 'licenses.csv') {
+        this.filename = filename
+    }
 
     @Override
     void render(ProjectData data) {

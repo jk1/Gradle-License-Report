@@ -13,25 +13,27 @@ import org.gradle.api.Project
 class InventoryHtmlReportRenderer implements ReportRenderer {
 
     private String name
+    private String fileName
     private Project project
     private LicenseReportExtension config
     private File output
     private int counter
-    private Map<String,Map<String,String>> overrides = [:]
+    private Map<String, Map<String, String>> overrides = [:]
 
-    InventoryHtmlReportRenderer(String name = null, File overridesFilename = null ) {
+    InventoryHtmlReportRenderer(String fileName = 'index.html', String name = null, File overridesFilename = null) {
         this.name = name
-        if( overridesFilename ) overrides = parseOverrides( overridesFilename )
+        this.fileName = fileName
+        if (overridesFilename) overrides = parseOverrides(overridesFilename)
     }
 
-    private Map<String,Map<String,String>> parseOverrides( File file ) {
+    private Map<String, Map<String, String>> parseOverrides(File file) {
         overrides = [:]
         file.withReader { Reader reader ->
             String line
-            while( (line = reader.readLine()) != null ) {
+            while ((line = reader.readLine()) != null) {
                 String[] columns = line.split(/\|/)
                 String groupNameVersion = columns[0]
-                overrides[groupNameVersion] = [projectUrl: safeGet(columns,1), license: safeGet(columns,2), licenseUrl: safeGet(columns,3)]
+                overrides[groupNameVersion] = [projectUrl: safeGet(columns, 1), license: safeGet(columns, 2), licenseUrl: safeGet(columns, 3)]
             }
         }
         return overrides
@@ -40,7 +42,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
-        output = new File(config.outputDir, 'index.html')
+        output = new File(config.outputDir, fileName)
         output.text = """
 <html>
 <head>
@@ -155,8 +157,8 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
 """
         def inventory = buildLicenseInventory(data)
         def externalInventories = buildExternalInventories(data)
-        printInventory( name, inventory, externalInventories )
-        printDependencies( inventory, externalInventories )
+        printInventory(name, inventory, externalInventories)
+        printDependencies(inventory, externalInventories)
         output << """
 </div>
 </body>
@@ -164,53 +166,53 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
 """
     }
 
-    private Map<String,List<ModuleData>> buildLicenseInventory(ProjectData data) {
-        Map<String,List<ModuleData>> inventory = [:]
+    private Map<String, List<ModuleData>> buildLicenseInventory(ProjectData data) {
+        Map<String, List<ModuleData>> inventory = [:]
         data.allDependencies.each { ModuleData module ->
-            if( !module.poms.isEmpty() ) {
+            if (!module.poms.isEmpty()) {
                 PomData pom = module.poms.first()
-                if( pom.licenses.isEmpty() ) {
+                if (pom.licenses.isEmpty()) {
                     addModule(inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module)
                 } else {
                     pom.licenses.each { License license ->
-                        addModule( inventory, license.name, module )
+                        addModule(inventory, license.name, module)
                     }
                 }
             } else {
-                addModule( inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module )
+                addModule(inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module)
             }
         }
         return inventory
     }
 
-    private Map<String,Map<String,List<ImportedModuleData>>> buildExternalInventories( ProjectData data ) {
-        Map<String,Map<String,List<ImportedModuleData>>> results = [:]
+    private Map<String, Map<String, List<ImportedModuleData>>> buildExternalInventories(ProjectData data) {
+        Map<String, Map<String, List<ImportedModuleData>>> results = [:]
         data.importedModules.each { ImportedModuleBundle module ->
-            Map<String,List<ImportedModuleData>> bundle = [:]
+            Map<String, List<ImportedModuleData>> bundle = [:]
             module.modules.each { ImportedModuleData moduleData ->
-                if( !bundle.containsKey(moduleData.license) ) bundle[ moduleData.license ] = []
-                bundle[ moduleData.license ] << moduleData
+                if (!bundle.containsKey(moduleData.license)) bundle[moduleData.license] = []
+                bundle[moduleData.license] << moduleData
             }
-            results[ module.name ] = bundle
+            results[module.name] = bundle
         }
         return results
     }
 
-    private void addModule( Map<String,List<ModuleData>> inventory, String key, ModuleData module ) {
+    private void addModule(Map<String, List<ModuleData>> inventory, String key, ModuleData module) {
         String gnv = "${module.group}:${module.name}:${module.version}"
-        if( key == "Unknown" && overrides.containsKey(gnv) ) {
-            if( !inventory.containsKey(overrides[gnv].license) ) inventory[ overrides[gnv].license ] = []
+        if (key == "Unknown" && overrides.containsKey(gnv)) {
+            if (!inventory.containsKey(overrides[gnv].license)) inventory[overrides[gnv].license] = []
             inventory[overrides[gnv].license] << module
         } else {
-            if( !inventory.containsKey(key) ) inventory[ key ] = []
+            if (!inventory.containsKey(key)) inventory[key] = []
             inventory[key] << module
         }
     }
 
-    private void printInventory( String title, Map<String,List<ModuleData>> inventory, Map<String,Map<String,List<ImportedModuleData>>> externalInventories ) {
+    private void printInventory(String title, Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
         output << "<div class='inventory'>\n"
         output << "<div class='header'>\n"
-        output << "<h1>$project.name ${ !'unspecified'.equals(project.version) ? project.version : ''}</h1>\n"
+        output << "<h1>$project.name ${!'unspecified'.equals(project.version) ? project.version : ''}</h1>\n"
         output << "<h2>Dependency License Report</h2>\n"
         output << "<h2 class='timestamp'><em>${new Date().format('yyyy-MM-dd HH:mm:ss z')}</em>.</h2>"
         output << "</div>\n"
@@ -222,11 +224,11 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         }
         output << "</ul>\n"
 
-        externalInventories.each { String name, Map<String,List<ImportedModuleData>> modules ->
+        externalInventories.each { String name, Map<String, List<ImportedModuleData>> modules ->
             output << "<h3>${name}</h3>\n"
             output << "<ul>\n"
             modules.each { String license, List<ImportedModuleData> dependencies ->
-                output << "<li><a class='license' href='#${sanitize(name,license)}'><span class='name'>${license}</span> <span class='badge'>${dependencies.size()}</span></a></li>\n"
+                output << "<li><a class='license' href='#${sanitize(name, license)}'><span class='name'>${license}</span> <span class='badge'>${dependencies.size()}</span></a></li>\n"
             }
             output << "</ul>\n"
         }
@@ -235,25 +237,25 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
     }
 
     String sanitize(String... values) {
-        values.collect { it.replaceAll(/\s/, '_') }.join('_')
+        values.findAll { it != null }.collect { it.replaceAll(/\s/, '_') }.join('_')
     }
 
-    private void printDependencies(Map<String,List<ModuleData>> inventory, Map<String,Map<String,List<ImportedModuleData>>> externalInventories) {
+    private void printDependencies(Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
         output << "<div class='content'>\n"
         output << "<h1>${name}</h1>\n"
         inventory.keySet().sort().each { String license ->
-            output << "<a id='${sanitize(name,license)}'></a>\n" << "<h2>${license}</h2>\n"
+            output << "<a id='${sanitize(name, license)}'></a>\n" << "<h2>${license}</h2>\n"
             inventory[license].sort({ ModuleData a, ModuleData b -> a.group <=> b.group }).each { ModuleData data ->
-                printDependency( data )
+                printDependency(data)
             }
         }
 
         externalInventories.keySet().sort().each { String name ->
             output << "<h1>${name}</h1>\n"
-            externalInventories[ name ].each { String license, List<ImportedModuleData> dependencies ->
-                output << "<a id='${sanitize(name,license)}'></a>\n"
+            externalInventories[name].each { String license, List<ImportedModuleData> dependencies ->
+                output << "<a id='${sanitize(name, license)}'></a>\n"
                 dependencies.each { ImportedModuleData importedData ->
-                    printImportedDependency( importedData )
+                    printImportedDependency(importedData)
                 }
             }
         }
@@ -270,15 +272,15 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         output << "</p>"
 
         String gnv = "${data.group}:${data.name}:${data.version}"
-        if( overrides.containsKey(gnv) ) {
-            output << sectionLink( "Project URL", overrides[gnv].projectUrl, overrides[gnv].projectUrl )
-            output << sectionLink( "License URL", overrides[gnv].license, overrides[gnv].licenseUrl )
+        if (overrides.containsKey(gnv)) {
+            output << sectionLink("Project URL", overrides[gnv].projectUrl, overrides[gnv].projectUrl)
+            output << sectionLink("License URL", overrides[gnv].license, overrides[gnv].licenseUrl)
         } else {
             if (!data.manifests.isEmpty() && !data.poms.isEmpty()) {
                 ManifestData manifest = data.manifests.first()
                 PomData pomData = data.poms.first()
                 if (manifest.url && pomData.projectUrl && manifest.url == pomData.projectUrl) {
-                    output << sectionLink( "Project URL", manifest.url, manifest.url )
+                    output << sectionLink("Project URL", manifest.url, manifest.url)
                     projectUrlDone = true
                 }
             }
@@ -286,15 +288,15 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
             if (!data.manifests.isEmpty()) {
                 ManifestData manifest = data.manifests.first()
                 if (manifest.url && !projectUrlDone) {
-                    output << sectionLink( "Manifest Project URL", manifest.url, manifest.url )
+                    output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
                 }
                 if (manifest.license) {
                     if (manifest.license.startsWith("http")) {
-                        output << sectionLink( "Manifest license URL", manifest.license, manifest.license )
+                        output << sectionLink("Manifest license URL", manifest.license, manifest.license)
                     } else if (manifest.hasPackagedLicense) {
-                        output << sectionLink( "Packaged License File", manifest.license, manifest.url )
+                        output << sectionLink("Packaged License File", manifest.license, manifest.url)
                     } else {
-                        output << section( "Manifest License", "${manifest.license} (Not Packaged)" )
+                        output << section("Manifest License", "${manifest.license} (Not Packaged)")
                     }
                 }
             }
@@ -302,14 +304,14 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
             if (!data.poms.isEmpty()) {
                 PomData pomData = data.poms.first()
                 if (pomData.projectUrl && !projectUrlDone) {
-                    output << sectionLink( "POM Project URL", pomData.projectUrl, pomData.projectUrl )
+                    output << sectionLink("POM Project URL", pomData.projectUrl, pomData.projectUrl)
                 }
                 if (pomData.licenses) {
                     pomData.licenses.each { License license ->
                         if (license.url) {
-                            output << section( "POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}" )
+                            output << section("POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}")
                         } else {
-                            output << section( "POM License", license.name )
+                            output << section("POM License", license.name)
                         }
                     }
                 }
@@ -317,32 +319,34 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         }
 
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().files.isEmpty()) {
-            output << section("Embedded license files", data.licenseFiles.first().files.collect { link(it, it ) }.join(''))
+            output << section("Embedded license files", data.licenseFiles.first().files.collect {
+                link(it, it)
+            }.join(''))
         }
         output << "</div>\n"
     }
 
-    private printImportedDependency( ImportedModuleData data ) {
+    private printImportedDependency(ImportedModuleData data) {
         output << "<div class='dependency'>\n"
         output << "<p>${++counter}. <strong>${data.name} v${data.version}</strong></p>"
-        output << sectionLink( "Project URL", data.projectUrl, data.projectUrl )
-        output << sectionLink( "License URL", data.license, data.licenseUrl )
+        output << sectionLink("Project URL", data.projectUrl, data.projectUrl)
+        output << sectionLink("License URL", data.license, data.licenseUrl)
         output << "</div>\n"
     }
 
-    private GString section( String label, String value ) {
+    private GString section(String label, String value) {
         "<label>${label}</label>\n<div class='dependency-value'>${value}</div>\n"
     }
 
-    private GString link( String name, String url ) {
+    private GString link(String name, String url) {
         "<a href='${url}'>${name}</a>"
     }
 
-    private GString sectionLink( String label, String name, String url ) {
-        section( label, link(name,url) )
+    private GString sectionLink(String label, String name, String url) {
+        section(label, link(name, url))
     }
 
-    private String safeGet( String[] arr, int index ) {
+    private String safeGet(String[] arr, int index) {
         arr.length > index ? arr[index] : null
     }
 

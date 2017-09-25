@@ -14,11 +14,16 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     private LicenseReportExtension config
     private File output
     private int counter
+    private String fileName
+
+    SimpleHtmlReportRenderer(String fileName = 'index.html') {
+        this.fileName = fileName
+    }
 
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
-        output = new File(config.outputDir, 'index.html')
+        output = new File(config.outputDir, fileName)
         output.text = """
 <html>
 <head>

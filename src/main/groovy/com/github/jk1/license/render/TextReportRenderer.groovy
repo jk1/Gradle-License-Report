@@ -10,27 +10,20 @@ import org.gradle.api.Project
 
 class TextReportRenderer implements ReportRenderer{
 
-
     private Project project
     private LicenseReportPlugin.LicenseReportExtension config
     private File output
     private int counter
     private String fileName
 
-    public TextReportRenderer() {
-    }
-
-    public TextReportRenderer(String filename) {
+    public TextReportRenderer(String filename = 'THIRD-PARTY-NOTICES.txt') {
         this.fileName = filename
     }
 
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
-        if (fileName == null) {
-            fileName = config.outputDir + "/THIRD-PARTY-NOTICES.txt"
-        }
-        output = new File(fileName)
+        output = new File(config.outputDir, fileName)
         output.text = """
 Dependency License Report for $project.name
 
@@ -98,8 +91,6 @@ This report was generated at ${new Date()}.
                     if (license.url) {
                         if (license.url.startsWith("http")) {
                             output << " - $license.url\n\n"
-                        } else if (false) {
-                            output << "Packaged License File: $license.url\n\n"
                         } else {
                             output << "License: $license.url\n\n"
                         }
