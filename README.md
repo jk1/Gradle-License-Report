@@ -16,7 +16,7 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '0.3.14'
+  id 'com.github.jk1.dependency-license-report' version '0.3.15'
 }
 ```
 
@@ -54,6 +54,51 @@ licenseReport {
     configurations = ['compile']
 }
 ```
+
+InventoryHtmlReportRenderer
+-----------------
+
+The InventoryHtmlReportRender renders a report grouped by license type so you can more easily identify which dependencies
+share the same license.  This makes it easier to know the individual licenses you need to verify with your legal department.
+To use this report you simply add it to the configuration:
+
+```groovy
+licenseReport {
+    renderer = new InventoryHtmlReportRenderer('index.html', 'Some Title')
+}
+```
+
+The first argument is the filename to write out, and the title to use on the report.  For dependencies that
+don't declare their license they will be listed underneath the `Unknown` license group.  You can
+provide the license information for these dependencies statically using the `overridesFilename`.  The overrides file
+is a pipe-separated value file with the columns for `Dependency Name`,`Project URL`,`License`, and `License URL`, respectively.
+Here is an example of the contents of the override file:
+
+```
+com.google.code.gson:gson:2.5|https://github.com/google/gson|The Apache Software License, Version 2.0|https://github.com/google/gson/blob/master/LICENSE
+org.springframework.security:spring-security-core:3.2.9.RELEASE|https://github.com/spring-projects/spring-security|The Apache Software License, Version 2.0|https://github.com/spring-projects/spring-security/blob/master/license.txt
+org.springframework.security:spring-security-acl:3.2.9.RELEASE|https://github.com/spring-projects/spring-security|The Apache Software License, Version 2.0|https://github.com/spring-projects/spring-security/blob/master/license.txt
+```
+
+There are no column headers on this file.  Here is the example of how to config the InventoryHtmlReportRenderer to use
+an overrides file:
+
+```groovy
+licenseReport {
+    renderer = new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir,"../unknown-license-details.txt"))
+}
+```
+
+InventoryHtmlReportRenderer also can handle any importers specified in the configuration for example:
+
+```groovy
+licenseReport {
+    renderer = new InventoryHtmlReportRenderer('Some Title', new File(projectDir,"../unknown-license-details.txt"))
+     importers = [ new XmlReportImporter("Front End", new File(projectDir,"src/main/webapp/vendor/front_end.xml") ) ]
+}
+```
+
+This is a great way to integrate javascript dependencies into your report so you can join all software into one report.
 
 Included Details
 -----------------
