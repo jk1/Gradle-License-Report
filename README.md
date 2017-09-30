@@ -82,15 +82,15 @@ To use this report you simply add it to the configuration:
 
 ```groovy
 licenseReport {
-    renderer = new InventoryHtmlReportRenderer('index.html', 'Some Title')
+    renderer = new InventoryHtmlReportRenderer()
 }
 ```
-
-The first argument is the filename to write out, and the title to use on the report.  For dependencies that
-don't declare their license they will be listed underneath the `Unknown` license group.  You can
-provide the license information for these dependencies statically using the `overridesFilename`.  The overrides file
-is a pipe-separated value file with the columns for `Dependency Name`,`Project URL`,`License`, and `License URL`, respectively.
-Here is an example of the contents of the override file:
+This defaults to using the name of the project as the title and index.html as the name of the file it creates.  You can
+change this by passing additional arguments.  The first argument is the filename to write out, and the 2nd is the title
+to use in the report.  For dependencies that don't declare their license they will be listed underneath the `Unknown`
+license group.  You can provide the license information for these dependencies statically using the `overridesFilename`.
+The overrides file is a pipe-separated value file with the columns for `Dependency Name`,`Project URL`,`License`, and
+`License URL`, respectively. Here is an example of the contents of the override file:
 
 ```
 com.google.code.gson:gson:2.5|https://github.com/google/gson|The Apache Software License, Version 2.0|https://github.com/google/gson/blob/master/LICENSE
@@ -111,7 +111,7 @@ InventoryHtmlReportRenderer also can handle any importers specified in the confi
 
 ```groovy
 licenseReport {
-    renderer = new InventoryHtmlReportRenderer('Some Title', new File(projectDir,"../unknown-license-details.txt"))
+    renderer = new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir,"../unknown-license-details.txt"))
      importers = [ new XmlReportImporter("Front End", new File(projectDir,"src/main/webapp/vendor/front_end.xml") ) ]
 }
 ```
