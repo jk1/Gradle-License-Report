@@ -16,8 +16,26 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '0.3.15'
+  id 'com.github.jk1.dependency-license-report' version '0.3.16'
 }
+```
+
+or via a 
+
+`buildscript` block
+-------
+
+```
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.3.16'
+    }
+}
+apply plugin: 'com.github.jk1.dependency-license-report'
 ```
 
 Then run `gradle generateLicenseReport` to generate your report in `build/reports/dependency-license`.

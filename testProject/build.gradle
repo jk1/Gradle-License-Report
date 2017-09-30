@@ -24,8 +24,8 @@ dependencies {
 }
 
 licenseReport {
-    renderer = new InventoryHtmlReportRenderer('Backend')
-    importers = [ new XmlReportImporter("Front End", new File("./externalDependencies.xml") ) ]
+    renderer = new InventoryHtmlReportRenderer('report.html','Backend')
+    importers = [ new XmlReportImporter("Front End", new File(project.projectDir, "externalDependencies.xml") ) ]
 }
 
 task printDependencies {

@@ -30,16 +30,13 @@ import org.gradle.api.Project
  */
 class XmlReportRenderer extends SingleInfoReportRenderer {
 
-    private String fileName = 'index.xml'
-    private String chapterName = 'Third-party libraries'
+    private String fileName
+    private String chapterName
     private Project project
     private LicenseReportExtension config
     private File output
 
-    XmlReportRenderer() {
-    }
-
-    XmlReportRenderer(String fileName, String chapterName) {
+    XmlReportRenderer(String fileName = 'index.xml', String chapterName = 'Third-party libraries') {
         this.fileName = fileName
         this.chapterName = chapterName
     }
