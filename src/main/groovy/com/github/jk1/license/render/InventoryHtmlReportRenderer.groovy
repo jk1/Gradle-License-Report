@@ -41,12 +41,13 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
 
     void render(ProjectData data) {
         project = data.project
+        if( name == null ) name = project.name
         config = project.licenseReport
         output = new File(config.outputDir, fileName)
         output.text = """
 <html>
 <head>
-<title>Dependency License Report for $project.name</title>
+<title>Dependency License Report for ${name}</title>
 <style>
     html, body, section {
       height: 100%;
