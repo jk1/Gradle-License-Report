@@ -2,6 +2,8 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.License
 import com.github.jk1.license.PomData
+import com.github.jk1.license.PomDeveloper
+import com.github.jk1.license.PomOrganization
 import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.CachingArtifactResolver
 import com.github.jk1.license.util.Files
@@ -124,6 +126,20 @@ class PomReader {
         pomData.name = pomContent.name?.text()
         pomData.description = pomContent.description?.text()
         pomData.projectUrl = pomContent.url?.text()
+
+        def organizationName = pomContent.organization?.name?.text()
+        def organizationUrl = pomContent.organization?.url?.text()
+        if (organizationName || organizationUrl) {
+            pomData.organization = new PomOrganization(name: organizationName, url: organizationUrl)
+        }
+
+        pomData.developers = pomContent.developers?.developer?.collect { GPathResult developer ->
+            new PomDeveloper(
+                    name: developer.name?.text(),
+                    email: developer.email?.text(),
+                    url: developer.url?.text()
+            )
+        }
 
         LOGGER.debug("POM license : ${pomContent.licenses.children()*.name() as Set}")
 
