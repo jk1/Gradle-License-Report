@@ -126,6 +126,7 @@ class PomReader {
         pomData.name = pomContent.name?.text()
         pomData.description = pomContent.description?.text()
         pomData.projectUrl = pomContent.url?.text()
+        pomData.inceptionYear = pomContent.inceptionYear?.text()
 
         def organizationName = pomContent.organization?.name?.text()
         def organizationUrl = pomContent.organization?.url?.text()
