@@ -28,7 +28,9 @@ or via a
 ```
 buildscript {
     repositories {
-        jcenter()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }  
     }
 
     dependencies {
