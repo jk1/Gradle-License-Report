@@ -42,8 +42,20 @@ class ManifestData {
 
 @Canonical
 class PomData {
-    String name, description, projectUrl
+    String name, description, projectUrl, inceptionYear
     Set<License> licenses = new HashSet<License>()
+    PomOrganization organization
+    Set<PomDeveloper> developers
+}
+
+@Canonical
+class PomOrganization {
+    String name, url
+}
+
+@Canonical
+class PomDeveloper {
+    String name, email, url
 }
 
 @Canonical
