@@ -2,6 +2,7 @@ Gradle License Report
 =====================
 
 [![Build Status](https://travis-ci.org/jk1/Gradle-License-Report.svg?branch=master)](https://travis-ci.org/jk1/Gradle-License-Report)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A plugin for generating reports about the licenses of the dependencies for your Gradle project.
 This plugin is a fork of https://github.com/RobertFischer/Gradle-License-Report.
@@ -9,8 +10,7 @@ This plugin is a fork of https://github.com/RobertFischer/Gradle-License-Report.
 This plugin will resolve all your dependencies, and then scour them for anything that looks like relevant licensing information. The theory is
 to automatically generate a report that you can hand to corporate IP lawyers in order to keep them busy.
 
-Usage
--------
+## Usage
 
 Add this to your `build.gradle` file:
 
@@ -20,10 +20,8 @@ plugins {
 }
 ```
 
-or via a 
+or via a `buildscript` block
 
-`buildscript` block
--------
 
 ```
 buildscript {
@@ -42,8 +40,7 @@ apply plugin: 'com.github.jk1.dependency-license-report'
 
 Then run `gradle generateLicenseReport` to generate your report in `build/reports/dependency-license`.
 
-Configuration
--------
+## Configuration
 
 Configuration described below is entirely optional.
 
@@ -75,8 +72,12 @@ licenseReport {
 }
 ```
 
-InventoryHtmlReportRenderer
------------------
+## Renderers
+
+Renderers define how a final dependency report will look like. Plugin comes with a number of predefined renderers for
+text, html, xml and other popular presentation formats. It's also possible to create a custom renderer for the report.
+
+### InventoryHtmlReportRender
 
 The InventoryHtmlReportRender renders a report grouped by license type so you can more easily identify which dependencies
 share the same license.  This makes it easier to know the individual licenses you need to verify with your legal department.
@@ -109,47 +110,75 @@ licenseReport {
 }
 ```
 
-InventoryHtmlReportRenderer also can handle any importers specified in the configuration for example:
+
+## Importers
+Importer adds license information from an external source to your report. Importer may come in handy if
+- some modules within your application use their own means of library dependency resolution, e.g. npm registry   
+- your application integrates third party components or services with their own library dependencies
+- joint report for a multimodule project is required
+
+The following example demonstrates how to use an importer:
 
 ```groovy
 licenseReport {
-    renderer = new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir,"../unknown-license-details.txt"))
-     importers = [ new XmlReportImporter("Front End", new File(projectDir,"src/main/webapp/vendor/front_end.xml") ) ]
+    // integrate javascript frontend dependencies into our report
+    importers = [ new XmlReportImporter("Front End", new File(projectDir,"src/main/webapp/vendor/front_end.xml") ) ]
 }
 ```
 
-This is a great way to integrate javascript dependencies into your report so you can join all software into one report.
+## Writing custom renderers and importers
 
-Included Details
------------------
+It's also possible to implement a custom importer to support any dependency data format necessary. To do so put custom 
+importer implementation inside `buildSrc` folder:
 
-For each dependency, these details are included in the report, assuming that the information exists within the dependency archives:
+```java
+package org.sample;
 
-* Module Name
-* Module Group
-* Module Version
-* Manifest Name
-* Manifest Description
-* Manifest Project URL
-* Manifest Vendor
-* Manifest Version
-* Manifest License(s) -- could be license names, URLs, and/or embedded files
-* POM Name
-* POM Description
-* POM Project URL
-* POM License(s) -- could be license names, URLs, and/or embedded files
-** POM License(s) Distribution
-** POM License(s) Comments
-* POM Developer(s) -- name, e-mail, organization, role
-* Packaged License Files, which is any file with the following base name:
-** `license`
-** `unlicense`
-** `readme`
-** `notice`
-** `copying`
-** `copying.lesser`
+import com.github.jk1.license.ImportedModuleBundle;
+import com.github.jk1.license.importer.DependencyDataImporter;
+import java.util.Collection;
 
-License
---------
+public class CustomImporter implements DependencyDataImporter{
 
-This plugin is released under the Apache 2.0 license. See the `LICENSE` file for details.
+    public String getImporterName() {
+        return "Custom importer";
+    }
+
+
+    public Collection<ImportedModuleBundle> doImport() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+}
+```  
+
+with `buildSrc/build.gradle` defined as follows to get all the imports resolved:
+
+```groovy
+apply plugin: 'java'
+
+repositories {
+    maven {
+        url 'https://plugins.gradle.org/m2/'
+    }
+}
+
+dependencies {
+    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.3.16'
+}
+
+```
+
+Now you can use your custom importer in the main build:
+
+```groovy
+import org.sample.CustomImporter 
+
+...
+
+licenseReport {
+    importers = [ new CustomImporter() ]
+}
+
+```
+
+The same technique can be used to create a renderer to support custom report formats.
