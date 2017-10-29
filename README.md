@@ -74,8 +74,17 @@ licenseReport {
 
 ## Renderers
 
-Renderers define how a final dependency report will look like. Plugin comes with a number of predefined renderers for
-text, html, xml and other popular presentation formats. It's also possible to create a custom renderer for the report.
+Renderers define how a final dependency report will look like. Plugin comes with 
+[a number of predefined renderers](https://github.com/jk1/Gradle-License-Report/tree/master/src/main/groovy/com/github/jk1/license/render) 
+for text, html, xml and other popular presentation formats. It's also possible to create a custom renderer for the report.
+
+All the renderers support report file name customization via constructor parameter:
+
+```groovy
+licenseReport {
+    renderer = new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')
+}
+```
 
 ### InventoryHtmlReportRender
 
