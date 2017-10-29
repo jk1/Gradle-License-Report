@@ -1,9 +1,8 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ModuleData
-import com.github.jk1.license.task.ReportTask
+import com.github.jk1.license.ReportTask
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.logging.Logger

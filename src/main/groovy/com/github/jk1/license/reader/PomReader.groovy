@@ -4,12 +4,11 @@ import com.github.jk1.license.License
 import com.github.jk1.license.PomData
 import com.github.jk1.license.PomDeveloper
 import com.github.jk1.license.PomOrganization
-import com.github.jk1.license.task.ReportTask
+import com.github.jk1.license.ReportTask
 import com.github.jk1.license.util.CachingArtifactResolver
 import com.github.jk1.license.util.Files
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -34,7 +33,15 @@ class PomReader {
                     "ext"    : "pom"
             ]
 
-            Collection<ResolvedArtifact> artifacts = resolver.resolveArtifacts(pomId)
+            Collection<ResolvedArtifact> artifacts
+
+            try {
+                artifacts = resolver.resolveArtifacts(pomId)
+            } catch (Exception e) {
+                LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
+                artifacts = Collections.emptyList()
+            }
+
             pomContent = artifacts?.inject(pomContent) { GPathResult memo, ResolvedArtifact resolved ->
                 try {
                     memo = memo ?: slurpPom(resolved.file)
@@ -111,10 +118,16 @@ class PomReader {
                     "group"  : parentContent.groupId.text(),
                     "name"   : parentContent.artifactId.text(),
                     "version": parentContent.version.text(),
-                    "ext"    : "pom"
+                    "ext"    : "pom1"
             ]
             LOGGER.debug("Parent to fetch: $parent")
-            Collection<ResolvedArtifact> parentArtifacts = resolver.resolveArtifacts(parent)
+            Collection<ResolvedArtifact> parentArtifacts
+            try {
+                parentArtifacts = resolver.resolveArtifacts(parent)
+            } catch (Exception e) {
+                LOGGER.debug("Failed to retrieve parent artifact " + parent, e)
+                parentArtifacts = Collections.emptyList()
+            }
             if (parentArtifacts) {
                 (parentArtifacts*.file as Set).each { File file ->
                     LOGGER.debug("Processing parent POM file: $file")
@@ -158,7 +171,7 @@ class PomReader {
         return pomData
     }
 
-    private XmlSlurper createParser(){
+    private XmlSlurper createParser() {
         // non-validating, non-namespace aware
         return new XmlSlurper(false, false)
     }
