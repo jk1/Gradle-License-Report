@@ -18,10 +18,18 @@ class ConfigurationReader {
 
     ConfigurationData read(Project project, Configuration configuration) {
         config = project.licenseReport
-        LOGGER.info("Processing configuration [$configuration], configuration will be resolved")
-        configuration.resolvedConfiguration // force configuration resolution
+
         ConfigurationData data = new ConfigurationData()
         data.name = configuration.name
+
+        if (!configuration.canBeResolved) {
+            LOGGER.info("Skipping configuration [$configuration] as it can't be resolved")
+            return data
+        }
+
+        LOGGER.info("Processing configuration [$configuration], configuration will be resolved")
+        configuration.resolvedConfiguration // force configuration resolution
+
         Set<ResolvedDependency> dependencies = new TreeSet<ResolvedDependency>(new ResolvedDependencyComparator())
         for (ResolvedDependency dependency : configuration.resolvedConfiguration.getFirstLevelModuleDependencies()) {
             collectDependencies(dependencies, dependency)
