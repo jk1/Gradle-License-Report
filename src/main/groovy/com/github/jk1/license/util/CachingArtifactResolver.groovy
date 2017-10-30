@@ -1,17 +1,12 @@
 package com.github.jk1.license.util
 
-import com.github.jk1.license.task.ReportTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedArtifact
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
 import java.util.concurrent.atomic.AtomicInteger
 
 class CachingArtifactResolver {
-
-    private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     private static AtomicInteger counter = new AtomicInteger()
     private Map<Map<String, String>, Collection<ResolvedArtifact>> cache =
@@ -23,17 +18,12 @@ class CachingArtifactResolver {
     }
 
     Collection<ResolvedArtifact> resolveArtifacts(Map<String, String> spec) {
-        try {
-            Map<String, String> copy = new HashMap<String, String>()
-            spec.each { copy.put(it.key.trim(), it.value.trim())}
-            if (!cache.containsKey(copy)){
-                cache.put(copy, doResolveArtifact(copy))
-            }
-            return cache.get(copy)
-        } catch (Exception e) {
-            LOGGER.warn("Failed to retrieve artifacts for " + spec, e)
-            return Collections.emptyList()
+        Map<String, String> copy = new HashMap<String, String>()
+        spec.each { copy.put(it.key.trim(), it.value.trim()) }
+        if (!cache.containsKey(copy)) {
+            cache.put(copy, doResolveArtifact(copy))
         }
+        return cache.get(copy)
     }
 
     private Collection<ResolvedArtifact> doResolveArtifact(Object spec) {
