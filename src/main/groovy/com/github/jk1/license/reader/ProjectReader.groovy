@@ -2,13 +2,12 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.ReportTask
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.specs.Spec
-
-import java.security.InvalidParameterException
 
 /**
  * todo: rewrite me in an idiomatic way
@@ -29,7 +28,7 @@ class ProjectReader {
                 for (String configurationName : project.licenseReport.configurations) {
                     if (configuration.getName().equalsIgnoreCase(configurationName)) {
                         if (!configuration.canBeResolved) {
-                            throw new InvalidParameterException("Project Reader: " +
+                            throw new GradleException("Project Reader: " +
                                     "The specified configuration \"${configuration.name}\" can't be resolved. " +
                                     "Try specifying a more specific configuration by adding flavor(s) and/or build type.")
                         }
