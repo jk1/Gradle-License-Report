@@ -8,6 +8,8 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.specs.Spec
 
+import java.security.InvalidParameterException
+
 /**
  * todo: rewrite me in an idiomatic way
  */
@@ -26,6 +28,11 @@ class ProjectReader {
              boolean isSatisfiedBy(Configuration configuration) {
                 for (String configurationName : project.licenseReport.configurations) {
                     if (configuration.getName().equalsIgnoreCase(configurationName)) {
+                        if (!configuration.canBeResolved) {
+                            throw new InvalidParameterException("Project Reader: " +
+                                    "The specified configuration \"${configuration.name}\" can't be resolved. " +
+                                    "Try specifying a more specific configuration by adding flavor(s) and/or build type.")
+                        }
                         return true
                     }
                 }
