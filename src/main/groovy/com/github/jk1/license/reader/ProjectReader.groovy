@@ -27,7 +27,7 @@ class ProjectReader {
              boolean isSatisfiedBy(Configuration configuration) {
                 for (String configurationName : project.licenseReport.configurations) {
                     if (configuration.getName().equalsIgnoreCase(configurationName)) {
-                        if (!configuration.canBeResolved) {
+                        if (configuration.hasProperty("hasProperty") && !configuration.canBeResolved) {
                             throw new GradleException("Project Reader: " +
                                     "The specified configuration \"${configuration.name}\" can't be resolved. " +
                                     "Try specifying a more specific configuration by adding flavor(s) and/or build type.")
