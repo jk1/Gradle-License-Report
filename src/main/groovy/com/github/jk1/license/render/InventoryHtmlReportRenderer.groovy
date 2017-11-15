@@ -49,6 +49,16 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
 <head>
 <title>Dependency License Report for ${name}</title>
 <style>
+    @media print {
+        .inventory {
+            display: none;
+        }
+
+        .content {
+            position: static !important;
+        }
+    }
+
     html, body, section {
       height: 100%;
     }
