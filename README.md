@@ -45,6 +45,9 @@ Then run `gradle generateLicenseReport` to generate your report in `build/report
 Configuration described below is entirely optional.
 
 ```groovy
+import com.github.jk1.license.render.*
+import com.github.jk1.license.importer.*
+
 licenseReport {
     // Set output directory for the report data. 
     // Defaults to ${project.buildDir}/reports/dependency-license.
@@ -81,8 +84,20 @@ for text, html, xml and other popular presentation formats. It's also possible t
 All the renderers support report file name customization via constructor parameter:
 
 ```groovy
+import com.github.jk1.license.render.*
+
 licenseReport {
     renderer = new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')
+}
+```
+
+To get the report generated in multiple formats use `MultiReportRenderer` as follows:
+
+```groovy
+import com.github.jk1.license.render.*
+
+licenseReport {
+    renderer = new MultiReportRenderer(new XmlReportRenderer(), new CsvReportRenderer())
 }
 ```
 
@@ -93,6 +108,8 @@ share the same license.  This makes it easier to know the individual licenses yo
 To use this report you simply add it to the configuration:
 
 ```groovy
+import com.github.jk1.license.render.*
+
 licenseReport {
     renderer = new InventoryHtmlReportRenderer()
 }
@@ -114,6 +131,8 @@ There are no column headers on this file.  Here is the example of how to config 
 an overrides file:
 
 ```groovy
+import com.github.jk1.license.render.*
+
 licenseReport {
     renderer = new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir,"../unknown-license-details.txt"))
 }
@@ -129,6 +148,8 @@ Importer adds license information from an external source to your report. Import
 The following example demonstrates how to use an importer:
 
 ```groovy
+import com.github.jk1.license.importer.*
+
 licenseReport {
     // integrate javascript frontend dependencies into our report
     importers = [ new XmlReportImporter("Front End", new File(projectDir,"src/main/webapp/vendor/front_end.xml") ) ]
