@@ -118,7 +118,7 @@ class PomReader {
                     "group"  : parentContent.groupId.text(),
                     "name"   : parentContent.artifactId.text(),
                     "version": parentContent.version.text(),
-                    "ext"    : "pom1"
+                    "ext"    : "pom"
             ]
             LOGGER.debug("Parent to fetch: $parent")
             Collection<ResolvedArtifact> parentArtifacts

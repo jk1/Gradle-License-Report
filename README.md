@@ -16,7 +16,7 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '0.5.0'
+  id 'com.github.jk1.dependency-license-report' version '0.5.1'
 }
 ```
 
@@ -32,7 +32,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.5.0'
+        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.5.1'
     }
 }
 apply plugin: 'com.github.jk1.dependency-license-report'
@@ -193,7 +193,7 @@ repositories {
 }
 
 dependencies {
-    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.5.0'
+    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.5.1'
 }
 
 ```
