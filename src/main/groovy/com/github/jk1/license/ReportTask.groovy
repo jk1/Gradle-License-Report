@@ -23,6 +23,14 @@ class ReportTask extends DefaultTask {
         LicenseReportExtension config = getProject().licenseReport
         new File(config.outputDir).mkdirs()
         ProjectData data = new ProjectReader().read(getProject())
+        LOGGER.info("Importing external dependency data. A total of ${config.importers.length} configured.")
+        config.importers.each {
+            data.importedModules.addAll(it.doImport())
+        }
+        LOGGER.info("Applying dependency filters. A total of ${config.filters.length} configured.")
+        config.filters.each {
+            data = it.filter(data)
+        }
         LOGGER.info("Building report for project ${getProject().name}")
         config.renderer.render(data)
         LOGGER.info("Dependency license report for project ${getProject().name} created in ${config.outputDir}")

@@ -1,5 +1,6 @@
 package com.github.jk1.license
 
+import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.importer.DependencyDataImporter
 import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.SimpleHtmlReportRenderer
@@ -20,6 +21,7 @@ class LicenseReportPlugin implements Plugin<Project> {
         String outputDir
         ReportRenderer renderer
         DependencyDataImporter[] importers
+        DependencyFilter[] filters
         String[] configurations
         String[] excludeGroups
         String[] excludes
@@ -30,7 +32,8 @@ class LicenseReportPlugin implements Plugin<Project> {
             configurations = ['runtime']
             excludeGroups = [project.group]
             excludes = []
-            importers = new DependencyDataImporter[0]
+            importers = []
+            filters = []
         }
 
         boolean isExcluded(ResolvedDependency module) {
