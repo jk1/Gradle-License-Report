@@ -1,10 +1,9 @@
 package com.github.jk1.license.render
 
-import com.github.jk1.license.render.*
-import com.github.jk1.license.ImportedModuleData
+import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
-import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
+import groovy.json.JsonBuilder
 import org.gradle.api.Project
 
 /**
@@ -31,6 +30,7 @@ import org.gradle.api.Project
  *   }, ...]
  * }
  */
+
 class JsonReportRenderer extends SingleInfoReportRenderer {
 
     private String fileName
@@ -44,77 +44,49 @@ class JsonReportRenderer extends SingleInfoReportRenderer {
 
     void render(ProjectData data) {
         project = data.project
-        config = project.licenseReport
+        config = project?.licenseReport
         output = new File(config.outputDir, fileName)
-        output.text = '{\n'
-        output << '"dependencies": [\n'
-        data.allDependencies.sort().eachWithIndex { it, i ->
-            printDependency(it)
-            if (i < data.allDependencies.size() - 1) {
-                output << ',\n'    
-            }
-        }
-        output << ']\n'
-        if (data.importedModules.size() > 0) {
-            output << ', "importedModules": [\n'
-            data.importedModules.eachWithIndex { importedModule, importedModuleIndex ->
-                output << "{name: \"$importedModule.name\",\n"
-                output << '"dependencies": [\n'
-                importedModule.modules.eachWithIndex { module, moduleIndex -> 
-                    printImportedModule(module)
-                    if (moduleIndex < importedModule.modules.size() -1) {
-                        output << ',\n'
-                    } 
-                }
-                output << ']\n'
-                output << '}\n'
-                if (importedModuleIndex < data.importedModules.size() -1) {
-                    output << ',\n'
-                }
-            }
-            output << ']\n'
-        }
-        output << '}'
+
+        def jsonReport = [:]
+        jsonReport.dependencies = readDependencies(data.allDependencies)
+        jsonReport.importedModules = readImportedModules(data.importedModules)
+
+        output.text = new JsonBuilder(trimAndremoveNullEntries(jsonReport)).toPrettyString()
     }
 
-    private void printDependency(ModuleData data) {
-        def moduleName = "${data.group}:${data.name}"
-        def moduleVersion = data.version
-        def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = moduleLicenseInfo(config, data)
-
-        output << "{\n"
-        output << "\"moduleName\": \"$moduleName\",\n"
-        
-        if (moduleUrl) {
-            output << "\"moduleUrl\": \"$moduleUrl\",\n"
-        }
-        output << "\"moduleVersion\": \"$moduleVersion\""
-        if (moduleLicense) {
-            output << ",\n\"moduleLicense\": \"$moduleLicense\""    
-            if (moduleLicenseUrl) {
-                output << ",\n\"moduleLicenseUrl\": \"$moduleLicenseUrl\"\n"
-            }
-        }
-
-        output << "\n}"
+    def readDependencies(def allDependencies) {
+        allDependencies.collect {
+            String moduleName = "${it.group}:${it.name}"
+            String moduleVersion = it.version
+            def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = moduleLicenseInfo(config, it)
+            trimAndremoveNullEntries([moduleName      : moduleName,
+                                      moduleUrl       : moduleUrl,
+                                      moduleVersion   : moduleVersion,
+                                      moduleLicense   : moduleLicense,
+                                      moduleLicenseUrl: moduleLicenseUrl])
+        }.sort { it.moduleName }
     }
 
-    private void printImportedModule(ImportedModuleData data) {
-        output << '{\n'
-        output << "{\"moduleName\": \"$data.name\",\n"
-        
-        if (data.projectUrl) {
-            output << "{\"moduleUrl\": \"$data.projectUrl\",\n"
-        }
-        output << "\"version\": \"$data.version\""
-        if (data.license) {
-            output << ',\n\"moduleLicense\": \"$data.license\",\n'
-            if (data.licenseUrl) {
-                output << "\"moduleLicenseUrl\": \"$data.licenseUrl\",\n"
-            }
-        }
-
-        output << '\n}'
+    def readImportedModules(def incModules) {
+        incModules.collect { ImportedModuleBundle importedModuleBundle ->
+            trimAndremoveNullEntries([moduleName  : importedModuleBundle.name,
+                                      dependencies: readModuleDependencies(importedModuleBundle.modules)])
+        }.sort { it.moduleName }
     }
 
+    def readModuleDependencies(def modules) {
+        modules.collectEntries {
+            trimAndremoveNullEntries([moduleName      : it.name,
+                                      moduleUrl       : it.projectUrl,
+                                      moduleVersion   : it.version,
+                                      moduleLicense   : it.license,
+                                      moduleLicenseUrl: it.licenseUrl])
+        }
+    }
+
+    def trimAndremoveNullEntries(def map) {
+        map.collectEntries { k, v ->
+            v ? [(k): v instanceof String ? v.trim() : v] : [:]
+        }
+    }
 }
