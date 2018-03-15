@@ -3,6 +3,7 @@ plugins{
     id 'groovy'
     id 'maven-publish'
     id 'com.gradle.plugin-publish' version '0.9.9'
+    id 'java-gradle-plugin'
 }
 
 group = "com.github.jk1"
@@ -23,7 +24,6 @@ dependencies {
         exclude group: 'org.codehaus.groovy'
     }
 }
-
 
 task('sourcesJar', type: Jar, dependsOn: classes) {
     classifier = 'sources'
@@ -64,4 +64,8 @@ pluginBundle {
             displayName = 'Gradle dependency license report plugin'
         }
     }
+}
+
+gradlePlugin {
+    testSourceSets sourceSets.test
 }

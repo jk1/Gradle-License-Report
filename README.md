@@ -212,3 +212,54 @@ licenseReport {
 ```
 
 The same technique can be used to create a renderer to support custom report formats.
+
+
+## Normalisation
+
+When multiple dependencies are analysed and displayed in a report, often
+e.g. two licenses like the following one appears:
+
+```text
+The Apache Software License, Version 2.0
+Apache License, Version 2.0
+```
+
+This can be avoided by providing an accurate normalisation file which contains rules
+to unify such entries. The configuration file has two sections:
+
+* license-bundles: Defines the actual licenses with their correct name and their correct url
+* transformation-rules: A rule defines a reference to one license-bundle and a pattern for 
+   a malformed name or url. When a pattern matches the the license of a dependency, the 
+   output license-information for that dependency will be updated with the referenced license-bundle. 
+   
+```json
+{
+  "bundles" : [ // the list of correct license-information
+    { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-1.1" },
+    { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-2.0" },
+    { "bundleName" : "cddl1", "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0 (CDDL-1.0)", "licenseUrl" : "http://opensource.org/licenses/CDDL-1.0" }
+  ],
+  "transformationRules" : [ // rules of "wrong" license information which should be updated
+    { "bundleName" : "apache2", "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" }, // pattern match
+    { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2" },                                     // exact match
+    { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-2.0.txt" }
+  ]
+}
+```
+
+So dependencies with license-name `The Apache Software License, Version 2.0` / `Apache 2` or license-url `http://www.apache.org/licenses/LICENSE-2.0.txt`
+are changed to license-name `Apache License, Version 2.0` and license-url `http://www.apache.org/licenses/LICENSE-2.0`
+
+
+The normalizer can be enabled via a filter.
+
+```groovy
+import com.github.jk1.license.filter.*
+...
+licenseReport {
+    filters = new LicenseBundleNormalizer("$projectDir/config/license-normalizer-bundle.json")
+}
+```
+
+If no bundle-file is specified, a default file is used containing some commons rules. You are encouraged to create your own bundle-file 
+and contribute back useful rules.
