@@ -234,14 +234,14 @@ to unify such entries. The configuration file has two sections:
    
 ```json
 {
-  "bundles" : [ // the list of correct license-information
+  "bundles" : [
     { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-1.1" },
     { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-2.0" },
     { "bundleName" : "cddl1", "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0 (CDDL-1.0)", "licenseUrl" : "http://opensource.org/licenses/CDDL-1.0" }
   ],
-  "transformationRules" : [ // rules of "wrong" license information which should be updated
-    { "bundleName" : "apache2", "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" }, // pattern match
-    { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2" },                                     // exact match
+  "transformationRules" : [
+    { "bundleName" : "apache2", "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" }, 
+    { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2" }, 
     { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-2.0.txt" }
   ]
 }
