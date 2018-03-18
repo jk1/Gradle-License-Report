@@ -7,6 +7,7 @@ import groovy.json.JsonSlurper
 
 
 class LicenseBundleNormalizer implements DependencyFilter {
+
     LicenseBundleNormalizerConfig normalizerConfig
     Map<String, NormalizerLicenseBundle> bundleMap
 
@@ -28,7 +29,6 @@ class LicenseBundleNormalizer implements DependencyFilter {
     @Override
     ProjectData filter(ProjectData data) {
         data.allDependencies.forEach { normalizeDependency(it) }
-
         return data
     }
 

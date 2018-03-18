@@ -1,5 +1,6 @@
 import com.github.jk1.license.render.InventoryHtmlReportRenderer
 import com.github.jk1.license.importer.XmlReportImporter
+import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 buildscript {
     repositories {
@@ -25,6 +26,7 @@ dependencies {
 
 licenseReport {
     renderer = new InventoryHtmlReportRenderer('report.html','Backend')
+    filters = [ new LicenseBundleNormalizer()]
     importers = [ new XmlReportImporter("Front End", new File(project.projectDir, "externalDependencies.xml") ) ]
 }
 

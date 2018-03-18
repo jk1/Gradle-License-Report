@@ -16,7 +16,7 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '0.5.1'
+  id 'com.github.jk1.dependency-license-report' version '0.6'
 }
 ```
 
@@ -32,7 +32,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.5.1'
+        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.6'
     }
 }
 apply plugin: 'com.github.jk1.dependency-license-report'
@@ -156,65 +156,13 @@ licenseReport {
 }
 ```
 
-## Writing custom renderers and importers
+## Filters
+Dependency filters transform discovered dependency data before rendering. 
+This may include sorting, reordering, data substitution. 
 
-It's also possible to implement a custom importer to support any dependency data format necessary. To do so put custom 
-importer implementation inside `buildSrc` folder:
+### License data grouping 
 
-```java
-package org.sample;
-
-import com.github.jk1.license.ImportedModuleBundle;
-import com.github.jk1.license.importer.DependencyDataImporter;
-import java.util.Collection;
-
-public class CustomImporter implements DependencyDataImporter{
-
-    public String getImporterName() {
-        return "Custom importer";
-    }
-
-
-    public Collection<ImportedModuleBundle> doImport() {
-        throw new UnsupportedOperationException("Not implemented yet");
-    }
-}
-```  
-
-with `buildSrc/build.gradle` defined as follows to get all the imports resolved:
-
-```groovy
-apply plugin: 'java'
-
-repositories {
-    maven {
-        url 'https://plugins.gradle.org/m2/'
-    }
-}
-
-dependencies {
-    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.5.1'
-}
-
-```
-
-Now you can use your custom importer in the main build:
-
-```groovy
-import org.sample.CustomImporter 
-
-...
-
-licenseReport {
-    importers = [ new CustomImporter() ]
-}
-
-```
-
-The same technique can be used to create a renderer to support custom report formats.
-
-
-## Normalisation
+This feature was contributed by [Günther Grill](https://github.com/guenhter)
 
 When multiple dependencies are analysed and displayed in a report, often
 e.g. two licenses like the following one appears:
@@ -263,3 +211,61 @@ licenseReport {
 
 If no bundle-file is specified, a default file is used containing some commons rules. You are encouraged to create your own bundle-file 
 and contribute back useful rules.
+
+## Writing custom renderers, importers and filters
+
+It's also possible to implement a custom importer to support any dependency data format necessary. To do so put custom 
+importer implementation inside `buildSrc` folder:
+
+```java
+package org.sample;
+
+import com.github.jk1.license.ImportedModuleBundle;
+import com.github.jk1.license.importer.DependencyDataImporter;
+import java.util.Collection;
+
+public class CustomImporter implements DependencyDataImporter{
+
+    public String getImporterName() {
+        return "Custom importer";
+    }
+
+
+    public Collection<ImportedModuleBundle> doImport() {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+}
+```  
+
+with `buildSrc/build.gradle` defined as follows to get all the imports resolved:
+
+```groovy
+apply plugin: 'java'
+
+repositories {
+    maven {
+        url 'https://plugins.gradle.org/m2/'
+    }
+}
+
+dependencies {
+    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.6'
+}
+
+```
+
+Now you can use your custom importer in the main build:
+
+```groovy
+import org.sample.CustomImporter 
+
+...
+
+licenseReport {
+    importers = [ new CustomImporter() ]
+}
+
+```
+
+The same technique can be used to create a filter or a renderer to support custom report formats.
+

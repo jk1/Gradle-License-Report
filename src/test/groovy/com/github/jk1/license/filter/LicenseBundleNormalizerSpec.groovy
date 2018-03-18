@@ -9,7 +9,9 @@ import spock.lang.Ignore
 import spock.lang.Specification
 
 class LicenseBundleNormalizerSpec extends Specification {
-    @Rule TemporaryFolder testProjectDir = new TemporaryFolder()
+
+    @Rule
+    TemporaryFolder testProjectDir = new TemporaryFolder()
     File buildFile
     File normalizerFile
 
