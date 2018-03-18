@@ -40,5 +40,17 @@ class LicenseReportPlugin implements Plugin<Project> {
             return excludeGroups.contains(module.moduleGroup) ||
                     excludes.contains("$module.moduleGroup:$module.moduleName")
         }
+
+        // configuration snapshot for the up-to-date check
+        private String getSnapshot() {
+            StringBuilder builder = new StringBuilder()
+            builder.append(renderer.class.name)
+            importers.each { builder.append(it.class.name) }
+            filters.each { builder.append(it.class.name) }
+            configurations.each { builder.append(it) }
+            excludeGroups.each { builder.append(it) }
+            excludes.each { builder.append(it) }
+            return builder.toString()
+        }
     }
 }
