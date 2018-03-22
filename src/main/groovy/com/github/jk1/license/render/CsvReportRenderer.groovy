@@ -61,7 +61,7 @@ class CsvReportRenderer extends SingleInfoReportRenderer {
     }
 
     void renderDependency(File output, LicenseReportPlugin.LicenseReportExtension config, ModuleData data) {
-        def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = moduleLicenseInfo(config, data)
+        def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = LicenseDataCollector.singleModuleLicenseInfo(config, data)
 
         String artifact = "${data.group}:${data.name}:${data.version}"
         output << "${quote(artifact)}$separator${quote(moduleUrl)}$separator${quote(moduleLicense)}$separator${quote(moduleLicenseUrl)}$separator$nl"

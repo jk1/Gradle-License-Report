@@ -2,12 +2,24 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
+import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import groovy.json.JsonBuilder
 import org.gradle.api.Project
 
+import static com.github.jk1.license.render.LicenseDataCollector.singleModuleLicenseInfo
+import static com.github.jk1.license.render.LicenseDataCollector.multiModuleLicenseInfo
+
 /**
+ *
+ * This renderer has two modes:  single-license-per-module  and  all-licenses-per-module.
+ * The mode can be controlled with the constructor parameter  onlyOneLicensePerModule   and depending on
+ * the mode, the result looks differently:
+ *
+ * single-license-per-module
+ * =========================
  * Renders a simply structured JSON dependency report
+ *
  *  {
  *  "dependencies": [
  *   {
@@ -29,17 +41,50 @@ import org.gradle.api.Project
  *       ]
  *   }, ...]
  * }
+ *
+ *
+ * all-licenses-per-module
+ * =======================
+ * Renders a structured JSON with all licenses per module
+ *
+ *  {
+ *  "dependencies": [
+ *   {
+ *      "moduleName": "...",
+ *      "moduleVersion": "...",
+ *      "moduleUrls": [ "..." ],
+ *      "moduleLicenses": [
+ *          {
+ *              "moduleLicense": "...",
+ *              "moduleLicenseUrl": "..."
+ *          }, ... ]
+ *   }, ...],
+ *  "importedModules": [
+ *   {
+ *       "name": "...",
+ *       "dependencies": [
+ *           "moduleName": "...",
+ *           "moduleVersion": "...",
+ *           "moduleUrl": "...",
+ *           "moduleLicense": "...",
+ *           "moduleLicenseUrl": "..."
+ *       ]
+ *   }, ...]
+ * }
+ *
  */
 
-class JsonReportRenderer extends SingleInfoReportRenderer {
+class JsonReportRenderer implements ReportRenderer {
 
     private String fileName
     private Project project
     private LicenseReportExtension config
     private File output
+    private Boolean onlyOneLicensePerModule
 
-    JsonReportRenderer(String fileName = 'index.json') {
+    JsonReportRenderer(String fileName = 'index.json', boolean onlyOneLicensePerModule = true) {
         this.fileName = fileName
+        this.onlyOneLicensePerModule = onlyOneLicensePerModule
     }
 
     void render(ProjectData data) {
@@ -48,18 +93,23 @@ class JsonReportRenderer extends SingleInfoReportRenderer {
         output = new File(config.outputDir, fileName)
 
         def jsonReport = [:]
-        jsonReport.dependencies = readDependencies(data.allDependencies)
+
+        if (onlyOneLicensePerModule) {
+            jsonReport.dependencies = renderSingleLicensePerModule(data.allDependencies)
+        } else {
+            jsonReport.dependencies = renderAllLicensesPerModule(data.allDependencies)
+        }
         jsonReport.importedModules = readImportedModules(data.importedModules)
 
-        output.text = new JsonBuilder(trimAndremoveNullEntries(jsonReport)).toPrettyString()
+        output.text = new JsonBuilder(trimAndRemoveNullEntries(jsonReport)).toPrettyString()
     }
 
-    def readDependencies(def allDependencies) {
+    def renderSingleLicensePerModule(Collection<ModuleData> allDependencies) {
         allDependencies.collect {
             String moduleName = "${it.group}:${it.name}"
             String moduleVersion = it.version
-            def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = moduleLicenseInfo(config, it)
-            trimAndremoveNullEntries([moduleName      : moduleName,
+            def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = singleModuleLicenseInfo(config, it)
+            trimAndRemoveNullEntries([moduleName      : moduleName,
                                       moduleUrl       : moduleUrl,
                                       moduleVersion   : moduleVersion,
                                       moduleLicense   : moduleLicense,
@@ -67,16 +117,33 @@ class JsonReportRenderer extends SingleInfoReportRenderer {
         }.sort { it.moduleName }
     }
 
-    def readImportedModules(def incModules) {
+    def renderAllLicensesPerModule(Collection<ModuleData> allDependencies) {
+        allDependencies.collect {
+            String moduleName = "${it.group}:${it.name}"
+            String moduleVersion = it.version
+            def info = multiModuleLicenseInfo(config, it)
+
+            def jsonLicenseList = info.licenses.collect {
+                [moduleLicense: it.name, moduleLicenseUrl: it.url]
+            }
+
+            trimAndRemoveNullEntries([moduleName    : moduleName,
+                                      moduleVersion : moduleVersion,
+                                      moduleUrls    : info.moduleUrls,
+                                      moduleLicenses: jsonLicenseList])
+        }.sort { it.moduleName }
+    }
+
+    static def readImportedModules(def incModules) {
         incModules.collect { ImportedModuleBundle importedModuleBundle ->
-            trimAndremoveNullEntries([moduleName  : importedModuleBundle.name,
+            trimAndRemoveNullEntries([moduleName  : importedModuleBundle.name,
                                       dependencies: readModuleDependencies(importedModuleBundle.modules)])
         }.sort { it.moduleName }
     }
 
-    def readModuleDependencies(def modules) {
+    static def readModuleDependencies(def modules) {
         modules.collectEntries {
-            trimAndremoveNullEntries([moduleName      : it.name,
+            trimAndRemoveNullEntries([moduleName      : it.name,
                                       moduleUrl       : it.projectUrl,
                                       moduleVersion   : it.version,
                                       moduleLicense   : it.license,
@@ -84,7 +151,7 @@ class JsonReportRenderer extends SingleInfoReportRenderer {
         }
     }
 
-    def trimAndremoveNullEntries(def map) {
+    static def trimAndRemoveNullEntries(def map) {
         map.collectEntries { k, v ->
             v ? [(k): v instanceof String ? v.trim() : v] : [:]
         }

@@ -72,7 +72,7 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
     private void printDependency(ModuleData data) {
         def moduleName = "${data.group}:${data.name}"
         def moduleVersion = data.version
-        def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = moduleLicenseInfo(config, data)
+        def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = LicenseDataCollector.singleModuleLicenseInfo(config, data)
 
         output << "<tr>\n"
         if (moduleUrl) {
