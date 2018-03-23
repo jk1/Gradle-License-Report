@@ -176,6 +176,55 @@ class LicenseBundleNormalizerSpec extends Specification {
         result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
     }
 
+
+
+    def "it normalizes the dependency on all specified configurations"() {
+        buildFile.setText("") // clear the file first
+        buildFile << """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+            }
+            configurations {
+                forTesting1
+                forTesting2
+            }
+            repositories {
+                mavenCentral()
+            }
+
+            import com.github.jk1.license.filter.*
+            import com.github.jk1.license.render.*
+
+            licenseReport {
+                outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
+                filters = [ new LicenseBundleNormalizer() ]
+                renderer = new JsonReportRenderer()
+                configurations = ['forTesting1', 'forTesting2']
+            }
+
+            dependencies {
+                forTesting1 "org.apache.httpcomponents:httpcore:4.4.9"
+                forTesting2 "org.apache.httpcomponents:httpcore:4.4.9"
+            }
+        """
+
+        when:
+        def runResult = GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withArguments('generateLicenseReport', '--stacktrace')
+                .withPluginClasspath()
+                .build()
+
+        def result = jsonSlurper.parse(licenseResultJsonFile)
+        println(licenseResultJsonFile.text)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        result.dependencies*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
+        result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
+    }
+
     @Ignore("add support for licence-text")
     def "normalizes dependencies by configured license text"() {
         buildFile << """
