@@ -30,7 +30,7 @@ class XmlReportImporter implements DependencyDataImporter {
             def root = createParser().parse(externalReport.call())
             if ("topic".equals(root.name())) {
                 bundles.addAll(parseTopic(root))
-            } else if ("chapter") {
+            } else if ("chapter".equals(root.name())) {
                 bundles.add(parseChapter(root))
             } else {
                 throw new GradleException("Dependency data importer: don't know how to parse ${root.name()} root tag")
