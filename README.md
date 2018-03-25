@@ -156,6 +156,35 @@ licenseReport {
 }
 ```
 
+The expected input format for `XmlReportImporter` is as follows:
+
+```
+<topic>
+  <chunk>
+    <chapter title="Some of my favorite libraries">
+      <table>
+        <tr>
+          <!-- every non-empty chapter must have a title row, which is stripped>
+          <th>Name</th>
+          <th>Version</th>
+          <th>License</th>
+        </tr>
+        <tr>
+          <td><a href="https://url.of.project/homepage">Name of library</a></td>
+          <td>1.2.3</td>
+          <td><a href="http://url.of.project/license">Name of license</a></td>
+        </tr>
+        <!-- more libraries here...>
+      </table>
+    </chapter>
+    <!-- more chapters here...>
+  </chunk>
+  <!-- more chunks here...>
+</topic>
+```
+
+If there is only one chapter, the outer `topic` and `chunk` tags may be omitted.
+
 ## Filters
 Dependency filters transform discovered dependency data before rendering. 
 This may include sorting, reordering, data substitution. 
