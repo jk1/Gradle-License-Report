@@ -28,7 +28,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     @Override
     ProjectData filter(ProjectData data) {
-        data.allDependencies.forEach { normalizeDependency(it) }
+        data.configurations*.dependencies.flatten().forEach { normalizeDependency(it) }
         return data
     }
 
