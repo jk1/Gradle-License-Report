@@ -38,7 +38,9 @@ class ReportTask extends DefaultTask {
             data = it.filter(data)
         }
         LOGGER.info("Building report for project ${getProject().name}")
-        config.renderer.render(data)
+        config.renderers.each {
+            it.render(data)
+        }
         LOGGER.info("Dependency license report for project ${getProject().name} created in ${config.outputDir}")
     }
 }

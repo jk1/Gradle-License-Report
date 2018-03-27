@@ -19,7 +19,7 @@ class LicenseReportPlugin implements Plugin<Project> {
     static class LicenseReportExtension {
 
         String outputDir
-        ReportRenderer renderer
+        ReportRenderer[] renderers
         DependencyDataImporter[] importers
         DependencyFilter[] filters
         String[] configurations
@@ -28,12 +28,31 @@ class LicenseReportPlugin implements Plugin<Project> {
 
         LicenseReportExtension(Project project) {
             outputDir = "${project.buildDir}/reports/dependency-license"
-            renderer = new SimpleHtmlReportRenderer()
+            renderers = new SimpleHtmlReportRenderer()
             configurations = ['runtime']
             excludeGroups = [project.group]
             excludes = []
             importers = []
             filters = []
+        }
+
+        /**
+         * Use #renderers instead
+         */
+        @Deprecated
+        void setRenderer(ReportRenderer renderer) {
+            renderers = renderer
+        }
+
+        /**
+         * Use #renderers instead
+         */
+        @Deprecated
+        ReportRenderer getRenderer() {
+            if (renderers != null && renderers.size() > 0) {
+                return renderers[0]
+            }
+            return null
         }
 
         boolean isExcluded(ResolvedDependency module) {
@@ -44,7 +63,8 @@ class LicenseReportPlugin implements Plugin<Project> {
         // configuration snapshot for the up-to-date check
         private String getSnapshot() {
             StringBuilder builder = new StringBuilder()
-            builder.append(renderer.class.name)
+
+            renderers.each { builder.append(it.class.name) }
             importers.each { builder.append(it.class.name) }
             filters.each { builder.append(it.class.name) }
             configurations.each { builder.append(it) }
