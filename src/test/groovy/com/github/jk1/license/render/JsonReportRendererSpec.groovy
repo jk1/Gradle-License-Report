@@ -82,8 +82,8 @@ class JsonReportRendererSpec extends Specification {
             "moduleName": "dummy-group:mod2",
             "moduleUrl": "http://dummy-pom-project-url",
             "moduleVersion": "0.0.1",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+            "moduleLicense": "MIT License",
+            "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
         }
     ],
     "importedModules": [
@@ -128,10 +128,6 @@ class JsonReportRendererSpec extends Specification {
                 {
                     "moduleLicense": "Apache License, Version 2.0",
                     "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 }
             ]
         },
@@ -140,7 +136,6 @@ class JsonReportRendererSpec extends Specification {
             "moduleVersion": "0.0.1",
             "moduleUrls": [
                 "http://dummy-mani-url",
-                "http://dummy-pom-project-url",
                 "http://dummy-pom-project-url"
             ],
             "moduleLicenses": [
@@ -153,16 +148,8 @@ class JsonReportRendererSpec extends Specification {
                     "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 },
                 {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                },
-                {
                     "moduleLicense": "MIT License",
                     "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 }
             ]
         }

@@ -42,4 +42,26 @@ class LicenseDataCollectorSpec extends Specification {
         result.licenses*.name == ["Apache License, Version 2.0"]
         result.licenses*.url == ["https://www.apache.org/licenses/LICENSE-2.0"]
     }
+
+    def "duplicate licenses are sorted out"() {
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                        license(name: "Apache License, Version 2.0", url: null)
+                    }
+                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                }
+            }
+        }
+
+        when:
+        ModuleData moduleData = projectData.configurations*.dependencies.flatten().first()
+        def result = LicenseDataCollector.multiModuleLicenseInfo(moduleData)
+
+        then:
+        result.licenses*.name == ["Apache License, Version 2.0", "Apache License, Version 2.0"]
+        result.licenses*.url == [null, "https://www.apache.org/licenses/LICENSE-2.0"]
+    }
 }

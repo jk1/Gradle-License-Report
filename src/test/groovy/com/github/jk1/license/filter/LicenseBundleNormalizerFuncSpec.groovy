@@ -266,17 +266,16 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleName": "joda-time:joda-time",
             "moduleVersion": "2.9.9",
             "moduleUrls": [
-                "http://www.joda.org/joda-time/",
                 "http://www.joda.org/joda-time/"
             ],
             "moduleLicenses": [
                 {
-                    "moduleLicense": "Apache 2.0",
-                    "moduleLicenseUrl": null
-                },
-                {
                     "moduleLicense": "Apache 2",
                     "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                },
+                {
+                    "moduleLicense": "Apache 2.0",
+                    "moduleLicenseUrl": null
                 },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
@@ -288,7 +287,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleName": "org.apache.commons:commons-lang3",
             "moduleVersion": "3.7",
             "moduleUrls": [
-                "http://commons.apache.org/proper/commons-lang/",
                 "http://commons.apache.org/proper/commons-lang/"
             ],
             "moduleLicenses": [
@@ -298,11 +296,11 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
                 }
             ]
         }

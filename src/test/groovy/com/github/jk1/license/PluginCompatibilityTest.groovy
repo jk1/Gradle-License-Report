@@ -74,10 +74,6 @@ class PluginCompatibilityTest extends Specification {
                 {
                     "moduleLicense": "Apache License, Version 2.0",
                     "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
                 }
             ]
         },
