@@ -13,7 +13,7 @@ class LicenseReportPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
         project.extensions.add('licenseReport', new LicenseReportExtension(project))
-        project.task(['type': ReportTask.class], "generateLicenseReport")
+        project.task(['type': ReportTask.class], 'generateLicenseReport')
     }
 
     static class LicenseReportExtension {
@@ -38,7 +38,7 @@ class LicenseReportPlugin implements Plugin<Project> {
 
         boolean isExcluded(ResolvedDependency module) {
             return excludeGroups.contains(module.moduleGroup) ||
-                    excludes.contains("$module.moduleGroup:$module.moduleName")
+                excludes.contains("$module.moduleGroup:$module.moduleName")
         }
 
         // configuration snapshot for the up-to-date check
