@@ -41,7 +41,7 @@ class LicenseBundleNormalizerSpec extends Specification {
             licenseReport {
                 outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
                 filters = new LicenseBundleNormalizer("$normalizerFile.absolutePath")
-                renderer = new JsonReportRenderer()
+                renderers = new JsonReportRenderer()
                 configurations = ['forTesting']
             }
         """
@@ -150,7 +150,7 @@ class LicenseBundleNormalizerSpec extends Specification {
             licenseReport {
                 outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
                 filters = new LicenseBundleNormalizer()
-                renderer = new JsonReportRenderer()
+                renderers = new JsonReportRenderer()
                 configurations = ['forTesting']
             }
             dependencies {
@@ -198,7 +198,7 @@ class LicenseBundleNormalizerSpec extends Specification {
             licenseReport {
                 outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
                 filters = [ new LicenseBundleNormalizer() ]
-                renderer = new JsonReportRenderer()
+                renderers = new JsonReportRenderer()
                 configurations = ['forTesting1', 'forTesting2']
             }
 
