@@ -64,7 +64,7 @@ licenseReport {
 
     // Set custom report renderer, implementing ReportRenderer.
     // Yes, you can write your own to support any format necessary.
-    renderer = new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')
+    renderers = [new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')]
 
     // Set importers to import any external dependency information, i.e. from npm.
     // Custom importer should implement DependencyDataImporter interface.
@@ -87,17 +87,17 @@ All the renderers support report file name customization via constructor paramet
 import com.github.jk1.license.render.*
 
 licenseReport {
-    renderer = new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')
+    renderers = [new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')]
 }
 ```
 
-To get the report generated in multiple formats use `MultiReportRenderer` as follows:
+To get the report generated in multiple formats just list them:
 
 ```groovy
 import com.github.jk1.license.render.*
 
 licenseReport {
-    renderer = new MultiReportRenderer(new XmlReportRenderer(), new CsvReportRenderer())
+    renderers = [new XmlReportRenderer(), new CsvReportRenderer()]
 }
 ```
 
@@ -111,7 +111,7 @@ To use this report you simply add it to the configuration:
 import com.github.jk1.license.render.*
 
 licenseReport {
-    renderer = new InventoryHtmlReportRenderer()
+    renderers = [new InventoryHtmlReportRenderer()]
 }
 ```
 This defaults to using the name of the project as the title and index.html as the name of the file it creates.  You can
@@ -134,7 +134,7 @@ an overrides file:
 import com.github.jk1.license.render.*
 
 licenseReport {
-    renderer = new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir,"../unknown-license-details.txt"))
+    renderers = [new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir,"../unknown-license-details.txt"))]
 }
 ```
 
