@@ -18,6 +18,8 @@ class LicenseReportPlugin implements Plugin<Project> {
 
     static class LicenseReportExtension {
 
+        public static final String[] ALL = []
+
         String outputDir
         ReportRenderer[] renderers
         DependencyDataImporter[] importers

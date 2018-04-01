@@ -71,9 +71,9 @@ licenseReport {
     importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
 
     // Adjust the configurations to use, e.g. for Android projects.
-    // Assign an empty list to dynamically resolve all configurations:
-    // configurations = []
     configurations = ['compile']
+    // Use 'ALL' to dynamically resolve all configurations:
+    // configurations = ALL
 }
 ```
 
