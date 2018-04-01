@@ -1,6 +1,7 @@
 package com.github.jk1.license.filter
 
 import com.github.jk1.license.License
+import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import groovy.json.JsonSlurper
@@ -28,21 +29,29 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     @Override
     ProjectData filter(ProjectData data) {
-        data.configurations*.dependencies.flatten().forEach { normalizeDependency(it) }
+        data.configurations*.dependencies.flatten().forEach { normalizePoms(it) }
+        data.configurations*.dependencies.flatten().forEach { normalizeManifest(it) }
         return data
     }
 
-    private def normalizeDependency(ModuleData dependency) {
-        dependency.poms
-                .collect { it.licenses }.flatten()
-                .forEach { normalizeLicense(it) }
+    private def normalizePoms(ModuleData dependency) {
+        dependency.poms*.licenses.flatten().forEach { normalizePomLicense(it) }
+    }
+    private def normalizeManifest(ModuleData dependency) {
+        dependency.manifests.flatten().forEach { normalizeManifestLicense(it) }
     }
 
-    private def normalizeLicense(License license) {
+    private def normalizePomLicense(License license) {
         def bundle = findMatchingBundleForName(license.name)
         if (bundle == null) bundle = findMatchingBundleForUrl(license.url)
         if (bundle == null) return
         applyBundleToLicense(bundle, license)
+    }
+    private def normalizeManifestLicense(ManifestData manifest) {
+        def bundle = findMatchingBundleForName(manifest.license)
+        if (bundle == null) bundle = findMatchingBundleForUrl(manifest.license)
+        if (bundle == null) return
+        applyBundleToManifest(bundle, manifest)
     }
 
     private def findMatchingBundleForName(String name) {
@@ -59,6 +68,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
     private def applyBundleToLicense(NormalizerLicenseBundle bundle, License license) {
         license.name = bundle.licenseName
         license.url = bundle.licenseUrl
+    }
+
+    private def applyBundleToManifest(NormalizerLicenseBundle bundle, ManifestData manifest) {
+        manifest.license = bundle.licenseName
     }
 
     private def toConfig(Object slurpResult) {
