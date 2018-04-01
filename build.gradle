@@ -8,7 +8,7 @@ plugins{
 }
 
 group = "com.github.jk1"
-version = "0.6.1"
+version = "0.7"
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -50,6 +50,14 @@ idea {
 
 artifacts {
     archives sourcesJar, javadocJar
+}
+
+test {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+    outputs.upToDateWhen { false }
 }
 
 // local maven publishing to ease development

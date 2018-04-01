@@ -10,7 +10,9 @@ import spock.lang.Specification
 import static com.github.jk1.license.ProjectDataFixture.*
 
 class JsonReportRendererSpec extends Specification {
-    @Rule TemporaryFolder testProjectDir = new TemporaryFolder()
+
+    @Rule
+    TemporaryFolder testProjectDir = new TemporaryFolder()
     File outputJson
 
     ProjectBuilder builder = new ProjectBuilder()
