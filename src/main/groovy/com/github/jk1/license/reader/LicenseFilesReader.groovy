@@ -35,7 +35,7 @@ class LicenseFilesReader {
                 def data = new LicenseFileData()
                 files.forEach {
                     data.files << it
-                    data.fileDetails << new LicenseFileDetails(file: it)
+                    data.fileDetails << createFileDetails(it)
                 }
                 return data
                 break
@@ -83,4 +83,24 @@ class LicenseFilesReader {
         return str.substring(pos + separator.length())
     }
 
+    private LicenseFileDetails createFileDetails(String file) {
+        String moduleLicense = null
+        String moduleLicenseUrl = null
+
+        def text = new File(config.outputDir, file).text
+        if (text.contains('Apache License, Version 2.0')) {
+            moduleLicense = 'Apache License, Version 2.0'
+            moduleLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0'
+        }
+        if (text.contains('Apache Software License, Version 1.1')) {
+            moduleLicense = 'Apache Software License, Version 1.1'
+            moduleLicenseUrl = 'http://www.apache.org/licenses/LICENSE-1.1'
+        }
+        if (text.contains('CDDL')) {
+            moduleLicense = 'COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0'
+            moduleLicenseUrl = 'http://opensource.org/licenses/CDDL-1.0'
+        }
+
+        new LicenseFileDetails(file: file, license: moduleLicense, licenseUrl: moduleLicenseUrl)
+    }
 }

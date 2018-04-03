@@ -94,9 +94,9 @@ class ProjectReaderFuncSpec extends Specification {
                 "license": null
             },
             {
-                "licenseUrl": null,
+                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
-                "license": null
+                "license": "Apache License, Version 2.0"
             }
         ],
         "files": [

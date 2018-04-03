@@ -34,9 +34,9 @@ class JsonReportRendererSpec extends Specification {
             configuration("runtime") {
                 module("mod1") {
                     pom("pom1") {
-                        license(APACHE2_LICENSE())
+                        license(APACHE2_LICENSE(), url: "https://www.apache.org/licenses/LICENSE-2.0")
                     }
-                    licenseFile(file: "apache2-license.txt")
+                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0")
                     manifest("mani1") {
                         license("Apache 2.0")
                     }
@@ -49,7 +49,7 @@ class JsonReportRendererSpec extends Specification {
                         license(APACHE2_LICENSE())
                         license(MIT_LICENSE())
                     }
-                    licenseFile(file: "apache2-license.txt")
+                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0")
                     manifest("mani1") {
                         license("Apache 2.0")
                     }
@@ -76,14 +76,14 @@ class JsonReportRendererSpec extends Specification {
             "moduleUrl": "http://dummy-pom-project-url",
             "moduleVersion": "0.0.1",
             "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
         },
         {
             "moduleName": "dummy-group:mod2",
             "moduleUrl": "http://dummy-pom-project-url",
             "moduleVersion": "0.0.1",
-            "moduleLicense": "MIT License",
-            "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
+            "moduleLicense": "Apache License, Version 2.0",
+            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
         }
     ],
     "importedModules": [

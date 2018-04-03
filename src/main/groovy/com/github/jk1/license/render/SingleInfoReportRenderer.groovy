@@ -14,6 +14,6 @@ abstract class SingleInfoReportRenderer implements ReportRenderer {
      */
     @Deprecated
     protected List<String> moduleLicenseInfo(LicenseReportExtension config, ModuleData data) {
-        return LicenseDataCollector.singleModuleLicenseInfo(config, data)
+        return LicenseDataCollector.singleModuleLicenseInfo(data)
     }
 }

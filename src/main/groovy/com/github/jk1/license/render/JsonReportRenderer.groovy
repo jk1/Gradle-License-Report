@@ -108,7 +108,7 @@ class JsonReportRenderer implements ReportRenderer {
         allDependencies.collect {
             String moduleName = "${it.group}:${it.name}"
             String moduleVersion = it.version
-            def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = singleModuleLicenseInfo(config, it)
+            def (String moduleUrl, String moduleLicense, String moduleLicenseUrl) = singleModuleLicenseInfo(it)
             trimAndRemoveNullEntries([moduleName      : moduleName,
                                       moduleUrl       : moduleUrl,
                                       moduleVersion   : moduleVersion,
@@ -121,7 +121,7 @@ class JsonReportRenderer implements ReportRenderer {
         allDependencies.collect {
             String moduleName = "${it.group}:${it.name}"
             String moduleVersion = it.version
-            def info = multiModuleLicenseInfo(config, it)
+            def info = multiModuleLicenseInfo(it)
 
             def jsonLicenseList = info.licenses.collect {
                 [moduleLicense: it.name, moduleLicenseUrl: it.url]

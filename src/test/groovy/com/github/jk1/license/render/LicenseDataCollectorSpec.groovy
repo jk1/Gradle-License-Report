@@ -19,7 +19,7 @@ class LicenseDataCollectorSpec extends Specification {
 
         when:
         ModuleData moduleData = projectData.configurations*.dependencies.flatten().first()
-        def result = LicenseDataCollector.singleModuleLicenseInfo(null, moduleData)
+        def result = LicenseDataCollector.singleModuleLicenseInfo(moduleData)
 
         then:
         result.licenses.isEmpty()
