@@ -1,30 +1,11 @@
 package com.github.jk1.license.reader
 
-import groovy.json.JsonBuilder
-import groovy.json.JsonSlurper
-import org.gradle.testkit.runner.GradleRunner
+import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
-import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class ProjectReaderFuncSpec extends Specification {
-
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
-    File buildFile
-    File outputDir
-    File rawJsonFile
-    List<File> pluginClasspath
-    JsonSlurper jsonSlurper = new JsonSlurper()
+class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     def setup() {
-        testProjectDir.create()
-        outputDir = new File(testProjectDir.root, "/build/licenses")
-        rawJsonFile = new File(outputDir, RawProjectDataJsonRenderer.RAW_PROJECT_JSON_NAME)
-
-        buildFile = testProjectDir.newFile('build.gradle')
         buildFile << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
@@ -43,13 +24,6 @@ class ProjectReaderFuncSpec extends Specification {
                 configurations = ['forTesting']
             }
         """
-
-        // add also the test-classes to the classpath to access some helper-renderers
-        def classpath = PluginUnderTestMetadataReading.readImplementationClasspath()
-        pluginClasspath = classpath + classpath.collect {
-            // there is surely a better way to add the test-classpath. Help appreciated.
-            new File(it.parentFile, "test")
-        }
     }
 
     def "it stores the licenses of a jar-file into the output-dir"() {
@@ -105,18 +79,5 @@ class ProjectReaderFuncSpec extends Specification {
         ]
     }
 ]"""
-    }
-
-
-    private def runGradleBuild() {
-        GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments('generateLicenseReport', '--stacktrace')
-            .withPluginClasspath(pluginClasspath)
-            .build()
-    }
-
-    private static String prettyPrintJson(Object obj) {
-        new JsonBuilder(obj).toPrettyString()
     }
 }

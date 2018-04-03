@@ -6,7 +6,7 @@ import com.github.jk1.license.render.ReportRenderer
 import groovy.json.JsonBuilder
 
 class RawProjectDataJsonRenderer implements ReportRenderer {
-    static String RAW_PROJECT_JSON_NAME = "raw-project-data.json"
+    static final String RAW_PROJECT_JSON_NAME = "raw-project-data.json"
 
     @Override
     void render(ProjectData data) {

@@ -1,28 +1,19 @@
 package com.github.jk1.license.filter
 
-import groovy.json.JsonSlurper
-import org.gradle.testkit.runner.GradleRunner
+import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Ignore
-import spock.lang.Specification
 
-class LicenseBundleNormalizerFuncSpec extends Specification {
+import static com.github.jk1.license.reader.ProjectReaderFuncSpec.prettyPrintJson
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
-    File buildFile
-    File normalizerFile
+class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     File licenseResultJsonFile
-    def jsonSlurper = new JsonSlurper()
+    File normalizerFile
 
     def setup() {
-        testProjectDir.create()
-        licenseResultJsonFile = new File(testProjectDir.root, "/build/licenses/index.json")
+        licenseResultJsonFile = new File(outputDir, "index.json")
 
-        buildFile = testProjectDir.newFile('build.gradle')
         normalizerFile = testProjectDir.newFile('test-normalizer-config.json')
 
         buildFile << """
@@ -38,10 +29,11 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
 
             import com.github.jk1.license.filter.*
             import com.github.jk1.license.render.*
+            import com.github.jk1.license.reader.*
             licenseReport {
-                outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
+                outputDir = "$outputDir.absolutePath"
                 filters = new LicenseBundleNormalizer("$normalizerFile.absolutePath")
-                renderer = new JsonReportRenderer(onlyOneLicensePerModule: false)
+                renderer = new MultiReportRenderer(new JsonReportRenderer(onlyOneLicensePerModule: false), new RawProjectDataJsonRenderer())
                 configurations = ['forTesting']
             }
         """
@@ -185,11 +177,11 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
     }
 
-    @Ignore("add support for licence-text")
-    def "normalizes dependencies by configured license text"() {
+    def "licenseFileDetails are extended with the license information"() {
         buildFile << """
             dependencies {
-                forTesting "joda-time:joda-time:2.9.9" // license-name: Apache 2
+                forTesting "joda-time:joda-time:2.9.9"
+                forTesting "org.apache.commons:commons-lang3:3.7"
             }
         """
         normalizerFile << """
@@ -201,15 +193,51 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
 
         when:
         def runResult = runGradleBuild()
-
-        def result = jsonSlurper.parse(licenseResultJsonFile)
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        def licenseFilesGPath = resultFileGPath.configurations*.dependencies.flatten().licenseFiles.flatten()
+        def licenseFileString = prettyPrintJson(licenseFilesGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        result.dependencies.size() == 1
-        result.dependencies*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
-        result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
+        licenseFileString == """[
+    {
+        "fileDetails": [
+            {
+                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                "file": "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
+                "license": "Apache License, Version 2.0"
+            },
+            {
+                "licenseUrl": null,
+                "file": "joda-time-2.9.9.jar/META-INF/NOTICE.txt",
+                "license": null
+            }
+        ],
+        "files": [
+            "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
+            "joda-time-2.9.9.jar/META-INF/NOTICE.txt"
+        ]
+    },
+    {
+        "fileDetails": [
+            {
+                "licenseUrl": null,
+                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                "license": null
+            },
+            {
+                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                "license": "Apache License, Version 2.0"
+            }
+        ],
+        "files": [
+            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+        ]
+    }
+]"""
     }
 
     @Ignore("Think about multiple licenses in a module AND multiple licenses within one license-name")
@@ -238,14 +266,5 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         result.dependencies.size() == 1
         result.dependencies*.moduleLicense.toSet() == ["Apache License, Version 2.0", "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"].toSet()
         result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0", "http://opensource.org/licenses/CDDL-1.0"].toSet()
-    }
-
-
-    private def runGradleBuild() {
-        GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments('generateLicenseReport', '--stacktrace')
-            .withPluginClasspath()
-            .build()
     }
 }

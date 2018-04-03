@@ -212,10 +212,16 @@ class ProjectBuilder extends BuilderSupport {
     }
 
     static String json(ProjectData data) {
-        def project = data.project
-        data.project = null
-        def str = new JsonBuilder(data).toPrettyString()
-        data.project = project
-        str
+        def configurationsString = new JsonBuilder(data.configurations).toPrettyString()
+        def importedModulesString = new JsonBuilder(data.importedModules).toPrettyString()
+
+        """{
+"configurations": [
+$configurationsString
+],
+"importedModules": [
+        $importedModulesString
+    ]
+}"""
     }
 }
