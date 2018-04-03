@@ -4,16 +4,27 @@ import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.importer.DependencyDataImporter
 import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.SimpleHtmlReportRenderer
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
+import org.gradle.util.GradleVersion
 
 class LicenseReportPlugin implements Plugin<Project> {
+    final def MINIMUM_REQUIRED_GRADLE_VERSION = "3.3"
 
     @Override
     void apply(Project project) {
+        assertCompatibleGradleVersion()
+
         project.extensions.add('licenseReport', new LicenseReportExtension(project))
         project.task(['type': ReportTask.class], 'generateLicenseReport')
+    }
+
+    private void assertCompatibleGradleVersion() {
+        if (GradleVersion.current() < GradleVersion.version(MINIMUM_REQUIRED_GRADLE_VERSION)) {
+            throw new GradleException("License Report Plugin requires Gradle $MINIMUM_REQUIRED_GRADLE_VERSION. ${GradleVersion.current()} detected.")
+        }
     }
 
     static class LicenseReportExtension {
