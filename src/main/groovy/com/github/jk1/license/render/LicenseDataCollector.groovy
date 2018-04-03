@@ -46,10 +46,10 @@ class LicenseDataCollector {
         // several licenses are available
         if (info.licenses.isEmpty() || !info.licenses.last().url || alwaysCheckLicenseFiles) {
             data.licenseFiles.each {
-                it.files.each {
+                it.fileDetails.each {
                     String moduleLicense = null
                     String moduleLicenseUrl = null
-                    def text = new File(config.outputDir, it).text
+                    def text = new File(config.outputDir, it.file).text
                     if (text.contains('Apache License, Version 2.0')) {
                         moduleLicense = 'Apache License, Version 2.0'
                         moduleLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0'

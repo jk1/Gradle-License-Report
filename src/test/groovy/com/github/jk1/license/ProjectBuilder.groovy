@@ -25,7 +25,6 @@ class ProjectBuilder extends BuilderSupport {
             case "pom": return addPom(id)
             case "manifest": return addManifest(id)
             case "license": return addLicense(id, null)
-            case "licenseFile": return addLicenseFiles(id)
             case "importedModulesBundle": return addImportedModulesBundle(id)
             default: throw new IllegalArgumentException("Invalid keyword $name")
         }
@@ -37,6 +36,7 @@ class ProjectBuilder extends BuilderSupport {
         switch(name) {
             case "license": return addLicense(null, map)
             case "importedModule": return addImportedModule(map)
+            case "licenseFile": return addLicenseFiles(map)
             default: throw new IllegalArgumentException("Invalid keyword $name")
         }
     }
@@ -139,11 +139,12 @@ class ProjectBuilder extends BuilderSupport {
         manifest
     }
 
-    private LicenseFileData addLicenseFiles(String id) {
+    private LicenseFileData addLicenseFiles(Map map) {
         ModuleData module = (ModuleData)current
 
         def licenseFiles = new LicenseFileData(
-            files: [id]
+            files: [map.file],
+            fileDetails: [new LicenseFileDetails(map)]
         )
 
         module.licenseFiles << licenseFiles

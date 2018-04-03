@@ -1,6 +1,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.LicenseFileData
+import com.github.jk1.license.LicenseFileDetails
 import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
 import com.github.jk1.license.ReportTask
 import com.github.jk1.license.util.Files
@@ -29,7 +30,14 @@ class LicenseFilesReader {
             case "zip":
             case "jar":
                 Collection<String> files = readLicenseFiles(artifact, new ZipFile(artifact.file, ZipFile.OPEN_READ))
-                return files.isEmpty() ? null : new LicenseFileData(files)
+                if (files.isEmpty()) return null
+
+                def data = new LicenseFileData()
+                files.forEach {
+                    data.files << it
+                    data.fileDetails << new LicenseFileDetails(file: it)
+                }
+                return data
                 break
             default:
                 return null

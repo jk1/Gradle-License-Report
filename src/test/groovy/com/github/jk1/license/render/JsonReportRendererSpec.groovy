@@ -36,7 +36,7 @@ class JsonReportRendererSpec extends Specification {
                     pom("pom1") {
                         license(APACHE2_LICENSE())
                     }
-                    licenseFile("apache2-license.txt")
+                    licenseFile(file: "apache2-license.txt")
                     manifest("mani1") {
                         license("Apache 2.0")
                     }
@@ -49,7 +49,7 @@ class JsonReportRendererSpec extends Specification {
                         license(APACHE2_LICENSE())
                         license(MIT_LICENSE())
                     }
-                    licenseFile("apache2-license.txt")
+                    licenseFile(file: "apache2-license.txt")
                     manifest("mani1") {
                         license("Apache 2.0")
                     }
