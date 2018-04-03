@@ -32,7 +32,6 @@ class ProjectBuilder extends BuilderSupport {
 
     @Override
     protected Object createNode(Object name, Map map) {
-        println("Create node $name - $map -- $current")
         switch(name) {
             case "license": return addLicense(null, map)
             case "importedModule": return addImportedModule(map)
@@ -43,7 +42,6 @@ class ProjectBuilder extends BuilderSupport {
 
     @Override
     protected Object createNode(Object name, Map map, Object id) {
-        println("Create node $name - $id - $map -- $current")
         switch(name) {
             case "license": return addLicense(id, map)
             default: throw new IllegalArgumentException("Invalid keyword $name")
