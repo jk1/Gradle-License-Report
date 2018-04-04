@@ -8,8 +8,8 @@ class LicenseDataCollector {
 
     protected static List<String> singleModuleLicenseInfo(LicenseReportPlugin.LicenseReportExtension config, ModuleData data) {
         def info = multiModuleLicenseInfo(config, data, false)
-        def moduleUrl = info.moduleUrls?.last()
-        def license = info.licenses?.last()
+        def moduleUrl = lastOrNull(info.moduleUrls)
+        def license = lastOrNull(info.licenses)
         def moduleLicense = license?.name
         def moduleLicenseUrl = license?.url
 
@@ -79,6 +79,10 @@ class LicenseDataCollector {
         } catch (URISyntaxException e) {
             return false
         }
+    }
+
+    private static def lastOrNull(List l) {
+        if (l) l.last() else null
     }
 
     protected static class MultiLicenseInfo {
