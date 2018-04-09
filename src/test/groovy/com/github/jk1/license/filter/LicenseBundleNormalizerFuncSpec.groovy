@@ -1,28 +1,19 @@
 package com.github.jk1.license.filter
 
-import groovy.json.JsonSlurper
-import org.gradle.testkit.runner.GradleRunner
+import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Ignore
-import spock.lang.Specification
 
-class LicenseBundleNormalizerFuncSpec extends Specification {
+import static com.github.jk1.license.reader.ProjectReaderFuncSpec.prettyPrintJson
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
-    File buildFile
-    File normalizerFile
+class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     File licenseResultJsonFile
-    def jsonSlurper = new JsonSlurper()
+    File normalizerFile
 
     def setup() {
-        testProjectDir.create()
-        licenseResultJsonFile = new File(testProjectDir.root, "/build/licenses/index.json")
+        licenseResultJsonFile = new File(outputDir, "index.json")
 
-        buildFile = testProjectDir.newFile('build.gradle')
         normalizerFile = testProjectDir.newFile('test-normalizer-config.json')
 
         buildFile << """
@@ -38,10 +29,11 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
 
             import com.github.jk1.license.filter.*
             import com.github.jk1.license.render.*
+            import com.github.jk1.license.reader.*
             licenseReport {
-                outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
+                outputDir = "$outputDir.absolutePath"
                 filters = new LicenseBundleNormalizer("$normalizerFile.absolutePath")
-                renderer = new JsonReportRenderer(onlyOneLicensePerModule: false)
+                renderer = new MultiReportRenderer(new JsonReportRenderer(onlyOneLicensePerModule: false), new RawProjectDataJsonRenderer())
                 configurations = ['forTesting']
             }
         """
@@ -49,9 +41,9 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         normalizerFile << """
             {
               "bundles" : [
-                { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-1.1" },
-                { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-2.0" },
-                { "bundleName" : "cddl1", "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0", "licenseUrl" : "http://opensource.org/licenses/CDDL-1.0" },
+                { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-1.1" },
+                { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" },
+                { "bundleName" : "cddl1", "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0", "licenseUrl" : "https://opensource.org/licenses/CDDL-1.0" },
                 { "bundleName" : "gpl2", "licenseName" : "GNU GENERAL PUBLIC LICENSE, Version 2", "licenseUrl" : "https://www.gnu.org/licenses/gpl-2.0" }
               ],
         """
@@ -81,7 +73,7 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
 
         result.dependencies.size() == 2
         result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0", null].toSet()
-        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
+        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["https://www.apache.org/licenses/LICENSE-2.0", "http://www.apache.org/licenses/LICENSE-2.0"].toSet()
     }
 
     def "normalizes dependencies by configured license url"() {
@@ -93,7 +85,7 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         """
         normalizerFile << """
               "transformationRules" : [
-                { "bundleName" : "apache2", "licenseUrlPattern" : ".*http://www.apache.org/licenses/LICENSE-2.0.txt.*" }
+                { "bundleName" : "apache2", "licenseUrlPattern" : ".*www.apache.org/licenses/LICENSE-2.0.*" }
               ]
             }
         """
@@ -107,8 +99,8 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         result.dependencies.size() == 2
-        result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0", null].toSet()
-        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
+        result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
+        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["https://www.apache.org/licenses/LICENSE-2.0", null].toSet()
     }
 
     def "normalizes manifest with pom data"() {
@@ -133,7 +125,7 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
-        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0", null].toSet()
+        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"/*LicenseFile*/, "https://www.apache.org/licenses/LICENSE-2.0"/*Pom*/, null/*Manifest*/].toSet()
     }
 
     def "an error is raised when a normalizer file is specified but not available"() {
@@ -185,11 +177,74 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
     }
 
-    @Ignore("add support for licence-text")
-    def "normalizes dependencies by configured license text"() {
+    def "licenseFileDetails are extended with the license information"() {
         buildFile << """
             dependencies {
-                forTesting "joda-time:joda-time:2.9.9" // license-name: Apache 2
+                forTesting "joda-time:joda-time:2.9.9"
+                forTesting "org.apache.commons:commons-lang3:3.7"
+            }
+        """
+        normalizerFile << """
+              "transformationRules" : [
+                { "bundleName" : "apache2", "licenseFileContentPattern" : ".*Apache License, Version 2.0.*" }
+              ]
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        def licenseFilesGPath = resultFileGPath.configurations*.dependencies.flatten().licenseFiles.flatten()
+        def licenseFileString = prettyPrintJson(licenseFilesGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        licenseFileString == """[
+    {
+        "fileDetails": [
+            {
+                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+                "file": "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
+                "license": "Apache License, Version 2.0"
+            },
+            {
+                "licenseUrl": null,
+                "file": "joda-time-2.9.9.jar/META-INF/NOTICE.txt",
+                "license": null
+            }
+        ],
+        "files": [
+            "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
+            "joda-time-2.9.9.jar/META-INF/NOTICE.txt"
+        ]
+    },
+    {
+        "fileDetails": [
+            {
+                "licenseUrl": null,
+                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                "license": null
+            },
+            {
+                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                "license": "Apache License, Version 2.0"
+            }
+        ],
+        "files": [
+            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+        ]
+    }
+]"""
+    }
+
+    def "normalizes dependencies by configured license text and exports result to json"() {
+        buildFile << """
+            dependencies {
+                forTesting "joda-time:joda-time:2.9.9"
+                forTesting "org.apache.commons:commons-lang3:3.7"
             }
         """
         normalizerFile << """
@@ -202,14 +257,57 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         when:
         def runResult = runGradleBuild()
 
-        def result = jsonSlurper.parse(licenseResultJsonFile)
-
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        result.dependencies.size() == 1
-        result.dependencies*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
-        result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
+        licenseResultJsonFile.text == """{
+    "dependencies": [
+        {
+            "moduleName": "joda-time:joda-time",
+            "moduleVersion": "2.9.9",
+            "moduleUrls": [
+                "http://www.joda.org/joda-time/",
+                "http://www.joda.org/joda-time/"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache 2.0",
+                    "moduleLicenseUrl": null
+                },
+                {
+                    "moduleLicense": "Apache 2",
+                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                },
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        },
+        {
+            "moduleName": "org.apache.commons:commons-lang3",
+            "moduleVersion": "3.7",
+            "moduleUrls": [
+                "http://commons.apache.org/proper/commons-lang/",
+                "http://commons.apache.org/proper/commons-lang/"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": null,
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                },
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                },
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        }
+    ]
+}"""
     }
 
     @Ignore("Think about multiple licenses in a module AND multiple licenses within one license-name")
@@ -238,14 +336,5 @@ class LicenseBundleNormalizerFuncSpec extends Specification {
         result.dependencies.size() == 1
         result.dependencies*.moduleLicense.toSet() == ["Apache License, Version 2.0", "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"].toSet()
         result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0", "http://opensource.org/licenses/CDDL-1.0"].toSet()
-    }
-
-
-    private def runGradleBuild() {
-        GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
-            .withArguments('generateLicenseReport', '--stacktrace')
-            .withPluginClasspath()
-            .build()
     }
 }

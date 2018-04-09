@@ -13,11 +13,14 @@ class LicenseBundleNormalizerSpec extends Specification {
     @Rule
     TemporaryFolder testProjectDir = new TemporaryFolder()
     File normalizerFile
+    File pluginOutputDir
 
     ProjectBuilder builder = new ProjectBuilder()
 
     def setup() {
         testProjectDir.create()
+        pluginOutputDir = new File(GRADLE_PROJECT().licenseReport.outputDir)
+        pluginOutputDir.mkdirs()
 
         normalizerFile = testProjectDir.newFile('test-normalizer-config.json')
         normalizerFile << """
@@ -27,8 +30,8 @@ class LicenseBundleNormalizerSpec extends Specification {
               ]"""
 
         // copy apache2 license file
-        def apache2LicenseFile = new File(getClass().getResource('/apache2-license.txt').toURI())
-        new File(testProjectDir.root, "apache2-license.txt") << apache2LicenseFile.text
+        def apache2LicenseFile = new File(getClass().getResource("/apache2-license.txt").toURI())
+        new File(pluginOutputDir, "apache2-license.txt") << apache2LicenseFile.text
     }
 
     def "normalize license of manifest (when stored as name)"() {
@@ -97,7 +100,7 @@ class LicenseBundleNormalizerSpec extends Specification {
         json(result) == json(expected)
     }
 
-    def "after normalisation, all poms of all configurations are normalized"() {
+    def "all poms of all configurations are normalized"() {
         normalizerFile << """,
             "transformationRules" : [
                 { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2.*" }
@@ -144,7 +147,7 @@ class LicenseBundleNormalizerSpec extends Specification {
         json(result) == json(expected)
     }
 
-    def "after normalisation, all manifests of all configurations are normalized"() {
+    def "all manifests of all configurations are normalized"() {
         normalizerFile << """,
             "transformationRules" : [
                 { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2.*" }
@@ -180,6 +183,103 @@ class LicenseBundleNormalizerSpec extends Specification {
                     manifest("mani1") {
                         license("Apache License, Version 2.0")
                     }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "all license files of all configurations are normalized"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseFileContentPattern" : ".*Apache License, Version 2.0.*" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt")
+                }
+            }
+            configuration("test") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt")
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                }
+            }
+            configuration("test") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "the licence-file is normalized by name-pattern (not by content-pattern)"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2.*" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt", license: "Apache 2")
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "the licence-file is normalized by url-pattern (not by content-pattern)"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-2.0.txt" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
                 }
             }
         }

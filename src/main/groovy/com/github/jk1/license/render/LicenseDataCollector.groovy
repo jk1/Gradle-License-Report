@@ -1,13 +1,13 @@
 package com.github.jk1.license.render
 
 import com.github.jk1.license.License
-import com.github.jk1.license.LicenseReportPlugin
+import com.github.jk1.license.LicenseFileDetails
 import com.github.jk1.license.ModuleData
 
 class LicenseDataCollector {
 
-    protected static List<String> singleModuleLicenseInfo(LicenseReportPlugin.LicenseReportExtension config, ModuleData data) {
-        def info = multiModuleLicenseInfo(config, data, false)
+    protected static List<String> singleModuleLicenseInfo(ModuleData data) {
+        def info = multiModuleLicenseInfo(data)
         def moduleUrl = lastOrNull(info.moduleUrls)
         def license = lastOrNull(info.licenses)
         def moduleLicense = license?.name
@@ -16,8 +16,7 @@ class LicenseDataCollector {
         [moduleUrl, moduleLicense, moduleLicenseUrl]
     }
 
-    protected static MultiLicenseInfo multiModuleLicenseInfo(
-        LicenseReportPlugin.LicenseReportExtension config, ModuleData data, boolean alwaysCheckLicenseFiles = true) {
+    protected static MultiLicenseInfo multiModuleLicenseInfo(ModuleData data) {
         MultiLicenseInfo info = new MultiLicenseInfo()
 
         data.manifests.each {
@@ -41,32 +40,9 @@ class LicenseDataCollector {
             }
         }
 
-        // Check just here for backward compatibility reason of "simple" json-renderer.
-        // think about removing this at all and risk that the simple-renderers gets a different result in case
-        // several licenses are available
-        if (info.licenses.isEmpty() || !info.licenses.last().url || alwaysCheckLicenseFiles) {
-            data.licenseFiles.each {
-                it.files.each {
-                    String moduleLicense = null
-                    String moduleLicenseUrl = null
-                    def text = new File(config.outputDir, it).text
-                    if (text.contains('Apache License, Version 2.0')) {
-                        moduleLicense = 'Apache License, Version 2.0'
-                        moduleLicenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0'
-                    }
-                    if (text.contains('Apache Software License, Version 1.1')) {
-                        moduleLicense = 'Apache Software License, Version 1.1'
-                        moduleLicenseUrl = 'http://www.apache.org/licenses/LICENSE-1.1'
-                    }
-                    if (text.contains('CDDL')) {
-                        moduleLicense = 'COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0'
-                        moduleLicenseUrl = 'http://opensource.org/licenses/CDDL-1.0'
-                    }
-
-                    if (moduleLicense || moduleLicenseUrl) {
-                        info.licenses << new License(name: moduleLicense, url: moduleLicenseUrl)
-                    }
-                }
+        data.licenseFiles*.fileDetails.flatten().each { LicenseFileDetails details ->
+            if (details.license || details.licenseUrl) {
+                info.licenses << new License(name: details.license, url: details.licenseUrl)
             }
         }
         info

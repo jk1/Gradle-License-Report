@@ -1,6 +1,8 @@
 package com.github.jk1.license.filter
 
 import com.github.jk1.license.License
+import com.github.jk1.license.LicenseFileDetails
+import com.github.jk1.license.LicenseReportPlugin
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
@@ -9,6 +11,7 @@ import groovy.json.JsonSlurper
 
 class LicenseBundleNormalizer implements DependencyFilter {
 
+    LicenseReportPlugin.LicenseReportExtension config
     LicenseBundleNormalizerConfig normalizerConfig
     Map<String, NormalizerLicenseBundle> bundleMap
 
@@ -29,8 +32,12 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     @Override
     ProjectData filter(ProjectData data) {
+        config = data.project.licenseReport
+
         data.configurations*.dependencies.flatten().forEach { normalizePoms(it) }
         data.configurations*.dependencies.flatten().forEach { normalizeManifest(it) }
+        data.configurations*.dependencies.flatten().forEach { normalizeLicenseFileDetails(it) }
+
         return data
     }
 
@@ -38,7 +45,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
         dependency.poms*.licenses.flatten().forEach { normalizePomLicense(it) }
     }
     private def normalizeManifest(ModuleData dependency) {
-        dependency.manifests.flatten().forEach { normalizeManifestLicense(it) }
+        dependency.manifests.forEach { normalizeManifestLicense(it) }
+    }
+    private def normalizeLicenseFileDetails(ModuleData dependency) {
+        dependency.licenseFiles*.fileDetails.flatten().forEach { normalizeLicenseFileDetailsLicense(it) }
     }
 
     private def normalizePomLicense(License license) {
@@ -53,15 +63,31 @@ class LicenseBundleNormalizer implements DependencyFilter {
         if (bundle == null) return
         applyBundleToManifest(bundle, manifest)
     }
+    private def normalizeLicenseFileDetailsLicense(LicenseFileDetails licenseFileDetails) {
+        if (licenseFileDetails.file == null || licenseFileDetails.file.isEmpty()) return
+
+        String licenseFileContent = new File("$config.outputDir/$licenseFileDetails.file").text
+
+        def bundle = findMatchingBundleForContentPattern(licenseFileContent)
+        if (bundle == null && licenseFileDetails.license) bundle = findMatchingBundleForName(licenseFileDetails.license)
+        if (bundle == null && licenseFileDetails.licenseUrl) bundle = findMatchingBundleForUrl(licenseFileDetails.licenseUrl)
+        if (bundle == null) return
+        applyBundleToLicenseFileDetails(bundle, licenseFileDetails)
+    }
 
     private def findMatchingBundleForName(String name) {
         def transformToBundleName = normalizerConfig.transformationRules
-                .find { it.licenseNamePattern  && name ==~ it.licenseNamePattern }?.bundleName
+                .find { it.licenseNamePattern  && name =~ it.licenseNamePattern }?.bundleName
         return bundleMap[transformToBundleName]
     }
     private def findMatchingBundleForUrl(String url) {
         def transformToBundleName = normalizerConfig.transformationRules
-                .find { it.licenseUrlPattern && url ==~ it.licenseUrlPattern }?.bundleName
+                .find { it.licenseUrlPattern && url =~ it.licenseUrlPattern }?.bundleName
+        return bundleMap[transformToBundleName]
+    }
+    private def findMatchingBundleForContentPattern(String content) {
+        def transformToBundleName = normalizerConfig.transformationRules
+            .find { it.licenseFileContentPattern  && content =~ it.licenseFileContentPattern }?.bundleName
         return bundleMap[transformToBundleName]
     }
 
@@ -69,9 +95,12 @@ class LicenseBundleNormalizer implements DependencyFilter {
         license.name = bundle.licenseName
         license.url = bundle.licenseUrl
     }
-
     private def applyBundleToManifest(NormalizerLicenseBundle bundle, ManifestData manifest) {
         manifest.license = bundle.licenseName
+    }
+    private def applyBundleToLicenseFileDetails(NormalizerLicenseBundle bundle, LicenseFileDetails details) {
+        details.license = bundle.licenseName
+        details.licenseUrl = bundle.licenseUrl
     }
 
     private def toConfig(Object slurpResult) {
@@ -93,6 +122,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     class NormalizerTransformationRule {
         String licenseNamePattern
         String licenseUrlPattern
+        String licenseFileContentPattern
         String bundleName
     }
 }

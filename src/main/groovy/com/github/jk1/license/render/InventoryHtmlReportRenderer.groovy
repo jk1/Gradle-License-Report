@@ -329,9 +329,9 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
             }
         }
 
-        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().files.isEmpty()) {
-            output << section("Embedded license files", data.licenseFiles.first().files.collect {
-                link(it, it)
+        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
+            output << section("Embedded license files", data.licenseFiles.first().fileDetails.collect {
+                link(it.file, it.file)
             }.join(''))
         }
         output << "</div>\n"

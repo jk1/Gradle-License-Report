@@ -165,14 +165,17 @@ class ProjectBuilderSpec extends Specification {
         ProjectData data = builder.project {
             configuration("runtime") {
                 module("mod1") {
-                    licenseFile("file1")
-                    licenseFile("file2")
+                    licenseFile(file: "file1", license: "lic1", licenseUrl: "licUrl1")
+                    licenseFile(file: "file2", license: "lic2", licenseUrl: "licUrl2")
                 }
             }
         }
 
         then:
         data.configurations*.dependencies.flatten().licenseFiles.flatten().files.flatten() == ["file1", "file2"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file == ["file1", "file2"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license == ["lic1", "lic2"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl == ["licUrl1", "licUrl2"]
         data.importedModules.isEmpty()
     }
 

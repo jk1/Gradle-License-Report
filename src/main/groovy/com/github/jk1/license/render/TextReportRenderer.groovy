@@ -98,10 +98,10 @@ This report was generated at ${new Date()}.
                 }
             }
         }
-        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().files.isEmpty()) {
+        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
             output << 'Embedded license: '
             output << "\n\n"
-            output << data.licenseFiles.first().files.collect({ "                    ****************************************                    \n\n" + new File("$config.outputDir/$it").text + "\n"}).join('')
+            output << data.licenseFiles.first().fileDetails.collect({ "                    ****************************************                    \n\n" + new File("$config.outputDir/$it.file").text + "\n"}).join('')
         }
         output << "--------------------------------------------------------------------------------\n\n"
     }

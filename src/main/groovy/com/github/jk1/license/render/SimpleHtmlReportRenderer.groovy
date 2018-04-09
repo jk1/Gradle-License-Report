@@ -104,9 +104,9 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
                 }
             }
         }
-        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().files.isEmpty()) {
+        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
             output << '<p><strong>Embedded license files:</strong> '
-            output << data.licenseFiles.first().files.collect({ "<a href=\"$it\">$it</a> " }).join('')
+            output << data.licenseFiles.first().fileDetails.collect({ "<a href=\"$it.file\">$it.file</a> " }).join('')
             output << '</p>'
         }
     }

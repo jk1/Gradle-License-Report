@@ -25,7 +25,6 @@ class ProjectBuilder extends BuilderSupport {
             case "pom": return addPom(id)
             case "manifest": return addManifest(id)
             case "license": return addLicense(id, null)
-            case "licenseFile": return addLicenseFiles(id)
             case "importedModulesBundle": return addImportedModulesBundle(id)
             default: throw new IllegalArgumentException("Invalid keyword $name")
         }
@@ -33,17 +32,16 @@ class ProjectBuilder extends BuilderSupport {
 
     @Override
     protected Object createNode(Object name, Map map) {
-        println("Create node $name - $map -- $current")
         switch(name) {
             case "license": return addLicense(null, map)
             case "importedModule": return addImportedModule(map)
+            case "licenseFile": return addLicenseFiles(map)
             default: throw new IllegalArgumentException("Invalid keyword $name")
         }
     }
 
     @Override
     protected Object createNode(Object name, Map map, Object id) {
-        println("Create node $name - $id - $map -- $current")
         switch(name) {
             case "license": return addLicense(id, map)
             default: throw new IllegalArgumentException("Invalid keyword $name")
@@ -139,11 +137,12 @@ class ProjectBuilder extends BuilderSupport {
         manifest
     }
 
-    private LicenseFileData addLicenseFiles(String id) {
+    private LicenseFileData addLicenseFiles(Map map) {
         ModuleData module = (ModuleData)current
 
         def licenseFiles = new LicenseFileData(
-            files: [id]
+            files: [map.file],
+            fileDetails: [new LicenseFileDetails(map)]
         )
 
         module.licenseFiles << licenseFiles
@@ -211,10 +210,16 @@ class ProjectBuilder extends BuilderSupport {
     }
 
     static String json(ProjectData data) {
-        def project = data.project
-        data.project = null
-        def str = new JsonBuilder(data).toPrettyString()
-        data.project = project
-        str
+        def configurationsString = new JsonBuilder(data.configurations).toPrettyString()
+        def importedModulesString = new JsonBuilder(data.importedModules).toPrettyString()
+
+        """{
+"configurations": [
+$configurationsString
+],
+"importedModules": [
+        $importedModulesString
+    ]
+}"""
     }
 }
