@@ -1,4 +1,4 @@
-package com.github.jk1.license.reader
+package com.github.jk1.license.render
 
 import com.github.jk1.license.LicenseReportPlugin
 import com.github.jk1.license.ProjectData

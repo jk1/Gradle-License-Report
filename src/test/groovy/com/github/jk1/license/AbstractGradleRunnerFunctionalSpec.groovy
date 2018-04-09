@@ -1,6 +1,6 @@
 package com.github.jk1.license
 
-import com.github.jk1.license.reader.RawProjectDataJsonRenderer
+import com.github.jk1.license.render.RawProjectDataJsonRenderer
 import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.gradle.testkit.runner.GradleRunner
