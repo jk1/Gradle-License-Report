@@ -15,7 +15,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
     LicenseBundleNormalizerConfig normalizerConfig
     Map<String, NormalizerLicenseBundle> bundleMap
 
-    LicenseBundleNormalizer(String bundlePath = null) {
+    LicenseBundleNormalizer(Map params = ["bundlePath": null, "createDefaultTransformationRules": true]) {
+        String bundlePath = params.bundlePath
+        boolean createDefaultTransformationRules = params.get("createDefaultTransformationRules", true)
+
         InputStream inputStream
         if (bundlePath == null) {
             inputStream = getClass().getResourceAsStream("/default-license-normalizer-bundle.json")
@@ -27,6 +30,26 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         bundleMap = normalizerConfig.bundles.collectEntries {
             [it.bundleName, it]
+        }
+
+        if (createDefaultTransformationRules) {
+            initializeDefaultTransformationRules()
+        }
+    }
+
+    private def initializeDefaultTransformationRules() {
+        Set<String> rulePatternNames = normalizerConfig.transformationRules*.licenseNamePattern as Set
+        Set<String> rulePatternUrls = normalizerConfig.transformationRules*.licenseUrlPattern as Set
+
+        normalizerConfig.bundles.each { NormalizerLicenseBundle bundle ->
+            if (!rulePatternNames.contains(bundle.licenseName)) {
+                normalizerConfig.transformationRules <<
+                    new NormalizerTransformationRule(bundleName: bundle.bundleName, licenseNamePattern: bundle.licenseName)
+            }
+            if (!rulePatternUrls.contains(bundle.licenseUrl)) {
+                normalizerConfig.transformationRules <<
+                    new NormalizerTransformationRule(bundleName: bundle.bundleName, licenseUrlPattern: bundle.licenseUrl)
+            }
         }
     }
 

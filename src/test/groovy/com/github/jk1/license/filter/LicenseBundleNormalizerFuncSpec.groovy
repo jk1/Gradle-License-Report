@@ -32,7 +32,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             import com.github.jk1.license.reader.*
             licenseReport {
                 outputDir = "$outputDir.absolutePath"
-                filters = new LicenseBundleNormalizer("$normalizerFile.absolutePath")
+                filters = new LicenseBundleNormalizer(bundlePath: "$normalizerFile.absolutePath", createDefaultTransformationRules: false)
                 renderer = new MultiReportRenderer(new JsonReportRenderer(onlyOneLicensePerModule: false), new RawProjectDataJsonRenderer())
                 configurations = ['forTesting']
             }
