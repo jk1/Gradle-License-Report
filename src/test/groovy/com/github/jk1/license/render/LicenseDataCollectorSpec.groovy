@@ -29,7 +29,9 @@ class LicenseDataCollectorSpec extends Specification {
         ProjectData projectData = builder.project {
             configuration("runtime") {
                 module("mod1") {
-                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                    licenseFiles {
+                        licenseFileDetails(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                    }
                 }
             }
         }
@@ -51,7 +53,9 @@ class LicenseDataCollectorSpec extends Specification {
                         license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
                         license(name: "Apache License, Version 2.0", url: null)
                     }
-                    licenseFile(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                    licenseFiles {
+                        licenseFileDetails(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                    }
                 }
             }
         }

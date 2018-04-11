@@ -165,17 +165,22 @@ class ProjectBuilderSpec extends Specification {
         ProjectData data = builder.project {
             configuration("runtime") {
                 module("mod1") {
-                    licenseFile(file: "file1", license: "lic1", licenseUrl: "licUrl1")
-                    licenseFile(file: "file2", license: "lic2", licenseUrl: "licUrl2")
+                    licenseFiles {
+                        licenseFileDetails(file: "file1", license: "lic1", licenseUrl: "licUrl1")
+                        licenseFileDetails(file: "file2", license: "lic2", licenseUrl: "licUrl2")
+                    }
+                    licenseFiles {
+                        licenseFileDetails(file: "file3", license: "lic3", licenseUrl: "licUrl3")
+                    }
                 }
             }
         }
 
         then:
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().files.flatten() == ["file1", "file2"]
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file == ["file1", "file2"]
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license == ["lic1", "lic2"]
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl == ["licUrl1", "licUrl2"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().files.flatten() == ["file1", "file2", "file3"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file == ["file1", "file2", "file3"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license == ["lic1", "lic2", "lic3"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl == ["licUrl1", "licUrl2", "licUrl3"]
         data.importedModules.isEmpty()
     }
 
