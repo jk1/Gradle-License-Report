@@ -58,8 +58,8 @@ class ConfigurationReader {
     private static class ResolvedDependencyComparator implements Comparator<ResolvedDependency>{
         @Override
         int compare(ResolvedDependency first, ResolvedDependency second) {
-            int result = first.moduleGroup.compareTo(second.moduleGroup)
-            result == 0 ? first.moduleName.compareTo(second.moduleName) : result
+            first.moduleGroup <=> second.moduleGroup ?:
+                first.moduleName <=> second.moduleName
         }
     }
 }
