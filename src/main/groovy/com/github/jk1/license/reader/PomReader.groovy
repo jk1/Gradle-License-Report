@@ -25,9 +25,20 @@ class PomReader {
     PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file)
+        boolean pomRepresentsArtifact = true
 
-        if (!pomContent) {
-            pomContent = fetchRemoteArtifactPom(artifact)
+        if (pomContent) {
+            pomRepresentsArtifact = areArtifactAndPomGroupAndArtifactIdEqual(artifact, pomContent)
+
+            if (!pomRepresentsArtifact) {
+                LOGGER.debug("Use remote pom because the found pom seems not to represent artifact. " +
+                    "Artifact: ${artifact.moduleVersion.id.group}:${artifact.moduleVersion.id.name} / " +
+                    "Pom: ${pomContent.groupId.text()}:${pomContent.artifactId.text()})")
+            }
+        }
+
+        if (!pomContent || !pomRepresentsArtifact) {
+            pomContent = fetchRemoteArtifactPom(artifact) ?: pomContent
         }
 
         if (!pomContent) {
@@ -61,10 +72,6 @@ class PomReader {
 
         LOGGER.debug("No idea how to process a pom from: $toSlurp")
         return null
-    }
-
-    private GPathResult slurpPomItself(File toSlurp) {
-        return createParser().parse(toSlurp)
     }
 
     private GPathResult slurpFirstPomFromZip(File archiveToSearch) {
@@ -188,8 +195,22 @@ class PomReader {
         return pomData
     }
 
-    private XmlSlurper createParser() {
+    private static GPathResult slurpPomItself(File toSlurp) {
+        return createParser().parse(toSlurp)
+    }
+
+    private static XmlSlurper createParser() {
         // non-validating, non-namespace aware
         return new XmlSlurper(false, false)
+    }
+
+    private static boolean areArtifactAndPomGroupAndArtifactIdEqual(ResolvedArtifact artifact, GPathResult pom) {
+        if (pom == null || artifact == null) return false
+
+        artifact.moduleVersion.id.group == tryReadGroupId(pom) &&
+            artifact.moduleVersion.id.name == pom.artifactId.text()
+    }
+    private static String tryReadGroupId(GPathResult pom) {
+        pom.groupId?.text() ?: pom.parent?.groupId?.text()
     }
 }

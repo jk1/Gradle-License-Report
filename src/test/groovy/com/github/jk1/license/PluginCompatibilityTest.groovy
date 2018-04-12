@@ -64,7 +64,7 @@ class PluginCompatibilityTest extends Specification {
             "moduleVersion": "3.3.1",
             "moduleUrls": [
                 "ehcache-3.3.1.jar/LICENSE.html",
-                "https://github.com/ehcache/sizeof"
+                "http://ehcache.org"
             ],
             "moduleLicenses": [
                 {

@@ -26,14 +26,15 @@ abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
 
         pluginClasspath = buildPluginClasspathWithTestClasspath()
 
-
         buildFile = testProjectDir.newFile('build.gradle')
     }
 
-    protected def runGradleBuild() {
+    protected def runGradleBuild(List<String> additionalArguments = []) {
+        List<String> args = ['generateLicenseReport', '--stacktrace']
+
         GradleRunner.create()
             .withProjectDir(testProjectDir.root)
-            .withArguments('generateLicenseReport', '--stacktrace')
+            .withArguments(args + additionalArguments)
             .withPluginClasspath(pluginClasspath)
             .forwardOutput()
             .build()

@@ -2,6 +2,7 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Unroll
 
 class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
@@ -15,6 +16,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
             }
             repositories {
                 mavenCentral()
+                maven { url "https://dl.bintray.com/realm/maven" }
             }
 
             import com.github.jk1.license.render.*
@@ -81,6 +83,148 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 ]"""
     }
 
+
+    static final def DEPENDENCY_REALM_ANDROID = "io.realm:realm-android:0.82.2"
+    static final def EXPECTED_ARTIFACT_MISMATCH_REALM_ANDROID = "Artifact: io.realm:realm-android / Pom: com.squareup:javawriter)"
+    static final def EXPECTED_CONTENT_REALM_ANDROID = """[
+    {
+        "inceptionYear": "",
+        "projectUrl": "http://realm.io",
+        "description": "Realm is a mobile database: a replacement for SQLite & ORMs.",
+        "name": "realm-android",
+        "organization": null,
+        "licenses": [
+            {
+                "comments": "",
+                "distribution": "repo",
+                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                "name": "The Apache Software License, Version 2.0"
+            }
+        ]
+    }
+]"""
+
+    static final def DEPENDENCY_EHCACHE = "org.ehcache:ehcache:3.3.1"
+    static final def EXPECTED_ARTIFACT_MISMATCH_EHCACHE = "Artifact: org.ehcache:ehcache / Pom: org.ehcache:sizeof)"
+    static final def EXPECTED_CONTENT_EHCACHE = """[
+    {
+        "inceptionYear": "",
+        "projectUrl": "http://ehcache.org",
+        "description": "End-user ehcache3 jar artifact",
+        "name": "Ehcache",
+        "organization": {
+            "url": "http://terracotta.org",
+            "name": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc."
+        },
+        "licenses": [
+            {
+                "comments": "",
+                "distribution": "repo",
+                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                "name": "The Apache Software License, Version 2.0"
+            }
+        ]
+    },
+    {
+        "inceptionYear": "",
+        "projectUrl": "http://www.slf4j.org",
+        "description": "The slf4j API",
+        "name": "SLF4J API Module",
+        "organization": {
+            "url": "http://www.qos.ch",
+            "name": "QOS.ch"
+        },
+        "licenses": [
+            {
+                "comments": "",
+                "distribution": "repo",
+                "url": "http://www.opensource.org/licenses/mit-license.php",
+                "name": "MIT License"
+            }
+        ]
+    }
+]"""
+
+    @Unroll
+    def "it reads the correct project url for #dependency"(String dependency, String expectedContent,
+                                                           String expectedMismatchMessage) {
+        buildFile << """
+            dependencies {
+                forTesting "$dependency"
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild(["--debug"])
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def pomGPath = resultFileGPath.configurations*.dependencies.flatten().poms.flatten()
+        def pomsString = prettyPrintJson(pomGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        runResult.output.contains("Use remote pom because the found pom seems not to represent artifact. $expectedMismatchMessage")
+        pomsString == expectedContent
+
+        where:
+        dependency                  | expectedContent                   | expectedMismatchMessage
+        DEPENDENCY_REALM_ANDROID    | EXPECTED_CONTENT_REALM_ANDROID    | EXPECTED_ARTIFACT_MISMATCH_REALM_ANDROID
+        DEPENDENCY_EHCACHE          | EXPECTED_CONTENT_EHCACHE          | EXPECTED_ARTIFACT_MISMATCH_EHCACHE
+    }
+
+
+    static final def DEPENDENCY_COMMONS_LANG3 = "org.apache.commons:commons-lang3:3.7"
+    static final def EXPECTED_CONTENT_COMMONS_LANG3 = """[
+    {
+        "inceptionYear": "2001",
+        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
+        "description": "\\n  Apache Commons Lang, a package of Java utility classes for the\\n  classes that are in java.lang's hierarchy, or are considered to be so\\n  standard as to justify existence in java.lang.\\n  ",
+        "name": "Apache Commons Lang",
+        "organization": {
+            "url": "https://www.apache.org/",
+            "name": "The Apache Software Foundation"
+        },
+        "licenses": [
+            {
+                "comments": "",
+                "distribution": "repo",
+                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                "name": "Apache License, Version 2.0"
+            }
+        ]
+    }
+]"""
+
+    @Unroll
+    def "it reads the correct project group from its parent when not available locally for #dependency"(
+        String dependency, String expectedContent) {
+        buildFile << """
+            dependencies {
+                forTesting "$dependency"
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild(["--debug"])
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def pomGPath = resultFileGPath.configurations*.dependencies.flatten().poms.flatten()
+
+        def pomsString = prettyPrintJson(pomGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        !runResult.output.contains("Use remote pom because the found pom seems not to represent artifact.")
+        pomsString == expectedContent
+
+        where:
+        dependency                  | expectedContent
+        DEPENDENCY_COMMONS_LANG3    | EXPECTED_CONTENT_COMMONS_LANG3
+    }
+
+
     def "it reads dependencies correctly"() {
         buildFile << """
             dependencies {
@@ -93,6 +237,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         when:
         def runResult = runGradleBuild()
         def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
         def configurationsGPath = resultFileGPath.configurations
         def configurationsString = prettyPrintJson(configurationsGPath)
 
@@ -118,16 +263,13 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "3.3.1",
                 "poms": [
                     {
-                        "developers": [
-                            
-                        ],
                         "inceptionYear": "",
-                        "projectUrl": "https://github.com/ehcache/sizeof",
-                        "description": "SizeOf engine, extracted from Ehcache",
-                        "name": "Ehcache SizeOf Engine",
+                        "projectUrl": "http://ehcache.org",
+                        "description": "End-user ehcache3 jar artifact",
+                        "name": "Ehcache",
                         "organization": {
                             "url": "http://terracotta.org",
-                            "name": "Terracotta"
+                            "name": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc."
                         },
                         "licenses": [
                             {
@@ -178,9 +320,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "1.0",
                 "poms": [
                     {
-                        "developers": [
-                            
-                        ],
                         "inceptionYear": "",
                         "projectUrl": "http://aopalliance.sourceforge.net",
                         "description": "AOP Alliance",
@@ -218,9 +357,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "1.7.7",
                 "poms": [
                     {
-                        "developers": [
-                            
-                        ],
                         "inceptionYear": "",
                         "projectUrl": "http://www.slf4j.org",
                         "description": "The slf4j API",
@@ -261,13 +397,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "3.2.3.RELEASE",
                 "poms": [
                     {
-                        "developers": [
-                            {
-                                "url": "",
-                                "email": "jhoeller@vmware.com",
-                                "name": "Juergen Hoeller"
-                            }
-                        ],
                         "inceptionYear": "",
                         "projectUrl": "https://github.com/SpringSource/spring-framework",
                         "description": "Spring Core",
@@ -325,93 +454,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "3.7",
                 "poms": [
                     {
-                        "developers": [
-                            {
-                                "url": "",
-                                "email": "dlr@finemaltcoding.com",
-                                "name": "Daniel Rall"
-                            },
-                            {
-                                "url": "",
-                                "email": "scolebourne@joda.org",
-                                "name": "Stephen Colebourne"
-                            },
-                            {
-                                "url": "",
-                                "email": "bayard@apache.org",
-                                "name": "Henri Yandell"
-                            },
-                            {
-                                "url": "",
-                                "email": "stevencaswell@apache.org",
-                                "name": "Steven Caswell"
-                            },
-                            {
-                                "url": "",
-                                "email": "rdonkin@apache.org",
-                                "name": "Robert Burrell Donkin"
-                            },
-                            {
-                                "url": "",
-                                "email": "ggregory@apache.org",
-                                "name": "Gary D. Gregory"
-                            },
-                            {
-                                "url": "",
-                                "email": "",
-                                "name": "Fredrik Westermarck"
-                            },
-                            {
-                                "url": "",
-                                "email": "jcarman@apache.org",
-                                "name": "James Carman"
-                            },
-                            {
-                                "url": "",
-                                "email": "",
-                                "name": "Niall Pemberton"
-                            },
-                            {
-                                "url": "",
-                                "email": "",
-                                "name": "Matt Benson"
-                            },
-                            {
-                                "url": "",
-                                "email": "joerg.schaible@gmx.de",
-                                "name": "Joerg Schaible"
-                            },
-                            {
-                                "url": "",
-                                "email": "oheger@apache.org",
-                                "name": "Oliver Heger"
-                            },
-                            {
-                                "url": "",
-                                "email": "pbenedict@apache.org",
-                                "name": "Paul Benedict"
-                            },
-                            {
-                                "url": "",
-                                "email": "britter@apache.org",
-                                "name": "Benedikt Ritter"
-                            },
-                            {
-                                "url": "",
-                                "email": "djones@apache.org",
-                                "name": "Duncan Jones"
-                            },
-                            {
-                                "url": "",
-                                "email": "lguibert@apache.org",
-                                "name": "Loic Guibert"
-                            },
-                            {
-                                "url": "",
-                                "email": "chtompki@apache.org",
-                                "name": "Rob Tompkins"
-                            }
-                        ],
                         "inceptionYear": "2001",
                         "projectUrl": "http://commons.apache.org/proper/commons-lang/",
                         "description": "\\n  Apache Commons Lang, a package of Java utility classes for the\\n  classes that are in java.lang's hierarchy, or are considered to be so\\n  standard as to justify existence in java.lang.\\n  ",
@@ -469,13 +511,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "3.2.3.RELEASE",
                 "poms": [
                     {
-                        "developers": [
-                            {
-                                "url": "",
-                                "email": "jhoeller@vmware.com",
-                                "name": "Juergen Hoeller"
-                            }
-                        ],
                         "inceptionYear": "",
                         "projectUrl": "https://github.com/SpringSource/spring-framework",
                         "description": "Spring Beans",
@@ -533,68 +568,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "1.1.1",
                 "poms": [
                     {
-                        "developers": [
-                            {
-                                "url": "",
-                                "email": "morgand at apache dot org",
-                                "name": "Morgan Delagrange"
-                            },
-                            {
-                                "url": "",
-                                "email": "rwaldhoff at apache org",
-                                "name": "Rodney Waldhoff"
-                            },
-                            {
-                                "url": "",
-                                "email": "craigmcc at apache org",
-                                "name": "Craig McClanahan"
-                            },
-                            {
-                                "url": "",
-                                "email": "sanders at apache dot org",
-                                "name": "Scott Sanders"
-                            },
-                            {
-                                "url": "",
-                                "email": "rdonkin at apache dot org",
-                                "name": "Robert Burrell Donkin"
-                            },
-                            {
-                                "url": "",
-                                "email": "donaldp at apache dot org",
-                                "name": "Peter Donald"
-                            },
-                            {
-                                "url": "",
-                                "email": "costin at apache dot org",
-                                "name": "Costin Manolache"
-                            },
-                            {
-                                "url": "",
-                                "email": "rsitze at apache dot org",
-                                "name": "Richard Sitze"
-                            },
-                            {
-                                "url": "",
-                                "email": "baliuka@apache.org",
-                                "name": "Juozas Baliuka"
-                            },
-                            {
-                                "url": "",
-                                "email": "skitching@apache.org",
-                                "name": "Simon Kitching"
-                            },
-                            {
-                                "url": "",
-                                "email": "dennisl@apache.org",
-                                "name": "Dennis Lundberg"
-                            },
-                            {
-                                "url": "",
-                                "email": "",
-                                "name": "Brian Stansberry"
-                            }
-                        ],
                         "inceptionYear": "2001",
                         "projectUrl": "http://commons.apache.org/logging",
                         "description": "Commons Logging is a thin adapter allowing configurable bridging to other,\\n    well known logging systems.",
@@ -652,13 +625,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "3.2.3.RELEASE",
                 "poms": [
                     {
-                        "developers": [
-                            {
-                                "url": "",
-                                "email": "jhoeller@vmware.com",
-                                "name": "Juergen Hoeller"
-                            }
-                        ],
                         "inceptionYear": "",
                         "projectUrl": "https://github.com/SpringSource/spring-framework",
                         "description": "Spring Transaction",
@@ -704,5 +670,10 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "name": "forTesting"
     }
 ]"""
+    }
+
+
+    private static void removeDevelopers(Map rawFile) {
+        rawFile.configurations*.dependencies.flatten().poms.flatten().each { it.remove("developers") }
     }
 }
