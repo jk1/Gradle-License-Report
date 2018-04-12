@@ -27,7 +27,7 @@ class PomReader {
         GPathResult pomContent = slurpPom(artifact.file)
 
         if (!pomContent) {
-            pomContent = fetchRemoteArtifactPom(artifact, resolver)
+            pomContent = fetchRemoteArtifactPom(artifact)
         }
 
         if (!pomContent) {
@@ -38,22 +38,9 @@ class PomReader {
         }
     }
 
-    private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact, CachingArtifactResolver resolver) {
-        Map pomId = [
-            "group"  : artifact.moduleVersion.id.group,
-            "name"   : artifact.moduleVersion.id.name,
-            "version": artifact.moduleVersion.id.version,
-            "ext"    : "pom"
-        ]
-
-        Collection<ResolvedArtifact> artifacts
-
-        try {
-            artifacts = resolver.resolveArtifacts(pomId)
-        } catch (Exception e) {
-            LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
-            artifacts = Collections.emptyList()
-        }
+    private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact) {
+        Collection<ResolvedArtifact> artifacts = fetchRemoteArtifactPoms(artifact.moduleVersion.id.group,
+            artifact.moduleVersion.id.name, artifact.moduleVersion.id.version)
 
         return artifacts.collect {
             try {
@@ -64,6 +51,23 @@ class PomReader {
             }
         }.find {
             it != null
+        }
+    }
+
+    private Collection<ResolvedArtifact> fetchRemoteArtifactPoms(String group, String name, String version) {
+        Map<String, String> pomId = [
+            "group"  : group,
+            "name"   : name,
+            "version": version,
+            "ext"    : "pom"
+        ]
+
+        LOGGER.debug("Fetch: $pomId")
+        try {
+            resolver.resolveArtifacts(pomId)
+        } catch (Exception e) {
+            LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
+            Collections.emptyList()
         }
     }
 
@@ -106,7 +110,6 @@ class PomReader {
         return createParser().parse(toSlurp)
     }
 
-
     private PomData readPomFile(GPathResult pomContent) {
         return readPomFile(pomContent, new PomData())
     }
@@ -121,20 +124,13 @@ class PomReader {
         if (!pomContent.parent.children().isEmpty()) {
             LOGGER.debug("Processing parent POM: ${pomContent.parent.children()*.name()}")
             GPathResult parentContent = pomContent.parent
-            Map<String, String> parent = [
-                    "group"  : parentContent.groupId.text(),
-                    "name"   : parentContent.artifactId.text(),
-                    "version": parentContent.version.text(),
-                    "ext"    : "pom"
-            ]
-            LOGGER.debug("Parent to fetch: $parent")
-            Collection<ResolvedArtifact> parentArtifacts
-            try {
-                parentArtifacts = resolver.resolveArtifacts(parent)
-            } catch (Exception e) {
-                LOGGER.debug("Failed to retrieve parent artifact " + parent, e)
-                parentArtifacts = Collections.emptyList()
-            }
+
+            String groupId = parentContent.groupId.text()
+            String artifactId = parentContent.artifactId.text()
+            String version = parentContent.version.text()
+
+            Collection<ResolvedArtifact> parentArtifacts = fetchRemoteArtifactPoms(groupId, artifactId, version)
+
             if (parentArtifacts) {
                 (parentArtifacts*.file as Set).each { File file ->
                     LOGGER.debug("Processing parent POM file: $file")
