@@ -25,31 +25,9 @@ class PomReader {
     PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = slurpPom(artifact.file)
+
         if (!pomContent) {
-            Map pomId = [
-                    "group"  : artifact.moduleVersion.id.group,
-                    "name"   : artifact.moduleVersion.id.name,
-                    "version": artifact.moduleVersion.id.version,
-                    "ext"    : "pom"
-            ]
-
-            Collection<ResolvedArtifact> artifacts
-
-            try {
-                artifacts = resolver.resolveArtifacts(pomId)
-            } catch (Exception e) {
-                LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
-                artifacts = Collections.emptyList()
-            }
-
-            pomContent = artifacts?.inject(pomContent) { GPathResult memo, ResolvedArtifact resolved ->
-                try {
-                    memo = memo ?: slurpPom(resolved.file)
-                } catch (Exception e) {
-                    LOGGER.warn("Error slurping pom from $resolved.file", e)
-                }
-                return memo
-            }
+            pomContent = fetchRemoteArtifactPom(artifact, resolver)
         }
 
         if (!pomContent) {
@@ -57,6 +35,35 @@ class PomReader {
             return null
         } else {
             return readPomFile(pomContent)
+        }
+    }
+
+    private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact, CachingArtifactResolver resolver) {
+        Map pomId = [
+            "group"  : artifact.moduleVersion.id.group,
+            "name"   : artifact.moduleVersion.id.name,
+            "version": artifact.moduleVersion.id.version,
+            "ext"    : "pom"
+        ]
+
+        Collection<ResolvedArtifact> artifacts
+
+        try {
+            artifacts = resolver.resolveArtifacts(pomId)
+        } catch (Exception e) {
+            LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
+            artifacts = Collections.emptyList()
+        }
+
+        return artifacts.collect {
+            try {
+                slurpPom(it.file)
+            } catch (Exception e) {
+                LOGGER.warn("Error slurping pom from $it.file", e)
+                null
+            }
+        }.find {
+            it != null
         }
     }
 
