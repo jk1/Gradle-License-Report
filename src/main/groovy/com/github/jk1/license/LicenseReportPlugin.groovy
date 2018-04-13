@@ -17,8 +17,8 @@ class LicenseReportPlugin implements Plugin<Project> {
     void apply(Project project) {
         assertCompatibleGradleVersion()
 
-        project.extensions.add('licenseReport', new LicenseReportExtension(project))
-        project.task(['type': ReportTask.class], 'generateLicenseReport')
+        project.extensions.create('licenseReport', LicenseReportExtension, project)
+        project.tasks.create('generateLicenseReport', ReportTask)
     }
 
     private void assertCompatibleGradleVersion() {
@@ -74,7 +74,7 @@ class LicenseReportPlugin implements Plugin<Project> {
         }
 
         // configuration snapshot for the up-to-date check
-        private String getSnapshot() {
+        String getSnapshot() {
             StringBuilder builder = new StringBuilder()
 
             renderers.each { builder.append(it.class.name) }
