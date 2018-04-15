@@ -1,6 +1,6 @@
 package com.github.jk1.license.render
 
-import com.github.jk1.license.LicenseReportPlugin
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 
@@ -47,7 +47,7 @@ class CsvReportRenderer extends SingleInfoReportRenderer {
 
     @Override
     void render(ProjectData data) {
-        LicenseReportPlugin.LicenseReportExtension config = data.project.licenseReport
+        LicenseReportExtension config = data.project.licenseReport
         File output = new File(config.outputDir, filename)
         output.write('')
 

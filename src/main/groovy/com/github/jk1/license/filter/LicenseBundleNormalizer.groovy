@@ -2,7 +2,7 @@ package com.github.jk1.license.filter
 
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseFileDetails
-import com.github.jk1.license.LicenseReportPlugin
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
@@ -11,7 +11,7 @@ import groovy.json.JsonSlurper
 
 class LicenseBundleNormalizer implements DependencyFilter {
 
-    LicenseReportPlugin.LicenseReportExtension config
+    LicenseReportExtension config
     LicenseBundleNormalizerConfig normalizerConfig
     Map<String, NormalizerLicenseBundle> bundleMap
 

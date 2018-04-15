@@ -1,7 +1,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ConfigurationData
-import com.github.jk1.license.LicenseReportPlugin
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ReportTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -14,7 +14,7 @@ class ConfigurationReader {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
     private ModuleReader moduleReader = new ModuleReader()
-    private LicenseReportPlugin.LicenseReportExtension config
+    private LicenseReportExtension config
 
     ConfigurationData read(Project project, Configuration configuration) {
         config = project.licenseReport
