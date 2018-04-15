@@ -156,25 +156,73 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             licenseReport {
                 outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
                 filters = new LicenseBundleNormalizer()
-                renderer = new JsonReportRenderer()
+                renderer = new JsonReportRenderer(onlyOneLicensePerModule: false)
                 configurations = ['forTesting']
             }
             dependencies {
                 forTesting "org.jetbrains:annotations:13.0"     // license-url: "http://www.apache.org/licenses/LICENSE-2.0.txt"
                 forTesting "io.netty:netty-common:4.1.17.Final" // license-url: "http://www.apache.org/licenses/LICENSE-2.0"
+                forTesting "org.apache.commons:commons-lang3:3.7"
             }
         """
 
         when:
         def runResult = runGradleBuild()
 
-        def result = jsonSlurper.parse(licenseResultJsonFile)
-
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        result.dependencies*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
-        result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"].toSet()
+        licenseResultJsonFile.text == """{
+    "dependencies": [
+        {
+            "moduleName": "io.netty:netty-common",
+            "moduleVersion": "4.1.17.Final",
+            "moduleUrls": [
+                "http://netty.io/"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": null
+                },
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        },
+        {
+            "moduleName": "org.apache.commons:commons-lang3",
+            "moduleVersion": "3.7",
+            "moduleUrls": [
+                "http://commons.apache.org/proper/commons-lang/"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": null
+                },
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        },
+        {
+            "moduleName": "org.jetbrains:annotations",
+            "moduleVersion": "13.0",
+            "moduleUrls": [
+                "http://www.jetbrains.org"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        }
+    ]
+}"""
     }
 
     def "licenseFileDetails are extended with the license information"() {
@@ -266,17 +314,16 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleName": "joda-time:joda-time",
             "moduleVersion": "2.9.9",
             "moduleUrls": [
-                "http://www.joda.org/joda-time/",
                 "http://www.joda.org/joda-time/"
             ],
             "moduleLicenses": [
                 {
-                    "moduleLicense": "Apache 2.0",
-                    "moduleLicenseUrl": null
-                },
-                {
                     "moduleLicense": "Apache 2",
                     "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                },
+                {
+                    "moduleLicense": "Apache 2.0",
+                    "moduleLicenseUrl": null
                 },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
@@ -288,7 +335,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleName": "org.apache.commons:commons-lang3",
             "moduleVersion": "3.7",
             "moduleUrls": [
-                "http://commons.apache.org/proper/commons-lang/",
                 "http://commons.apache.org/proper/commons-lang/"
             ],
             "moduleLicenses": [
@@ -298,11 +344,11 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
                 }
             ]
         }

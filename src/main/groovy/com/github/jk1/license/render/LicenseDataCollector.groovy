@@ -57,12 +57,14 @@ class LicenseDataCollector {
         }
     }
 
-    private static def lastOrNull(List l) {
+    private static def lastOrNull(Collection l) {
         if (l) l.last() else null
     }
 
     protected static class MultiLicenseInfo {
-        List<String> moduleUrls = new ArrayList<>()
-        List<License> licenses = new ArrayList<>()
+        Set<String> moduleUrls = new TreeSet<>()
+        Set<License> licenses = new TreeSet<>({
+            o1, o2 -> o1.name <=> o2.name ?: o1.url <=> o2.url
+        })
     }
 }

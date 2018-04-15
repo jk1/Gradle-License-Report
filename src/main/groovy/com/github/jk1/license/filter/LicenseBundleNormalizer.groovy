@@ -11,6 +11,7 @@ import groovy.json.JsonSlurper
 
 class LicenseBundleNormalizer implements DependencyFilter {
 
+    ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
     LicenseReportExtension config
     LicenseBundleNormalizerConfig normalizerConfig
     Map<String, NormalizerLicenseBundle> bundleMap
@@ -37,6 +38,8 @@ class LicenseBundleNormalizer implements DependencyFilter {
         data.configurations*.dependencies.flatten().forEach { normalizePoms(it) }
         data.configurations*.dependencies.flatten().forEach { normalizeManifest(it) }
         data.configurations*.dependencies.flatten().forEach { normalizeLicenseFileDetails(it) }
+
+        data = duplicateFilter.filter(data)
 
         return data
     }
@@ -126,4 +129,3 @@ class LicenseBundleNormalizer implements DependencyFilter {
         String bundleName
     }
 }
-

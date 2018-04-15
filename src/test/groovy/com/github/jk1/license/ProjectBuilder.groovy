@@ -13,6 +13,7 @@ class ProjectBuilder extends BuilderSupport {
     protected Object createNode(Object name) {
         switch(name) {
             case "project": return createProject()
+            case "licenseFiles": return addLicenseFiles()
             default: throw new IllegalArgumentException("Invalid keyword $name")
         }
     }
@@ -35,7 +36,7 @@ class ProjectBuilder extends BuilderSupport {
         switch(name) {
             case "license": return addLicense(null, map)
             case "importedModule": return addImportedModule(map)
-            case "licenseFile": return addLicenseFiles(map)
+            case "licenseFileDetails": return addLicenseFileDetails(map)
             default: throw new IllegalArgumentException("Invalid keyword $name")
         }
     }
@@ -137,16 +138,23 @@ class ProjectBuilder extends BuilderSupport {
         manifest
     }
 
-    private LicenseFileData addLicenseFiles(Map map) {
+    private LicenseFileData addLicenseFiles() {
         ModuleData module = (ModuleData)current
 
-        def licenseFiles = new LicenseFileData(
-            files: [map.file],
-            fileDetails: [new LicenseFileDetails(map)]
-        )
+        def licenseFiles = new LicenseFileData()
 
         module.licenseFiles << licenseFiles
         licenseFiles
+    }
+
+    private LicenseFileDetails addLicenseFileDetails(Map map) {
+        LicenseFileData licenseFileData = (LicenseFileData)current
+
+        def details = new LicenseFileDetails(map)
+
+        licenseFileData.files << details.file
+        licenseFileData.fileDetails << details
+        details
     }
 
     private def addLicense(Object license, Map map) {
