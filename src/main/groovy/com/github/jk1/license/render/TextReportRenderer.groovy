@@ -1,7 +1,7 @@
 package com.github.jk1.license.render
 
 import com.github.jk1.license.License
-import com.github.jk1.license.LicenseReportPlugin
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
@@ -11,7 +11,7 @@ import org.gradle.api.Project
 class TextReportRenderer implements ReportRenderer{
 
     private Project project
-    private LicenseReportPlugin.LicenseReportExtension config
+    private LicenseReportExtension config
     private File output
     private int counter
     private String fileName

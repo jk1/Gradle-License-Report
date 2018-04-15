@@ -1,6 +1,5 @@
 package com.github.jk1.license
 
-import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
 import com.github.jk1.license.reader.ProjectReader
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger

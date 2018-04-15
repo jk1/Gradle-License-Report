@@ -2,7 +2,7 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.LicenseFileData
 import com.github.jk1.license.LicenseFileDetails
-import com.github.jk1.license.LicenseReportPlugin.LicenseReportExtension
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ReportTask
 import com.github.jk1.license.util.Files
 import org.gradle.api.Project

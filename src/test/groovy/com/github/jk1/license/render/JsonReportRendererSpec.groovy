@@ -1,6 +1,6 @@
 package com.github.jk1.license.render
 
-import com.github.jk1.license.LicenseReportPlugin
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
 import org.junit.Rule
@@ -23,7 +23,7 @@ class JsonReportRendererSpec extends Specification {
         outputJson = new File(testProjectDir.root, "index.json")
         outputJson.delete()
 
-        LicenseReportPlugin.LicenseReportExtension extension = GRADLE_PROJECT().licenseReport
+        LicenseReportExtension extension = GRADLE_PROJECT().licenseReport
         extension.outputDir = testProjectDir.root
 
         // copy apache2 license file

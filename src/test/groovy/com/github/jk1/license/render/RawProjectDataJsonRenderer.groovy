@@ -1,8 +1,7 @@
 package com.github.jk1.license.render
 
-import com.github.jk1.license.LicenseReportPlugin
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectData
-import com.github.jk1.license.render.ReportRenderer
 import groovy.json.JsonBuilder
 
 class RawProjectDataJsonRenderer implements ReportRenderer {
@@ -10,7 +9,7 @@ class RawProjectDataJsonRenderer implements ReportRenderer {
 
     @Override
     void render(ProjectData data) {
-        LicenseReportPlugin.LicenseReportExtension config = data.project?.licenseReport
+        LicenseReportExtension config = data.project?.licenseReport
         File outputFile = new File(config.outputDir, RAW_PROJECT_JSON_NAME)
         outputFile.createNewFile()
 
