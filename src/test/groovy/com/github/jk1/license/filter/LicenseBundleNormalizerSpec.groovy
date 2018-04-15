@@ -34,6 +34,17 @@ class LicenseBundleNormalizerSpec extends Specification {
         new File(pluginOutputDir, "apache2-license.txt") << apache2LicenseFile.text
     }
 
+    def "normalizer constructor can be called with named parameters"() {
+        when:
+        new LicenseBundleNormalizer()
+        new LicenseBundleNormalizer(bundlePath: null)
+        new LicenseBundleNormalizer(createDefaultTransformationRules: false)
+        new LicenseBundleNormalizer(bundlePath: null, createDefaultTransformationRules: false)
+
+        then:
+        noExceptionThrown()
+    }
+
     def "normalize license of manifest (when stored as name)"() {
         normalizerFile << """,
             "transformationRules" : [
@@ -377,7 +388,102 @@ class LicenseBundleNormalizerSpec extends Specification {
         json(result) == json(expected)
     }
 
-    private LicenseBundleNormalizer newNormalizer() {
-        new LicenseBundleNormalizer(normalizerFile.absolutePath)
+    def "a transformation rule is created for each licence-bundle-name as exact match"() {
+        normalizerFile << """}"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(APACHE2_LICENSE(), url: "different url") // should be normalized because name matches the bundle-name
+                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")   // should stay, because name is different
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(APACHE2_LICENSE())
+                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer(true).filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "a transformation rule is created for each licence-bundle-url as exact match"() {
+        normalizerFile << """}"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(APACHE2_LICENSE(), name: "different name") // should be normalized because url matches the bundle-url
+                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")   // should stay, because url is different
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(APACHE2_LICENSE())
+                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer(true).filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "not creating default transformation rules when turned off"() {
+        normalizerFile << """}"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(APACHE2_LICENSE(), url: "different url")
+                        license(APACHE2_LICENSE(), name: "different name")
+                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(APACHE2_LICENSE(), url: "different url")
+                        license(APACHE2_LICENSE(), name: "different name")
+                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer(false).filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    private LicenseBundleNormalizer newNormalizer(boolean createDefaultTransformationRules = false) {
+        new LicenseBundleNormalizer(bundlePath: normalizerFile.absolutePath, createDefaultTransformationRules: createDefaultTransformationRules)
     }
 }

@@ -257,7 +257,7 @@ The normalizer can be enabled via a filter.
 import com.github.jk1.license.filter.*
 ...
 licenseReport {
-    filters = new LicenseBundleNormalizer("$projectDir/config/license-normalizer-bundle.json")
+    filters = new LicenseBundleNormalizer(bundlePath: "$projectDir/config/license-normalizer-bundle.json")
 }
 ```
 
