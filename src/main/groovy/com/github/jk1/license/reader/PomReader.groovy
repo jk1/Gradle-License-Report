@@ -24,32 +24,21 @@ class PomReader {
 
     PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)
-        GPathResult pomContent = slurpPom(artifact.file)
-        if (!pomContent) {
-            Map pomId = [
-                    "group"  : artifact.moduleVersion.id.group,
-                    "name"   : artifact.moduleVersion.id.name,
-                    "version": artifact.moduleVersion.id.version,
-                    "ext"    : "pom"
-            ]
+        GPathResult pomContent = findAndSlurpPom(artifact.file)
+        boolean pomRepresentsArtifact = true
 
-            Collection<ResolvedArtifact> artifacts
+        if (pomContent) {
+            pomRepresentsArtifact = areArtifactAndPomGroupAndArtifactIdEqual(artifact, pomContent)
 
-            try {
-                artifacts = resolver.resolveArtifacts(pomId)
-            } catch (Exception e) {
-                LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
-                artifacts = Collections.emptyList()
+            if (!pomRepresentsArtifact) {
+                LOGGER.debug("Use remote pom because the found pom seems not to represent artifact. " +
+                    "Artifact: ${artifact.moduleVersion.id.group}:${artifact.moduleVersion.id.name} / " +
+                    "Pom: ${pomContent.groupId.text()}:${pomContent.artifactId.text()})")
             }
+        }
 
-            pomContent = artifacts?.inject(pomContent) { GPathResult memo, ResolvedArtifact resolved ->
-                try {
-                    memo = memo ?: slurpPom(resolved.file)
-                } catch (Exception e) {
-                    LOGGER.warn("Error slurping pom from $resolved.file", e)
-                }
-                return memo
-            }
+        if (!pomContent || !pomRepresentsArtifact) {
+            pomContent = fetchRemoteArtifactPom(artifact) ?: pomContent
         }
 
         if (!pomContent) {
@@ -60,7 +49,7 @@ class PomReader {
         }
     }
 
-    private GPathResult slurpPom(File toSlurp) {
+    private GPathResult findAndSlurpPom(File toSlurp) {
         if (toSlurp.name == "pom.xml") {
             LOGGER.debug("Slurping pom from pom.xml file: $toSlurp")
             return slurpPomItself(toSlurp)
@@ -78,14 +67,14 @@ class PomReader {
             case "zip":
             case "jar":
                 LOGGER.debug("Processing pom from archive: $toSlurp")
-                return slurpPomFromZip(toSlurp)
+                return slurpFirstPomFromZip(toSlurp)
         }
 
         LOGGER.debug("No idea how to process a pom from: $toSlurp")
         return null
     }
 
-    private GPathResult slurpPomFromZip(File archiveToSearch) {
+    private GPathResult slurpFirstPomFromZip(File archiveToSearch) {
         ZipFile archive = new ZipFile(archiveToSearch, ZipFile.OPEN_READ)
         ZipEntry pomEntry = archive.entries().toList().find { ZipEntry entry ->
             entry.name.endsWith("pom.xml") || entry.name.endsWith(".pom")
@@ -95,84 +84,133 @@ class PomReader {
         return createParser().parse(archive.getInputStream(pomEntry))
     }
 
-    private GPathResult slurpPomItself(File toSlurp) {
-        return createParser().parse(toSlurp)
+    private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact) {
+        Collection<ResolvedArtifact> artifacts = fetchRemoteArtifactPoms(artifact.moduleVersion.id.group,
+            artifact.moduleVersion.id.name, artifact.moduleVersion.id.version)
+
+        return artifacts.collect {
+            try {
+                findAndSlurpPom(it.file)
+            } catch (Exception e) {
+                LOGGER.warn("Error slurping pom from $it.file", e)
+                null
+            }
+        }.find {
+            it != null
+        }
     }
 
+    private Collection<ResolvedArtifact> fetchRemoteArtifactPoms(String group, String name, String version) {
+        Map<String, String> pomId = [
+            "group"  : group,
+            "name"   : name,
+            "version": version,
+            "ext"    : "pom"
+        ]
+
+        LOGGER.debug("Fetch: $pomId")
+        try {
+            resolver.resolveArtifacts(pomId)
+        } catch (Exception e) {
+            LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
+            Collections.emptyList()
+        }
+    }
 
     private PomData readPomFile(GPathResult pomContent) {
-        return readPomFile(pomContent, new PomData())
+        List<GPathResult> children = collectChildGPaths(pomContent)
+        return createPomData(pomContent, children)
     }
 
-    private PomData readPomFile(GPathResult pomContent, PomData pomData) {
-        if (!pomContent) {
-            LOGGER.info("No content found in pom")
-            return null
-        }
+    private List<GPathResult> collectChildGPaths(GPathResult rootPomGPath) {
+        List<GPathResult> results = []
 
-        LOGGER.debug("POM content children: ${pomContent.children()*.name() as Set}")
-        if (!pomContent.parent.children().isEmpty()) {
-            LOGGER.debug("Processing parent POM: ${pomContent.parent.children()*.name()}")
-            GPathResult parentContent = pomContent.parent
-            Map<String, String> parent = [
-                    "group"  : parentContent.groupId.text(),
-                    "name"   : parentContent.artifactId.text(),
-                    "version": parentContent.version.text(),
-                    "ext"    : "pom"
-            ]
-            LOGGER.debug("Parent to fetch: $parent")
-            Collection<ResolvedArtifact> parentArtifacts
-            try {
-                parentArtifacts = resolver.resolveArtifacts(parent)
-            } catch (Exception e) {
-                LOGGER.debug("Failed to retrieve parent artifact " + parent, e)
-                parentArtifacts = Collections.emptyList()
-            }
-            if (parentArtifacts) {
-                (parentArtifacts*.file as Set).each { File file ->
-                    LOGGER.debug("Processing parent POM file: $file")
-                    pomData = readPomFile(createParser().parse(file), pomData)
+        LOGGER.debug("POM content children: ${rootPomGPath.children()*.name() as Set}")
+        if (rootPomGPath.parent.children().isEmpty()) return []
+
+        LOGGER.debug("Processing parent POM: ${rootPomGPath.parent.children()*.name()}")
+        GPathResult parentContent = rootPomGPath.parent
+
+        String groupId = parentContent.groupId.text()
+        String artifactId = parentContent.artifactId.text()
+        String version = parentContent.version.text()
+
+        Collection<ResolvedArtifact> parentArtifacts = fetchRemoteArtifactPoms(groupId, artifactId, version)
+
+        if (parentArtifacts) {
+            (parentArtifacts*.file as Set).each { File file ->
+                LOGGER.debug("Processing parent POM file: $file")
+                GPathResult childPomGPath = slurpPomItself(file)
+
+                if (childPomGPath) {
+                    results += childPomGPath
+                    results += collectChildGPaths(childPomGPath)
                 }
             }
         }
+        return results
+    }
 
-        pomData.name = pomContent.name?.text()
-        pomData.description = pomContent.description?.text()
-        pomData.projectUrl = pomContent.url?.text()
-        pomData.inceptionYear = pomContent.inceptionYear?.text()
+    private PomData createPomData(GPathResult rootPom, List<GPathResult> childPoms) {
+        List<GPathResult> allPoms = [rootPom] + childPoms
 
-        def organizationName = pomContent.organization?.name?.text()
-        def organizationUrl = pomContent.organization?.url?.text()
-        if (organizationName || organizationUrl) {
-            pomData.organization = new PomOrganization(name: organizationName, url: organizationUrl)
-        }
+        PomData pomData = new PomData()
 
-        pomData.developers = pomContent.developers?.developer?.collect { GPathResult developer ->
+        pomData.name = rootPom.name?.text()
+        pomData.description = rootPom.description?.text()
+        pomData.projectUrl = rootPom.url?.text()
+        pomData.inceptionYear = rootPom.inceptionYear?.text()
+
+        pomData.developers = rootPom.developers?.developer?.collect { GPathResult developer ->
             new PomDeveloper(
-                    name: developer.name?.text(),
-                    email: developer.email?.text(),
-                    url: developer.url?.text()
+                name: developer.name?.text(),
+                email: developer.email?.text(),
+                url: developer.url?.text()
             )
         }
 
-        LOGGER.debug("POM license : ${pomContent.licenses.children()*.name() as Set}")
+        allPoms.reverse().each { pom ->
+            def organizationName = pom.organization?.name?.text()
+            def organizationUrl = pom.organization?.url?.text()
+            if (organizationName || organizationUrl) {
+                pomData.organization = new PomOrganization(name: organizationName, url: organizationUrl)
+            }
+        }
 
-        pomContent.licenses?.license?.each { GPathResult license ->
-            LOGGER.debug("Processing license: ${license.name.text()}")
-            pomData.licenses << new License(
+        LOGGER.debug("POM license : ${rootPom.licenses.children()*.name() as Set}")
+
+        allPoms.each { pom ->
+            pom.licenses?.license?.each { GPathResult license ->
+                LOGGER.debug("Processing license: ${license.name.text()}")
+                pomData.licenses << new License(
                     name: license.name?.text(),
                     url: license.url?.text(),
                     distribution: license.distribution?.text(),
                     comments: license.comments?.text()
-            )
+                )
+            }
         }
 
         LOGGER.info("Returning pom data: ${pomData.dump()}")
         return pomData
     }
 
-    private XmlSlurper createParser() {
+    private static GPathResult slurpPomItself(File toSlurp) {
+        return createParser().parse(toSlurp)
+    }
+
+    private static XmlSlurper createParser() {
         // non-validating, non-namespace aware
         return new XmlSlurper(false, false)
+    }
+
+    private static boolean areArtifactAndPomGroupAndArtifactIdEqual(ResolvedArtifact artifact, GPathResult pom) {
+        if (pom == null || artifact == null) return false
+
+        artifact.moduleVersion.id.group == tryReadGroupId(pom) &&
+            artifact.moduleVersion.id.name == pom.artifactId.text()
+    }
+    private static String tryReadGroupId(GPathResult pom) {
+        pom.groupId?.text() ?: pom.parent?.groupId?.text()
     }
 }
