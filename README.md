@@ -16,14 +16,14 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '0.7.1'
+  id 'com.github.jk1.dependency-license-report' version '0.8'
 }
 ```
 
 or via a `buildscript` block
 
 
-```
+```groovy
 buildscript {
     repositories {
         maven {
@@ -32,7 +32,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.7.1'
+        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.8'
     }
 }
 apply plugin: 'com.github.jk1.dependency-license-report'
@@ -76,6 +76,27 @@ licenseReport {
     // configurations = ALL
 }
 ```
+
+## Kotlin script support
+
+Plugin is compatible with build scripts written in kotlin. Configuration syntax is slighlty different from groovy though.
+Consider the following sample:
+
+```kotlin
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.filter.LicenseBundleNormalizer
+
+plugins {
+    id("com.github.jk1.dependency-license-report") version "0.8"
+}
+
+licenseReport {
+    renderers = arrayOf(InventoryHtmlReportRenderer("report.html","Backend"))
+    filters = arrayOf(LicenseBundleNormalizer())
+}
+
+```
+
 
 ## Renderers
 
@@ -160,7 +181,7 @@ licenseReport {
 
 The expected input format for `XmlReportImporter` is as follows:
 
-```
+```xml
 <topic>
   <chunk>
     <chapter title="Some of my favorite libraries">
@@ -280,7 +301,7 @@ repositories {
 }
 
 dependencies {
-    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.7.1'
+    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.8'
 }
 
 ```

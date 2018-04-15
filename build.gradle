@@ -1,4 +1,4 @@
-plugins{
+plugins {
     id 'idea'
     id 'groovy'
     id 'maven-publish'
@@ -8,13 +8,12 @@ plugins{
 }
 
 group = "com.github.jk1"
-version = "0.7.1"
+version = "0.8"
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -28,28 +27,12 @@ dependencies {
     }
 }
 
-task('sourcesJar', type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    sourceSets.each { SourceSet ss ->
-        from ss.allSource
-    }
-}
-
-task('javadocJar', type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
 idea {
     module {
         downloadSources = true
         outputDir file("$buildDir/idea/main")
         testOutputDir file("$buildDir/idea/test")
     }
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
 }
 
 test {
@@ -64,9 +47,9 @@ test {
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId 'com.github.jk1.dependency-license-report'
+            artifactId 'com.github.jk1.dependency-license-report.gradle.plugin'
             from components.java
-            artifact sourcesJar { classifier "sources" }
-            artifact javadocJar { classifier "javadoc" }
         }
     }
 }
