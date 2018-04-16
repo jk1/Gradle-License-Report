@@ -17,9 +17,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
     Map<String, NormalizerLicenseBundle> bundleMap
 
     LicenseBundleNormalizer(Map params = ["bundlePath": null, "createDefaultTransformationRules": true]) {
-        String bundlePath = params.bundlePath
-        boolean createDefaultTransformationRules = params.get("createDefaultTransformationRules", true)
+        this(params.bundlePath, params.get("createDefaultTransformationRules", true))
+    }
 
+    LicenseBundleNormalizer(String bundlePath, boolean createDefaultTransformationRules) {
         InputStream inputStream
         if (bundlePath == null) {
             inputStream = getClass().getResourceAsStream("/default-license-normalizer-bundle.json")
