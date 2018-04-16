@@ -19,18 +19,6 @@ class LicenseDataCollector {
     protected static MultiLicenseInfo multiModuleLicenseInfo(ModuleData data) {
         MultiLicenseInfo info = new MultiLicenseInfo()
 
-        data.manifests.each {
-            if (it.url) {
-                info.moduleUrls << it.url
-            }
-            if (it.license) {
-                if (isValidUrl(it.license)) {
-                    info.licenses << new License(url: it.license)
-                } else {
-                    info.licenses << new License(name: it.license)
-                }
-            }
-        }
         data.poms.each {
             if (it.projectUrl) {
                 info.moduleUrls << it.projectUrl
@@ -40,9 +28,26 @@ class LicenseDataCollector {
             }
         }
 
+        data.manifests.each { manifest ->
+            if (manifest.url) {
+                info.moduleUrls << manifest.url
+            }
+            if (manifest.license) {
+                if (isValidUrl(manifest.license)) {
+                    if (!info.licenses.find { it.url == manifest.license })
+                        info.licenses << new License(url: manifest.license)
+                } else {
+                    if (!info.licenses.find { it.name == manifest.license })
+                        info.licenses << new License(name: manifest.license)
+                }
+            }
+        }
+
         data.licenseFiles*.fileDetails.flatten().each { LicenseFileDetails details ->
-            if (details.license || details.licenseUrl) {
-                info.licenses << new License(name: details.license, url: details.licenseUrl)
+            if (!info.licenses.find { it.name == details.license }) {
+                if (details.license || details.licenseUrl) {
+                    info.licenses << new License(name: details.license, url: details.licenseUrl)
+                }
             }
         }
         info
