@@ -4,6 +4,7 @@ import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.github.jk1.license.ProjectBuilder.json
@@ -26,6 +27,7 @@ class LicenseBundleNormalizerSpec extends Specification {
         normalizerFile << """
             {
               "bundles" : [
+                { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-1.1" },
                 { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" }
               ]"""
 
@@ -376,6 +378,92 @@ class LicenseBundleNormalizerSpec extends Specification {
                 module("mod1") {
                     licenseFiles {
                         licenseFileDetails(file: "apache2-license.txt", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "the name/url isn't applied to the license, when configured not to do so"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : "name1", "transformUrl" : false },
+                { "bundleName" : "apache1", "licenseUrlPattern" :  "url2",  "transformUrl" : false },
+                { "bundleName" : "apache2", "licenseNamePattern" : "name3", "transformName" : false },
+                { "bundleName" : "apache2", "licenseUrlPattern" :  "url4",  "transformName" : false },
+                { "bundleName" : "apache2", "licenseNamePattern" :  "name5",  "transformName" : false, "transformUrl" : false }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(name: "name1", url: "url1")
+                        license(name: "name2", url: "url2")
+                        license(name: "name3", url: "url3")
+                        license(name: "name4", url: "url4")
+                        license(name: "name5", url: "url5")
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(name: "Apache License, Version 2.0", url: "url1")
+                        license(name: "Apache Software License, Version 1.1", url: "url2")
+                        license(name: "name3", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                        license(name: "name4", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                        license(name: "name5", url: "url5")
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "the name/url is applied to the license, when configured to do so"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : "name1", "transformUrl" : true },
+                { "bundleName" : "apache2", "licenseUrlPattern" :  "url2",  "transformUrl" : true },
+                { "bundleName" : "apache2", "licenseNamePattern" : "name3", "transformName" : true },
+                { "bundleName" : "apache2", "licenseUrlPattern" :  "url4",  "transformName" : true },
+                { "bundleName" : "apache2", "licenseNamePattern" :  "name5",  "transformName" : true, "transformUrl" : true }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(name: "name1", url: "url1")
+                        license(name: "name2", url: "url2")
+                        license(name: "name3", url: "url3")
+                        license(name: "name4", url: "url4")
+                        license(name: "name5", url: "url5")
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configuration("runtime") {
+                module("mod1") {
+                    pom("pom1") {
+                        license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
                     }
                 }
             }

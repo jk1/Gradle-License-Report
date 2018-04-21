@@ -28,7 +28,7 @@ buildscript {
     repositories {
         maven {
             url 'https://plugins.gradle.org/m2/'
-        }  
+        }
     }
 
     dependencies {
@@ -49,14 +49,14 @@ import com.github.jk1.license.render.*
 import com.github.jk1.license.importer.*
 
 licenseReport {
-    // Set output directory for the report data. 
+    // Set output directory for the report data.
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = "$projectDir/build/licenses"
 
     // List the groups ids to exclude from dependency report.
     // By default project's own group is excluded.
     // For finer granularity, see: excludes.
-    excludeGroups = ['do.not.want'] 
+    excludeGroups = ['do.not.want']
 
     // List the ids (in module:name format) to exclude from dependency report.
     // By default excludes is empty.
@@ -100,8 +100,8 @@ licenseReport {
 
 ## Renderers
 
-Renderers define how a final dependency report will look like. Plugin comes with 
-[a number of predefined renderers](https://github.com/jk1/Gradle-License-Report/tree/master/src/main/groovy/com/github/jk1/license/render) 
+Renderers define how a final dependency report will look like. Plugin comes with
+[a number of predefined renderers](https://github.com/jk1/Gradle-License-Report/tree/master/src/main/groovy/com/github/jk1/license/render)
 for text, html, xml and other popular presentation formats. It's also possible to create a custom renderer for the report.
 
 All the renderers support report file name customization via constructor parameter:
@@ -164,7 +164,7 @@ licenseReport {
 
 ## Importers
 Importer adds license information from an external source to your report. Importer may come in handy if
-- some modules within your application use their own means of library dependency resolution, e.g. npm registry   
+- some modules within your application use their own means of library dependency resolution, e.g. npm registry
 - your application integrates third party components or services with their own library dependencies
 - joint report for a multimodule project is required
 
@@ -209,10 +209,10 @@ The expected input format for `XmlReportImporter` is as follows:
 If there is only one chapter, the outer `topic` and `chunk` tags may be omitted.
 
 ## Filters
-Dependency filters transform discovered dependency data before rendering. 
-This may include sorting, reordering, data substitution. 
+Dependency filters transform discovered dependency data before rendering.
+This may include sorting, reordering, data substitution.
 
-### License data grouping 
+### License data grouping
 
 This feature was contributed by [Günther Grill](https://github.com/guenhter)
 
@@ -228,10 +228,10 @@ This can be avoided by providing an accurate normalisation file which contains r
 to unify such entries. The configuration file has two sections:
 
 * license-bundles: Defines the actual licenses with their correct name and their correct url
-* transformation-rules: A rule defines a reference to one license-bundle and a pattern for 
-   a malformed name or url. When a pattern matches the the license of a dependency, the 
-   output license-information for that dependency will be updated with the referenced license-bundle. 
-   
+* transformation-rules: A rule defines a reference to one license-bundle and a pattern for
+   a malformed name or url. When a pattern matches the the license of a dependency, the
+   output license-information for that dependency will be updated with the referenced license-bundle.
+
 ```json
 {
   "bundles" : [
@@ -240,9 +240,11 @@ to unify such entries. The configuration file has two sections:
     { "bundleName" : "cddl1", "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0 (CDDL-1.0)", "licenseUrl" : "http://opensource.org/licenses/CDDL-1.0" }
   ],
   "transformationRules" : [
-    { "bundleName" : "apache2", "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" }, 
-    { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2" }, 
-    { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-2.0.txt" }
+    { "bundleName" : "apache2", "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" },
+    { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2" },
+    { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-2.0.txt" },
+    { "bundleName" : "apache2", "licenseNamePattern" : "Special Apache", "transformUrl" : false },
+    { "bundleName" : "apache2", "licenseNamePattern" : "Keep this name", "transformName" : false }
   ]
 }
 ```
@@ -261,12 +263,12 @@ licenseReport {
 }
 ```
 
-If no bundle-file is specified, a default file is used containing some commons rules. You are encouraged to create your own bundle-file 
+If no bundle-file is specified, a default file is used containing some commons rules. You are encouraged to create your own bundle-file
 and contribute back useful rules.
 
 ## Writing custom renderers, importers and filters
 
-It's also possible to implement a custom importer to support any dependency data format necessary. To do so put custom 
+It's also possible to implement a custom importer to support any dependency data format necessary. To do so put custom
 importer implementation inside `buildSrc` folder:
 
 ```java
@@ -287,7 +289,7 @@ public class CustomImporter implements DependencyDataImporter{
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }
-```  
+```
 
 with `buildSrc/build.gradle` defined as follows to get all the imports resolved:
 
@@ -309,7 +311,7 @@ dependencies {
 Now you can use your custom importer in the main build:
 
 ```groovy
-import org.sample.CustomImporter 
+import org.sample.CustomImporter
 
 ...
 
