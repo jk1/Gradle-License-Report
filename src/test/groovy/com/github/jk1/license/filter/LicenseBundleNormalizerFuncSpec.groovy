@@ -72,7 +72,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         result.dependencies.size() == 2
-        result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0", null].toSet()
+        result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
         result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["https://www.apache.org/licenses/LICENSE-2.0", "http://www.apache.org/licenses/LICENSE-2.0"].toSet()
     }
 
@@ -100,7 +100,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
 
         result.dependencies.size() == 2
         result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
-        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["https://www.apache.org/licenses/LICENSE-2.0", null].toSet()
+        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["https://www.apache.org/licenses/LICENSE-2.0"].toSet()
     }
 
     def "normalizes manifest with pom data"() {
@@ -125,7 +125,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         result.dependencies*.moduleLicenses.flatten()*.moduleLicense.toSet() == ["Apache License, Version 2.0"].toSet()
-        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0"/*LicenseFile*/, "https://www.apache.org/licenses/LICENSE-2.0"/*Pom*/, null/*Manifest*/].toSet()
+        result.dependencies*.moduleLicenses.flatten()*.moduleLicenseUrl.toSet() == ["https://www.apache.org/licenses/LICENSE-2.0"].toSet()
     }
 
     def "an error is raised when a normalizer file is specified but not available"() {
@@ -183,10 +183,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleLicenses": [
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": null
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
                     "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
                 }
             ]
@@ -198,10 +194,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 "http://commons.apache.org/proper/commons-lang/"
             ],
             "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": null
-                },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
                     "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
@@ -338,14 +330,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 "http://commons.apache.org/proper/commons-lang/"
             ],
             "moduleLicenses": [
-                {
-                    "moduleLicense": null,
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
                     "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"

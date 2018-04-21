@@ -230,4 +230,8 @@ $configurationsString
     ]
 }"""
     }
+
+    static String json(Object data) {
+        new JsonBuilder(data).toPrettyString()
+    }
 }
