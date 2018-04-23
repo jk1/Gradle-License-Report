@@ -102,7 +102,7 @@ class ProjectBuilderSpec extends Specification {
 
         data.configurations*.dependencies.flatten().poms.flatten().find { it.name == "pom1" }.licenses as List == [APACHE2_LICENSE()]
         data.configurations*.dependencies.flatten().poms.flatten().find { it.name == "pom2" }.licenses as List == [MIT_LICENSE()]
-        data.configurations*.dependencies.flatten().poms.flatten().find { it.name == "pom3" }.licenses as List == [MIT_LICENSE(), LGPL_LICENSE()]
+        data.configurations*.dependencies.flatten().poms.flatten().find { it.name == "pom3" }.licenses as List == [LGPL_LICENSE(), MIT_LICENSE()]
 
         data.importedModules.isEmpty()
     }

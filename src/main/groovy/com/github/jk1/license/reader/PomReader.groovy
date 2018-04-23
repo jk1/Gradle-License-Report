@@ -176,13 +176,14 @@ class PomReader {
         pomData.projectUrl = rootPom.url?.text()
         pomData.inceptionYear = rootPom.inceptionYear?.text()
 
-        pomData.developers = rootPom.developers?.developer?.collect { GPathResult developer ->
+        def developers = rootPom.developers?.developer?.collect { GPathResult developer ->
             new PomDeveloper(
                 name: developer.name?.text(),
                 email: developer.email?.text(),
                 url: developer.url?.text()
             )
         }
+        if (developers) pomData.developers.addAll(developers)
 
         allPoms.reverse().each { pom ->
             def organizationName = pom.organization?.name?.text()

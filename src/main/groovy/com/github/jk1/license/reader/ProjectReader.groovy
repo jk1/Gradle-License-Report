@@ -41,7 +41,7 @@ class ProjectReader {
         configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
 
         LOGGER.info("Configurations: " + configurationsToScan.join(','))
-        data.configurations = readConfigurationData(configurationsToScan, project)
+        data.configurations.addAll(readConfigurationData(configurationsToScan, project))
         return data
     }
 

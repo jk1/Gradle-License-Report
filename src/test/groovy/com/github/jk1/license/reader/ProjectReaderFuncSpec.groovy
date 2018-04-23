@@ -263,63 +263,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
     {
         "dependencies": [
             {
-                "group": "org.ehcache",
-                "manifests": [
-                    {
-                        "vendor": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc.",
-                        "hasPackagedLicense": true,
-                        "version": "3.3.1",
-                        "license": "LICENSE",
-                        "description": "Ehcache is an open-source caching library, compliant with the JSR-107 standard.",
-                        "url": "ehcache-3.3.1.jar/LICENSE.html",
-                        "name": "ehcache 3"
-                    }
-                ],
-                "version": "3.3.1",
-                "poms": [
-                    {
-                        "inceptionYear": "",
-                        "projectUrl": "http://ehcache.org",
-                        "description": "End-user ehcache3 jar artifact",
-                        "name": "Ehcache",
-                        "organization": {
-                            "url": "http://terracotta.org",
-                            "name": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc."
-                        },
-                        "licenses": [
-                            {
-                                "comments": "",
-                                "distribution": "repo",
-                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
-                                "name": "The Apache Software License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    {
-                        "fileDetails": [
-                            {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "ehcache-3.3.1.jar/LICENSE",
-                                "license": "Apache License, Version 2.0"
-                            },
-                            {
-                                "licenseUrl": null,
-                                "file": "ehcache-3.3.1.jar/NOTICE",
-                                "license": null
-                            }
-                        ],
-                        "files": [
-                            "ehcache-3.3.1.jar/LICENSE",
-                            "ehcache-3.3.1.jar/NOTICE"
-                        ]
-                    }
-                ],
-                "empty": false,
-                "name": "ehcache"
-            },
-            {
                 "group": "aopalliance",
                 "manifests": [
                     {
@@ -357,68 +300,28 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "aopalliance"
             },
             {
-                "group": "org.slf4j",
+                "group": "commons-logging",
                 "manifests": [
                     {
-                        "vendor": "SLF4J.ORG",
+                        "vendor": "Apache Software Foundation",
                         "hasPackagedLicense": false,
-                        "version": "1.7.7",
-                        "license": null,
-                        "description": "The slf4j API",
-                        "url": null,
-                        "name": "slf4j-api"
-                    }
-                ],
-                "version": "1.7.7",
-                "poms": [
-                    {
-                        "inceptionYear": "",
-                        "projectUrl": "http://www.slf4j.org",
-                        "description": "The slf4j API",
-                        "name": "SLF4J API Module",
-                        "organization": {
-                            "url": "http://www.qos.ch",
-                            "name": "QOS.ch"
-                        },
-                        "licenses": [
-                            {
-                                "comments": "",
-                                "distribution": "repo",
-                                "url": "http://www.opensource.org/licenses/mit-license.php",
-                                "name": "MIT License"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    
-                ],
-                "empty": false,
-                "name": "slf4j-api"
-            },
-            {
-                "group": "org.springframework",
-                "manifests": [
-                    {
-                        "vendor": null,
-                        "hasPackagedLicense": false,
-                        "version": "3.2.3.RELEASE",
+                        "version": "1.1.1",
                         "license": null,
                         "description": null,
                         "url": null,
-                        "name": "spring-core"
+                        "name": "Jakarta Commons Logging"
                     }
                 ],
-                "version": "3.2.3.RELEASE",
+                "version": "1.1.1",
                 "poms": [
                     {
-                        "inceptionYear": "",
-                        "projectUrl": "https://github.com/SpringSource/spring-framework",
-                        "description": "Spring Core",
-                        "name": "Spring Core",
+                        "inceptionYear": "2001",
+                        "projectUrl": "http://commons.apache.org/logging",
+                        "description": "Commons Logging is a thin adapter allowing configurable bridging to other,\\n    well known logging systems.",
+                        "name": "Commons Logging",
                         "organization": {
-                            "url": "http://springsource.org/spring-framework",
-                            "name": "SpringSource"
+                            "url": "http://www.apache.org/",
+                            "name": "The Apache Software Foundation"
                         },
                         "licenses": [
                             {
@@ -435,23 +338,23 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
+                                "file": "commons-logging-1.1.1.jar/META-INF/LICENSE",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt",
-                                "license": "Apache License, Version 2.0"
+                                "licenseUrl": null,
+                                "file": "commons-logging-1.1.1.jar/META-INF/NOTICE",
+                                "license": null
                             }
                         ],
                         "files": [
-                            "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
-                            "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt"
+                            "commons-logging-1.1.1.jar/META-INF/LICENSE",
+                            "commons-logging-1.1.1.jar/META-INF/NOTICE"
                         ]
                     }
                 ],
                 "empty": false,
-                "name": "spring-core"
+                "name": "commons-logging"
             },
             {
                 "group": "org.apache.commons",
@@ -511,6 +414,103 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "commons-lang3"
             },
             {
+                "group": "org.ehcache",
+                "manifests": [
+                    {
+                        "vendor": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc.",
+                        "hasPackagedLicense": true,
+                        "version": "3.3.1",
+                        "license": "LICENSE",
+                        "description": "Ehcache is an open-source caching library, compliant with the JSR-107 standard.",
+                        "url": "ehcache-3.3.1.jar/LICENSE.html",
+                        "name": "ehcache 3"
+                    }
+                ],
+                "version": "3.3.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "http://ehcache.org",
+                        "description": "End-user ehcache3 jar artifact",
+                        "name": "Ehcache",
+                        "organization": {
+                            "url": "http://terracotta.org",
+                            "name": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc."
+                        },
+                        "licenses": [
+                            {
+                                "comments": "",
+                                "distribution": "repo",
+                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    {
+                        "fileDetails": [
+                            {
+                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "file": "ehcache-3.3.1.jar/LICENSE",
+                                "license": "Apache License, Version 2.0"
+                            },
+                            {
+                                "licenseUrl": null,
+                                "file": "ehcache-3.3.1.jar/NOTICE",
+                                "license": null
+                            }
+                        ],
+                        "files": [
+                            "ehcache-3.3.1.jar/LICENSE",
+                            "ehcache-3.3.1.jar/NOTICE"
+                        ]
+                    }
+                ],
+                "empty": false,
+                "name": "ehcache"
+            },
+            {
+                "group": "org.slf4j",
+                "manifests": [
+                    {
+                        "vendor": "SLF4J.ORG",
+                        "hasPackagedLicense": false,
+                        "version": "1.7.7",
+                        "license": null,
+                        "description": "The slf4j API",
+                        "url": null,
+                        "name": "slf4j-api"
+                    }
+                ],
+                "version": "1.7.7",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "http://www.slf4j.org",
+                        "description": "The slf4j API",
+                        "name": "SLF4J API Module",
+                        "organization": {
+                            "url": "http://www.qos.ch",
+                            "name": "QOS.ch"
+                        },
+                        "licenses": [
+                            {
+                                "comments": "",
+                                "distribution": "repo",
+                                "url": "http://www.opensource.org/licenses/mit-license.php",
+                                "name": "MIT License"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    
+                ],
+                "empty": false,
+                "name": "slf4j-api"
+            },
+            {
                 "group": "org.springframework",
                 "manifests": [
                     {
@@ -568,28 +568,28 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "spring-beans"
             },
             {
-                "group": "commons-logging",
+                "group": "org.springframework",
                 "manifests": [
                     {
-                        "vendor": "Apache Software Foundation",
+                        "vendor": null,
                         "hasPackagedLicense": false,
-                        "version": "1.1.1",
+                        "version": "3.2.3.RELEASE",
                         "license": null,
                         "description": null,
                         "url": null,
-                        "name": "Jakarta Commons Logging"
+                        "name": "spring-core"
                     }
                 ],
-                "version": "1.1.1",
+                "version": "3.2.3.RELEASE",
                 "poms": [
                     {
-                        "inceptionYear": "2001",
-                        "projectUrl": "http://commons.apache.org/logging",
-                        "description": "Commons Logging is a thin adapter allowing configurable bridging to other,\\n    well known logging systems.",
-                        "name": "Commons Logging",
+                        "inceptionYear": "",
+                        "projectUrl": "https://github.com/SpringSource/spring-framework",
+                        "description": "Spring Core",
+                        "name": "Spring Core",
                         "organization": {
-                            "url": "http://www.apache.org/",
-                            "name": "The Apache Software Foundation"
+                            "url": "http://springsource.org/spring-framework",
+                            "name": "SpringSource"
                         },
                         "licenses": [
                             {
@@ -606,23 +606,23 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-logging-1.1.1.jar/META-INF/LICENSE",
+                                "file": "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
-                                "licenseUrl": null,
-                                "file": "commons-logging-1.1.1.jar/META-INF/NOTICE",
-                                "license": null
+                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "file": "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt",
+                                "license": "Apache License, Version 2.0"
                             }
                         ],
                         "files": [
-                            "commons-logging-1.1.1.jar/META-INF/LICENSE",
-                            "commons-logging-1.1.1.jar/META-INF/NOTICE"
+                            "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
+                            "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt"
                         ]
                     }
                 ],
                 "empty": false,
-                "name": "commons-logging"
+                "name": "spring-core"
             },
             {
                 "group": "org.springframework",

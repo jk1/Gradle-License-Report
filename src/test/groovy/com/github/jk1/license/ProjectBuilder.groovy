@@ -74,8 +74,7 @@ class ProjectBuilder extends BuilderSupport {
         ProjectData projectData = (ProjectData)current
 
         def config = new ConfigurationData(
-            name: id,
-            dependencies: [ ]
+            name: id
         )
         projectData.configurations << config
         config
@@ -110,10 +109,7 @@ class ProjectBuilder extends BuilderSupport {
         ConfigurationData configurationData = (ConfigurationData)current
 
         def module = new ModuleData(
-            group: "dummy-group", name: id, version: "0.0.1",
-            manifests: [],
-            licenseFiles: [],
-            poms: []
+            group: "dummy-group", name: id, version: "0.0.1"
         )
 
         configurationData.dependencies << module
@@ -129,9 +125,7 @@ class ProjectBuilder extends BuilderSupport {
             inceptionYear: "dummy-pom-inception-year",
             organization: new PomOrganization(
                 name: "dummy-pom-org-name", url: "http://dummy-pom-org-url"
-            ),
-            licenses: [],
-            developers: []
+            )
         )
 
         module.poms << pom
