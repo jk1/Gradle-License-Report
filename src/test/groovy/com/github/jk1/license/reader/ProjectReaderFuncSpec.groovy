@@ -673,7 +673,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
     }
 
 
-    private static void removeDevelopers(Map rawFile) {
+    static void removeDevelopers(Map rawFile) {
         rawFile.configurations*.dependencies.flatten().poms.flatten().each { it.remove("developers") }
     }
 }

@@ -9,6 +9,8 @@ import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
+import static com.github.jk1.license.reader.ProjectReader.isResolvable
+
 
 class ConfigurationReader {
 
@@ -22,7 +24,7 @@ class ConfigurationReader {
         ConfigurationData data = new ConfigurationData()
         data.name = configuration.name
 
-        if ( configuration.hasProperty("canBeResolved") && !configuration.canBeResolved) {
+        if (isResolvable(configuration)) {
             LOGGER.info("Skipping configuration [$configuration] as it can't be resolved")
             return data
         }
