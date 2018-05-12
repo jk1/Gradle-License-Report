@@ -1,3 +1,18 @@
+/*
+ * Copyright 2018 Evgeny Naumenko <jk.vc@mail.ru>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.jk1.license.render
 
 import com.github.jk1.license.LicenseReportExtension
@@ -27,8 +42,8 @@ class JsonReportRendererSpec extends Specification {
         extension.outputDir = testProjectDir.root
 
         // copy apache2 license file
-        def apache2LicenseFile = new File(getClass().getResource('/apache2-license.txt').toURI())
-        new File(testProjectDir.root, "apache2-license.txt") << apache2LicenseFile.text
+        def apache2LicenseFile = new File(getClass().getResource('/apache2.license').toURI())
+        new File(testProjectDir.root, "apache2.license") << apache2LicenseFile.text
 
         projectData = builder.project {
             configuration("runtime") {
@@ -37,7 +52,7 @@ class JsonReportRendererSpec extends Specification {
                         license(APACHE2_LICENSE(), url: "https://www.apache.org/licenses/LICENSE-2.0")
                     }
                     licenseFiles {
-                        licenseFileDetails(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
                     }
                     manifest("mani1") {
                         license("Apache 2.0")
@@ -52,7 +67,7 @@ class JsonReportRendererSpec extends Specification {
                         license(MIT_LICENSE())
                     }
                     licenseFiles {
-                        licenseFileDetails(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
                     }
                     manifest("mani1") {
                         license("Apache 2.0")

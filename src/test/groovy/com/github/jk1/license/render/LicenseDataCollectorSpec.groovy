@@ -1,3 +1,18 @@
+/*
+ * Copyright 2018 Evgeny Naumenko <jk.vc@mail.ru>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.jk1.license.render
 
 import com.github.jk1.license.ModuleData
@@ -33,7 +48,7 @@ class LicenseDataCollectorSpec extends Specification {
             configuration("runtime") {
                 module("mod1") {
                     licenseFiles {
-                        licenseFileDetails(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
                     }
                 }
             }
@@ -57,7 +72,7 @@ class LicenseDataCollectorSpec extends Specification {
                         license(name: "Apache License, Version 2.0", url: null)
                     }
                     licenseFiles {
-                        licenseFileDetails(file: "apache2-license.txt", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
                     }
                 }
             }
@@ -168,7 +183,7 @@ class LicenseDataCollectorSpec extends Specification {
                         license(APACHE2_LICENSE())
                     }
                     licenseFiles {
-                        licenseFileDetails(file: "apache2-license.txt", license: "Apache 2.0", licenseUrl: APACHE2_LICENSE().url)
+                        licenseFileDetails(file: "apache2.license", license: "Apache 2.0", licenseUrl: APACHE2_LICENSE().url)
                     }
                 }
             }
@@ -207,8 +222,8 @@ class LicenseDataCollectorSpec extends Specification {
                         license(APACHE2_LICENSE())
                     }
                     licenseFiles {
-                        licenseFileDetails(file: "apache2-license.txt", license: APACHE2_LICENSE().name, licenseUrl: APACHE2_LICENSE().url)
-                        licenseFileDetails(file: "apache2-license.txt", license: APACHE2_LICENSE().name, licenseUrl: "http://some-url")
+                        licenseFileDetails(file: "apache2.license", license: APACHE2_LICENSE().name, licenseUrl: APACHE2_LICENSE().url)
+                        licenseFileDetails(file: "apache2.license", license: APACHE2_LICENSE().name, licenseUrl: "http://some-url")
                     }
                 }
             }

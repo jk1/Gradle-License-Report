@@ -5,6 +5,7 @@ plugins {
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.9.9'
     id "com.palantir.idea-test-fix" version "0.1.0"
+    id "com.github.hierynomus.license" version"0.14.0"
 }
 
 group = "com.github.jk1"
