@@ -17,7 +17,11 @@ class ProjectReader {
         ProjectData data = new ProjectData()
         data.project = project
 
-        final Set<Configuration> configurationsToScan = findConfigurationsToScan(project)
+        def projectsToScan = [project] + project.subprojects
+
+        List<Configuration> configurationsToScan = projectsToScan.collect {
+            findConfigurationsToScan(it)
+        }.flatten()
 
         configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
 
@@ -38,14 +42,19 @@ class ProjectReader {
         toScan
     }
 
-    private static Set<Configuration> getAllExtendedConfigurations(Set<Configuration> configurationsToScan) {
+    private static Set<Configuration> getAllExtendedConfigurations(Collection<Configuration> configurationsToScan) {
         configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }
     }
 
-    private List<ConfigurationData> readConfigurationData(Set<Configuration> configurationsToScan, Project project) {
-        configurationsToScan.collect { config ->
-            LOGGER.info("Reading configuration: " + config)
-            configurationReader.read(project, config)
+    private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, Project project) {
+        def configurationsByName = configurationsToScan.groupBy { it.name }
+
+        configurationsByName.collect { name, configs ->
+            List<ConfigurationData> configsPerName = configs.collect { config ->
+                LOGGER.info("Reading configuration: " + config)
+                configurationReader.read(project, config)
+            }
+            mergeConfigurations(configsPerName)
         }
     }
 
@@ -57,7 +66,17 @@ class ProjectReader {
         toScan.findAll { config -> !isResolvable(config) }
     }
 
-    private static boolean isResolvable(Configuration config) {
+    static boolean isResolvable(Configuration config) {
         config.hasProperty("canBeResolved") && config.canBeResolved
+    }
+
+    static ConfigurationData mergeConfigurations(Collection<ConfigurationData> configs) {
+        ConfigurationData merged = new ConfigurationData()
+
+        configs.forEach {
+            merged.name = it.name
+            merged.dependencies.addAll(it.dependencies)
+        }
+        merged
     }
 }
