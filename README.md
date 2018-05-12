@@ -16,7 +16,7 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '0.8'
+  id 'com.github.jk1.dependency-license-report' version '0.9'
 }
 ```
 
@@ -32,7 +32,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.8'
+        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:0.9'
     }
 }
 apply plugin: 'com.github.jk1.dependency-license-report'
@@ -52,6 +52,10 @@ licenseReport {
     // Set output directory for the report data.
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = "$projectDir/build/licenses"
+    
+    // Set output directory for the report data.
+    // Defaults to current project and all its subprojects
+    projects = [project] + project.subprojects
 
     // List the groups ids to exclude from dependency report.
     // By default project's own group is excluded.
@@ -79,7 +83,7 @@ licenseReport {
 
 ## Kotlin script support
 
-Plugin is compatible with build scripts written in kotlin. Configuration syntax is slighlty different from groovy though.
+Plugin is compatible with build scripts written in kotlin. Configuration syntax is slightly different from groovy though.
 Consider the following sample:
 
 ```kotlin
@@ -87,7 +91,7 @@ import com.github.jk1.license.render.InventoryHtmlReportRenderer
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "0.8"
+    id("com.github.jk1.dependency-license-report") version "0.9"
 }
 
 licenseReport {
@@ -303,7 +307,7 @@ repositories {
 }
 
 dependencies {
-    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.8'
+    compile 'gradle.plugin.com.github.jk1:gradle-license-report:0.9'
 }
 
 ```

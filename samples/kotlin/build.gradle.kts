@@ -2,7 +2,7 @@ import com.github.jk1.license.render.InventoryHtmlReportRenderer
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "0.8"
+    id("com.github.jk1.dependency-license-report") version "0.9"
     id("java")
 }
 
