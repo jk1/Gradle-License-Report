@@ -26,6 +26,7 @@ class LicenseReportExtension {
     public static final String[] ALL = []
 
     public String outputDir
+    public Project[] projects
     public ReportRenderer[] renderers
     public DependencyDataImporter[] importers
     public DependencyFilter[] filters
@@ -35,6 +36,7 @@ class LicenseReportExtension {
 
     LicenseReportExtension(Project project) {
         outputDir = "${project.buildDir}/reports/dependency-license"
+        projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
         configurations = ['runtime']
         excludeGroups = [project.group]
@@ -70,7 +72,7 @@ class LicenseReportExtension {
     // configuration snapshot for the up-to-date check
     String getSnapshot() {
         StringBuilder builder = new StringBuilder()
-
+        projects.each { builder.append(it.name) }
         renderers.each { builder.append(it.class.name) }
         importers.each { builder.append(it.class.name) }
         filters.each { builder.append(it.class.name) }

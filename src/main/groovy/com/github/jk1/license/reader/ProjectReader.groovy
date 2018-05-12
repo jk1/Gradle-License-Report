@@ -32,8 +32,8 @@ class ProjectReader {
         ProjectData data = new ProjectData()
         data.project = project
 
-        def projectsToScan = [project] + project.subprojects
-
+        def projectsToScan = project.licenseReport.projects
+        LOGGER.info("Configured projects: " + projectsToScan.join(','))
         List<Configuration> configurationsToScan = projectsToScan.collect {
             findConfigurationsToScan(it)
         }.flatten()

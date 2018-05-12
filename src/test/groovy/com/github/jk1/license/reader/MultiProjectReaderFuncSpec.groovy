@@ -340,4 +340,119 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
     }
 ]"""
     }
+
+    def "project filtering is respected"() {
+        setup:
+        buildFile.newWriter().withWriter { w ->
+            w << """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+            }
+            configurations {
+                forTesting1
+            }
+            repositories {
+                mavenCentral()
+            }
+
+            import com.github.jk1.license.render.*
+            licenseReport {
+                outputDir = "$outputDir.absolutePath"
+                projects = [project]
+                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                configurations = ['forTesting']
+            }
+            dependencies {
+                forTesting1 "org.apache.commons:commons-lang3:3.7"
+            }
+        """
+        }
+
+        newSubBuildFile("sub1") << """
+            configurations {
+                forTesting2
+            }
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                forTesting2 "org.apache.commons:commons-lang3:3.7"
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        configurationsString == """[
+    {
+        "dependencies": [
+            {
+                "group": "org.apache.commons",
+                "manifests": [
+                    {
+                        "vendor": "The Apache Software Foundation",
+                        "hasPackagedLicense": false,
+                        "version": "3.7.0",
+                        "license": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
+                        "url": "http://commons.apache.org/proper/commons-lang/",
+                        "name": "Apache Commons Lang"
+                    }
+                ],
+                "version": "3.7",
+                "poms": [
+                    {
+                        "inceptionYear": "2001",
+                        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
+                        "description": "\\n  Apache Commons Lang, a package of Java utility classes for the\\n  classes that are in java.lang's hierarchy, or are considered to be so\\n  standard as to justify existence in java.lang.\\n  ",
+                        "name": "Apache Commons Lang",
+                        "organization": {
+                            "url": "https://www.apache.org/",
+                            "name": "The Apache Software Foundation"
+                        },
+                        "licenses": [
+                            {
+                                "comments": "",
+                                "distribution": "repo",
+                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "Apache License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    {
+                        "fileDetails": [
+                            {
+                                "licenseUrl": null,
+                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "license": null
+                            },
+                            {
+                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                                "license": "Apache License, Version 2.0"
+                            }
+                        ],
+                        "files": [
+                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+                        ]
+                    }
+                ],
+                "empty": false,
+                "name": "commons-lang3"
+            }
+        ],
+        "name": "forTesting1"
+    }
+]"""
+    }
 }
