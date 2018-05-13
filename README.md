@@ -53,10 +53,6 @@ licenseReport {
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = "$projectDir/build/licenses"
     
-    // Set output directory for the report data.
-    // Defaults to current project and all its subprojects
-    projects = [project] + project.subprojects
-
     // List the groups ids to exclude from dependency report.
     // By default project's own group is excluded.
     // For finer granularity, see: excludes.
@@ -73,6 +69,10 @@ licenseReport {
     // Set importers to import any external dependency information, i.e. from npm.
     // Custom importer should implement DependencyDataImporter interface.
     importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
+
+    // Select projects to examine for dependencies.
+    // Defaults to current project and all its subprojects
+    projects = [project] + project.subprojects
 
     // Adjust the configurations to use, e.g. for Android projects.
     configurations = ['compile']
