@@ -70,6 +70,15 @@ class ProjectBuilder extends BuilderSupport {
             project: GRADLE_PROJECT()
         )
     }
+
+    // allows to create multiple configurations with only defining the child-structure once.
+    def configurations(List<String> configNames, Closure<ConfigurationData> block) {
+        configNames.forEach { name ->
+            block.delegate = this
+            block(name)
+        }
+    }
+
     private ConfigurationData addConfiguration(String id) {
         ProjectData projectData = (ProjectData)current
 
