@@ -46,31 +46,33 @@ class JsonReportRendererSpec extends Specification {
         new File(testProjectDir.root, "apache2.license") << apache2LicenseFile.text
 
         projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), url: "https://www.apache.org/licenses/LICENSE-2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), url: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
+                        manifest("mani1") {
+                            license("Apache 2.0")
+                        }
                     }
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
-                    }
-                    manifest("mani1") {
-                        license("Apache 2.0")
-                    }
-                }
-                module("mod2") {
-                    pom("pom2") {
-                        license(APACHE2_LICENSE())
-                    }
-                    pom("pom3") {
-                        license(APACHE2_LICENSE())
-                        license(MIT_LICENSE())
-                    }
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
-                    }
-                    manifest("mani1") {
-                        license("Apache 2.0")
+                    module("mod2") {
+                        pom("pom2") {
+                            license(APACHE2_LICENSE())
+                        }
+                        pom("pom3") {
+                            license(APACHE2_LICENSE())
+                            license(MIT_LICENSE())
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
+                        manifest("mani1") {
+                            license("Apache 2.0")
+                        }
                     }
                 }
             }

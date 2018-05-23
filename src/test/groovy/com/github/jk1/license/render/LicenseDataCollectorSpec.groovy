@@ -29,8 +29,10 @@ class LicenseDataCollectorSpec extends Specification {
 
     def "empty module info results in empty license info"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                    }
                 }
             }
         }
@@ -45,10 +47,12 @@ class LicenseDataCollectorSpec extends Specification {
 
     def "after normalisation, all license files of all configurations are normalized"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
                     }
                 }
             }
@@ -65,14 +69,16 @@ class LicenseDataCollectorSpec extends Specification {
 
     def "duplicate licenses are sorted out"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
-                        license(name: "Apache License, Version 2.0", url: null)
-                    }
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                            license(name: "Apache License, Version 2.0", url: null)
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
                     }
                 }
             }
@@ -89,16 +95,18 @@ class LicenseDataCollectorSpec extends Specification {
 
     def "keep manifest-license when name/url not matches a existing licenses name or url"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                    }
-                    manifest("mani1") {
-                        license("Apache 2.0")
-                    }
-                    manifest("mani2") {
-                        license("https://someUrl")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                        }
+                        manifest("mani1") {
+                            license("Apache 2.0")
+                        }
+                        manifest("mani2") {
+                            license("https://someUrl")
+                        }
                     }
                 }
             }
@@ -139,16 +147,18 @@ class LicenseDataCollectorSpec extends Specification {
 
     def "remove manifest-license when name/url matches a existing licenses name or url"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                    }
-                    manifest("mani1") {
-                        license(APACHE2_LICENSE().name)
-                    }
-                    manifest("mani2") {
-                        license(APACHE2_LICENSE().url)
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                        }
+                        manifest("mani1") {
+                            license(APACHE2_LICENSE().name)
+                        }
+                        manifest("mani2") {
+                            license(APACHE2_LICENSE().url)
+                        }
                     }
                 }
             }
@@ -177,13 +187,15 @@ class LicenseDataCollectorSpec extends Specification {
 
     def "keep license-file-license when name not matches a existing licenses name or url"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                    }
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache 2.0", licenseUrl: APACHE2_LICENSE().url)
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache 2.0", licenseUrl: APACHE2_LICENSE().url)
+                        }
                     }
                 }
             }
@@ -216,14 +228,16 @@ class LicenseDataCollectorSpec extends Specification {
 
     def "remove license-file-license when name matches a existing licenses name or url"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                    }
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: APACHE2_LICENSE().name, licenseUrl: APACHE2_LICENSE().url)
-                        licenseFileDetails(file: "apache2.license", license: APACHE2_LICENSE().name, licenseUrl: "http://some-url")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: APACHE2_LICENSE().name, licenseUrl: APACHE2_LICENSE().url)
+                            licenseFileDetails(file: "apache2.license", license: APACHE2_LICENSE().name, licenseUrl: "http://some-url")
+                        }
                     }
                 }
             }
