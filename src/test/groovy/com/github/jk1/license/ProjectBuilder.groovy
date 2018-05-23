@@ -176,7 +176,7 @@ class ProjectBuilder extends BuilderSupport {
 
         def details = new LicenseFileDetails(map)
 
-        licenseFileData.files << details.file
+        if (!licenseFileData.files.contains(details.file)) licenseFileData.files << details.file
         licenseFileData.fileDetails << details
         details
     }

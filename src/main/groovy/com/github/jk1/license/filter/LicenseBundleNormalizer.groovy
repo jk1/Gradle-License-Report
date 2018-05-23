@@ -111,43 +111,52 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     private Collection<License> normalizePomLicense(License license) {
-        def rule = findMatchingRuleForName(license.name)
-        if (rule == null) rule = findMatchingRuleForUrl(license.url)
-        if (rule == null) return [license]
+        List<NormalizerTransformationRule> rules = [ ]
 
-        [normalizePomLicense(rule, license)]
+        rules += findMatchingRulesForName(license.name)
+        rules += findMatchingRulesForUrl(license.url)
+
+        if (rules.isEmpty()) return [license]
+
+        rules.collect { normalizePomLicense(it, license) }
     }
     private Collection<ManifestData> normalizeManifestLicense(ManifestData manifest) {
-        def rule = findMatchingRuleForName(manifest.license)
-        if (rule == null) rule = findMatchingRuleForUrl(manifest.license)
-        if (rule == null) return [manifest]
+        List<NormalizerTransformationRule> rules = [ ]
 
-        [normalizeManifestLicense(rule, manifest)]
+        rules += findMatchingRulesForName(manifest.license)
+        rules += findMatchingRulesForUrl(manifest.license)
+
+        if (rules.isEmpty()) return [manifest]
+
+        rules.collect { normalizeManifestLicense(it, manifest) }
     }
     private Collection<LicenseFileDetails> normalizeLicenseFileDetailsLicense(LicenseFileDetails licenseFileDetails) {
         if (licenseFileDetails.file == null || licenseFileDetails.file.isEmpty()) return [licenseFileDetails]
 
+        List<NormalizerTransformationRule> rules = [ ]
+
         String licenseFileContent = new File("$config.outputDir/$licenseFileDetails.file").text
 
-        def rule = findMatchingRuleForContentPattern(licenseFileContent)
-        if (rule == null && licenseFileDetails.license) rule = findMatchingRuleForName(licenseFileDetails.license)
-        if (rule == null && licenseFileDetails.licenseUrl) rule = findMatchingRuleForUrl(licenseFileDetails.licenseUrl)
-        if (rule == null) return [licenseFileDetails]
+        rules += findMatchingRulesForContentPattern(licenseFileContent)
+        rules += findMatchingRulesForName(licenseFileDetails.license)
+        rules += findMatchingRulesForUrl(licenseFileDetails.licenseUrl)
 
-        [normalizeLicenseFileDetailsLicense(rule, licenseFileDetails)]
+        if (rules.isEmpty()) return [licenseFileDetails]
+
+        rules.collect { normalizeLicenseFileDetailsLicense(it, licenseFileDetails) }
     }
 
-    private NormalizerTransformationRule findMatchingRuleForName(String name) {
+    private List<NormalizerTransformationRule> findMatchingRulesForName(String name) {
         return normalizerConfig.transformationRules
-            .find { it.licenseNamePattern && name =~ it.licenseNamePattern }
+            .findAll { it.licenseNamePattern && name =~ it.licenseNamePattern }
     }
-    private NormalizerTransformationRule findMatchingRuleForUrl(String url) {
+    private List<NormalizerTransformationRule> findMatchingRulesForUrl(String url) {
         return normalizerConfig.transformationRules
-            .find { it.licenseUrlPattern && url =~ it.licenseUrlPattern }
+            .findAll { it.licenseUrlPattern && url =~ it.licenseUrlPattern }
     }
-    private NormalizerTransformationRule findMatchingRuleForContentPattern(String content) {
+    private List<NormalizerTransformationRule> findMatchingRulesForContentPattern(String content) {
         return normalizerConfig.transformationRules
-            .find { it.licenseFileContentPattern  && content =~ it.licenseFileContentPattern }
+            .findAll { it.licenseFileContentPattern  && content =~ it.licenseFileContentPattern }
     }
     private NormalizerLicenseBundle findBundleForRule(NormalizerTransformationRule rule) {
         return bundleMap[rule?.bundleName]

@@ -43,7 +43,8 @@ class LicenseBundleNormalizerSpec extends Specification {
             {
               "bundles" : [
                 { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-1.1" },
-                { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" }
+                { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" },
+                { "bundleName" : "mit", "licenseName" : "MIT License", "licenseUrl" : "https://opensource.org/licenses/MIT" }
               ]"""
 
         // copy apache2 license file
@@ -598,7 +599,128 @@ class LicenseBundleNormalizerSpec extends Specification {
         }
 
         when:
-        def result = newNormalizer(false).filter(projectData)
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "pom licenses where the two licenses are contained in one entry, are split up"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : ".*Apache 2.0.*" },
+                { "bundleName" : "mit", "licenseNamePattern" : ".*MIT.*" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache 2.0 + MIT", url: "some url")
+                        }
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                            license(name: "MIT License", url: "https://opensource.org/licenses/MIT")
+                        }
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "file licenses where the two licenses are contained in one entry, are split up"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseFileContentPattern" : ".*Apache 2.0.*" },
+                { "bundleName" : "mit", "licenseFileContentPattern" : ".*MIT.*" }
+              ]
+            }"""
+
+        new File(pluginOutputDir, "combined.license") << "Apache 2.0\nMIT"
+
+        ProjectData projectData = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "combined.license")
+                        }
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "combined.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                            licenseFileDetails(file: "combined.license", license: "MIT License", licenseUrl: "https://opensource.org/licenses/MIT")
+                        }
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "manifest licenses where the two licenses are contained in one entry, are split up"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : ".*Apache 2.0.*" },
+                { "bundleName" : "mit", "licenseNamePattern" : ".*MIT.*" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache 2.0 + MIT")
+                        }
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache License, Version 2.0")
+                        }
+                        manifest("mani1") {
+                            license("MIT License")
+                        }
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
 
         then:
         json(result) == json(expected)
