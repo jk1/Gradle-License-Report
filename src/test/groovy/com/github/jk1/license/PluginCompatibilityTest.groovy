@@ -109,7 +109,7 @@ class PluginCompatibilityTest extends Specification {
 }"""
 
         where:
-        gradleVersion << [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7" ]
+        gradleVersion << [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7", "4.8" ]
     }
 
     @Unroll
