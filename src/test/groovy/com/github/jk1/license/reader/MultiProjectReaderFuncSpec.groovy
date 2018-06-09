@@ -90,43 +90,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
     {
         "dependencies": [
             {
-                "group": "org.jetbrains",
-                "manifests": [
-                    {
-                        "vendor": null,
-                        "hasPackagedLicense": false,
-                        "version": null,
-                        "license": null,
-                        "description": null,
-                        "url": null,
-                        "name": null
-                    }
-                ],
-                "version": "16.0.1",
-                "poms": [
-                    {
-                        "inceptionYear": "",
-                        "projectUrl": "https://github.com/JetBrains/java-annotations",
-                        "description": "A set of annotations used for code inspection support and code documentation.",
-                        "name": "JetBrains Java Annotations",
-                        "organization": null,
-                        "licenses": [
-                            {
-                                "comments": "",
-                                "distribution": "repo",
-                                "url": "http://www.apache.org/license/LICENSE-2.0.txt",
-                                "name": "The Apache Software License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    
-                ],
-                "empty": false,
-                "name": "annotations"
-            },
-            {
                 "group": "org.apache.commons",
                 "manifests": [
                     {
@@ -182,6 +145,43 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 ],
                 "empty": false,
                 "name": "commons-lang3"
+            },
+            {
+                "group": "org.jetbrains",
+                "manifests": [
+                    {
+                        "vendor": null,
+                        "hasPackagedLicense": false,
+                        "version": null,
+                        "license": null,
+                        "description": null,
+                        "url": null,
+                        "name": null
+                    }
+                ],
+                "version": "16.0.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "https://github.com/JetBrains/java-annotations",
+                        "description": "A set of annotations used for code inspection support and code documentation.",
+                        "name": "JetBrains Java Annotations",
+                        "organization": null,
+                        "licenses": [
+                            {
+                                "comments": "",
+                                "distribution": "repo",
+                                "url": "http://www.apache.org/license/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    
+                ],
+                "empty": false,
+                "name": "annotations"
             }
         ],
         "name": "forTesting1"

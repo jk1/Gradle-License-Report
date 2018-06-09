@@ -89,8 +89,8 @@ class LicenseDataCollectorSpec extends Specification {
         def result = LicenseDataCollector.multiModuleLicenseInfo(moduleData)
 
         then:
-        result.licenses*.name == ["Apache License, Version 2.0", "Apache License, Version 2.0"]
-        result.licenses*.url == [null, "https://www.apache.org/licenses/LICENSE-2.0"]
+        result.licenses*.name == ["Apache License, Version 2.0"]
+        result.licenses*.url == ["https://www.apache.org/licenses/LICENSE-2.0"]
     }
 
     def "keep manifest-license when name/url not matches a existing licenses name or url"() {

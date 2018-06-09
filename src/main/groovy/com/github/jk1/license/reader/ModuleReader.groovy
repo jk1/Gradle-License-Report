@@ -36,16 +36,17 @@ class ModuleReader {
         dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
             LOGGER.info("Processing artifact: $artifact ($artifact.file)")
             if (artifact.file.exists()){
-                data.poms << pomReader.readPomData(project, artifact)
-                data.manifests << manifestReader.readManifestData(project, artifact)
-                data.licenseFiles << filesReader.read(project, artifact)
+                def pom = pomReader.readPomData(project, artifact)
+                def manifest = manifestReader.readManifestData(project, artifact)
+                def licenseFile = filesReader.read(project, artifact)
+
+                if (pom) data.poms << pom
+                if (manifest) data.manifests << manifest
+                if (licenseFile) data.licenseFiles << licenseFile
             } else {
                 LOGGER.info("Skipping artifact file $artifact.file as it does not exist")
             }
         }
-        data.poms = data.poms - null
-        data.manifests = data.manifests - null
-        data.licenseFiles = data.licenseFiles - null
         data
     }
 }
