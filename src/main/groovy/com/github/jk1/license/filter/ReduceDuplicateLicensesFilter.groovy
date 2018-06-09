@@ -20,16 +20,16 @@ import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
 
 class ReduceDuplicateLicensesFilter implements DependencyFilter {
-    
+
     @Override
     ProjectData filter(ProjectData projectData) {
         // remove pom duplicates
-        projectData.allDependencies*.poms.flatten().forEach { PomData pom ->
+        projectData.configurations*.dependencies.flatten().poms.flatten().forEach { PomData pom ->
             pom.licenses = pom.licenses.unique()
         }
 
         // remove license-file duplicates
-        projectData.allDependencies*.licenseFiles.flatten().forEach { LicenseFileData files ->
+        projectData.configurations*.dependencies.flatten().licenseFiles.flatten().forEach { LicenseFileData files ->
             files.fileDetails = files.fileDetails.unique()
             files.files = files.files.unique()
         }

@@ -29,11 +29,13 @@ class ReduceDuplicateLicensesFilterSpec extends Specification {
     def "when two licenses are equal in one pom, they should be unified"() {
         // add two configuration with slightly different name (to avoid HashMap swallow one)
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), name: "Apache 2")
-                        license(APACHE2_LICENSE())
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), name: "Apache 2")
+                            license(APACHE2_LICENSE())
+                        }
                     }
                 }
             }
@@ -43,10 +45,12 @@ class ReduceDuplicateLicensesFilterSpec extends Specification {
             it.name = APACHE2_LICENSE().name
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                        }
                     }
                 }
             }
@@ -62,22 +66,26 @@ class ReduceDuplicateLicensesFilterSpec extends Specification {
     def "when two license names in a pom are equal, they should be unified, even if other details differ"() {
         // add two configuration with slightly different name (to avoid HashMap swallow one)
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                        license(APACHE2_LICENSE(), url: "someting else")
-                        license(APACHE2_LICENSE(), distribution: "someting else")
-                        license(APACHE2_LICENSE(), comments: "someting else")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                            license(APACHE2_LICENSE(), url: "someting else")
+                            license(APACHE2_LICENSE(), distribution: "someting else")
+                            license(APACHE2_LICENSE(), comments: "someting else")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                        }
                     }
                 }
             }
@@ -92,20 +100,24 @@ class ReduceDuplicateLicensesFilterSpec extends Specification {
 
     def "when two licenses files are equals, they should be unified"() {
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                            licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
                     }
                 }
             }

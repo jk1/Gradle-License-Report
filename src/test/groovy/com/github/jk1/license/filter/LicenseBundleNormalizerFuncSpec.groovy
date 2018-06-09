@@ -17,9 +17,9 @@ package com.github.jk1.license.filter
 
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
-import spock.lang.Ignore
 
 import static com.github.jk1.license.reader.ProjectReaderFuncSpec.prettyPrintJson
+import static com.github.jk1.license.reader.ProjectReaderFuncSpec.removeDevelopers
 
 class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
@@ -355,8 +355,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
 }"""
     }
 
-    @Ignore("Think about multiple licenses in a module AND multiple licenses within one license-name")
-    def "normalizes combined licenses without losing information of one of the single licenses"() {
+    def "multiple license-details are added to the pom, when one pom-license contains multiple license infos"() {
         buildFile << """
             dependencies {
                 forTesting "javax.annotation:javax.annotation-api:1.3.2" // CDDL + GPL
@@ -364,22 +363,79 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         """
         normalizerFile << """
               "transformationRules" : [
-                { "bundleName" : "cddl1", "licenseNamePattern" : "CDDL + GPLv2 with classpath exception" },
-                { "bundleName" : "gpl2", "licenseNamePattern" : "CDDL + GPLv2 with classpath exception" }
+                { "bundleName" : "cddl1", "licenseNamePattern" : "CDDL . GPLv2 with classpath exception", "transformUrl" : false },
+                { "bundleName" : "gpl2", "licenseNamePattern" : "CDDL . GPLv2 with classpath exception", "transformUrl" : false }
               ]
             }
         """
 
         when:
         def runResult = runGradleBuild()
-
-        def result = jsonSlurper.parse(licenseResultJsonFile)
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def pomGPath = resultFileGPath.configurations*.dependencies.flatten().poms.flatten().licenses.flatten()
+        def pomsString = prettyPrintJson(pomGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        result.dependencies.size() == 1
-        result.dependencies*.moduleLicense.toSet() == ["Apache License, Version 2.0", "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"].toSet()
-        result.dependencies*.moduleLicenseUrl.toSet() == ["http://www.apache.org/licenses/LICENSE-2.0", "http://opensource.org/licenses/CDDL-1.0"].toSet()
+        pomsString == """[
+    {
+        "comments": "A business-friendly OSS license",
+        "distribution": "repo",
+        "url": "https://github.com/javaee/javax.annotation/blob/master/LICENSE",
+        "name": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"
+    },
+    {
+        "comments": "A business-friendly OSS license",
+        "distribution": "repo",
+        "url": "https://github.com/javaee/javax.annotation/blob/master/LICENSE",
+        "name": "GNU GENERAL PUBLIC LICENSE, Version 2"
+    }
+]"""
+    }
+
+    def "multiple license-details are added to the files-structure, when one license-file contains multiple licenses"() {
+        buildFile << """
+            dependencies {
+                forTesting "javax.annotation:javax.annotation-api:1.3.2" // CDDL + GPL
+            }
+        """
+        normalizerFile << """
+              "transformationRules" : [
+                { "bundleName" : "cddl1", "licenseFileContentPattern" : ".*COMMON DEVELOPMENT AND DISTRIBUTION LICENSE .CDDL. Version 1.0.*" },
+                { "bundleName" : "gpl2", "licenseFileContentPattern" : ".*The GNU General Public License .GPL. Version 2, June 1991.*" }
+              ]
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        def licenseFilesGPath = resultFileGPath.configurations*.dependencies.flatten().licenseFiles.flatten()
+        def licenseFileString = prettyPrintJson(licenseFilesGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        licenseFileString == """[
+    {
+        "fileDetails": [
+            {
+                "licenseUrl": "https://opensource.org/licenses/CDDL-1.0",
+                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
+                "license": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"
+            },
+            {
+                "licenseUrl": "https://www.gnu.org/licenses/gpl-2.0",
+                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
+                "license": "GNU GENERAL PUBLIC LICENSE, Version 2"
+            }
+        ],
+        "files": [
+            "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt"
+        ]
+    }
+]"""
     }
 }

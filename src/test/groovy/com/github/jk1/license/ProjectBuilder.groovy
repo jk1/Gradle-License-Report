@@ -70,6 +70,15 @@ class ProjectBuilder extends BuilderSupport {
             project: GRADLE_PROJECT()
         )
     }
+
+    // allows to create multiple configurations with only defining the child-structure once.
+    def configurations(List<String> configNames, Closure<ConfigurationData> block) {
+        configNames.forEach { name ->
+            block.delegate = this
+            block(name)
+        }
+    }
+
     private ConfigurationData addConfiguration(String id) {
         ProjectData projectData = (ProjectData)current
 
@@ -167,7 +176,7 @@ class ProjectBuilder extends BuilderSupport {
 
         def details = new LicenseFileDetails(map)
 
-        licenseFileData.files << details.file
+        if (!licenseFileData.files.contains(details.file)) licenseFileData.files << details.file
         licenseFileData.fileDetails << details
         details
     }

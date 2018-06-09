@@ -49,6 +49,22 @@ class ProjectBuilderSpec extends Specification {
         data.importedModules.isEmpty()
     }
 
+    def "it creates the specified empty configurations within one call"() {
+        when:
+        ProjectData data = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {}
+            }
+        }
+
+        then:
+        data != null
+        data.project != null
+        data.configurations*.name as Set == ["runtime", "test"] as Set
+        data.configurations*.dependencies.flatten().isEmpty()
+        data.importedModules.isEmpty()
+    }
+
     def "it creates the specified configurations with the given empty poms"() {
         when:
         ProjectData data = builder.project {
@@ -213,5 +229,51 @@ class ProjectBuilderSpec extends Specification {
         data.importedModules*.modules.flatten().license == ["Apache  2"]
         data.importedModules*.modules.flatten().licenseUrl == ["apache-url"]
         data.configurations.isEmpty()
+    }
+
+    def "it creates all the configuration details for the given configurations"() {
+        when:
+        ProjectData data = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") { }
+                        manifest("mani1") {
+                            license(APACHE2_LICENSE().name)
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "file1", license: "lic1", licenseUrl: "licUrl1")
+                        }
+                    }
+                    module("mod2") {
+                        pom("pom2") { }
+                        manifest("mani2") {
+                            license(MIT_LICENSE())
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "file2", license: "lic2", licenseUrl: "licUrl2")
+                        }
+                    }
+                }
+            }
+        }
+
+        then:
+        data != null
+        data.project != null
+        data.configurations*.name as Set == ["runtime", "test"] as Set
+        data.configurations.forEach {
+            assert it.dependencies.flatten().poms*.flatten()*.name.flatten() as Set == ["pom1", "pom2"] as Set
+            assert it.dependencies.flatten().poms*.flatten()*.name.flatten() as Set == ["pom1", "pom2"] as Set
+
+            assert it.dependencies.flatten().manifests.flatten().find { it.name == "mani1" }*.license == [APACHE2_LICENSE().name]
+            assert it.dependencies.flatten().manifests.flatten().find { it.name == "mani2" }*.license == [MIT_LICENSE().name]
+
+            assert it.dependencies.flatten().licenseFiles.flatten().files.flatten() == ["file1", "file2"]
+            assert it.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file == ["file1", "file2"]
+            assert it.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license == ["lic1", "lic2"]
+            assert it.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl == ["licUrl1", "licUrl2"]
+        }
+        data.importedModules.isEmpty()
     }
 }

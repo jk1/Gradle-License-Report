@@ -43,7 +43,8 @@ class LicenseBundleNormalizerSpec extends Specification {
             {
               "bundles" : [
                 { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-1.1" },
-                { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" }
+                { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" },
+                { "bundleName" : "mit", "licenseName" : "MIT License", "licenseUrl" : "https://opensource.org/licenses/MIT" }
               ]"""
 
         // copy apache2 license file
@@ -70,19 +71,23 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("Apache 2")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache 2")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("Apache License, Version 2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache License, Version 2.0")
+                        }
                     }
                 }
             }
@@ -103,19 +108,23 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("Apache License, Version 2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache License, Version 2.0")
+                        }
                     }
                 }
             }
@@ -136,33 +145,23 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), name: "Apache 2")
-                    }
-                }
-            }
-            configuration("test") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), name: "Apache 2")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), name: "Apache 2")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                    }
-                }
-            }
-            configuration("test") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                        }
                     }
                 }
             }
@@ -183,33 +182,23 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("Apache 2")
-                    }
-                }
-            }
-            configuration("test") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("Apache 2")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache 2")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("Apache License, Version 2.0")
-                    }
-                }
-            }
-            configuration("test") {
-                module("mod1") {
-                    manifest("mani1") {
-                        license("Apache License, Version 2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache License, Version 2.0")
+                        }
                     }
                 }
             }
@@ -230,33 +219,23 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license")
-                    }
-                }
-            }
-            configuration("test") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
-                    }
-                }
-            }
-            configuration("test") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
                     }
                 }
             }
@@ -277,19 +256,23 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache 2")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache 2")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
                     }
                 }
             }
@@ -310,19 +293,23 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
                     }
                 }
             }
@@ -343,22 +330,26 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), name: "The Apache 2 License") // should stay
-                        license(APACHE2_LICENSE(), name: "Apache 2.0") // should be unified with the last one
-                        license(APACHE2_LICENSE())
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), name: "The Apache 2 License") // should stay
+                            license(APACHE2_LICENSE(), name: "Apache 2.0") // should be unified with the last one
+                            license(APACHE2_LICENSE())
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), name: "The Apache 2 License")
-                        license(APACHE2_LICENSE())
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), name: "The Apache 2 License")
+                            license(APACHE2_LICENSE())
+                        }
                     }
                 }
             }
@@ -379,20 +370,24 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                            licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    licenseFiles {
-                        licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", licenseUrl: "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
                     }
                 }
             }
@@ -417,27 +412,31 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(name: "name1", url: "url1")
-                        license(name: "name2", url: "url2")
-                        license(name: "name3", url: "url3")
-                        license(name: "name4", url: "url4")
-                        license(name: "name5", url: "url5")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "name1", url: "url1")
+                            license(name: "name2", url: "url2")
+                            license(name: "name3", url: "url3")
+                            license(name: "name4", url: "url4")
+                            license(name: "name5", url: "url5")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(name: "Apache License, Version 2.0", url: "url1")
-                        license(name: "Apache Software License, Version 1.1", url: "url2")
-                        license(name: "name3", url: "https://www.apache.org/licenses/LICENSE-2.0")
-                        license(name: "name4", url: "https://www.apache.org/licenses/LICENSE-2.0")
-                        license(name: "name5", url: "url5")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache License, Version 2.0", url: "url1")
+                            license(name: "Apache Software License, Version 1.1", url: "url2")
+                            license(name: "name3", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                            license(name: "name4", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                            license(name: "name5", url: "url5")
+                        }
                     }
                 }
             }
@@ -462,23 +461,27 @@ class LicenseBundleNormalizerSpec extends Specification {
             }"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(name: "name1", url: "url1")
-                        license(name: "name2", url: "url2")
-                        license(name: "name3", url: "url3")
-                        license(name: "name4", url: "url4")
-                        license(name: "name5", url: "url5")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "name1", url: "url1")
+                            license(name: "name2", url: "url2")
+                            license(name: "name3", url: "url3")
+                            license(name: "name4", url: "url4")
+                            license(name: "name5", url: "url5")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
                     }
                 }
             }
@@ -495,21 +498,27 @@ class LicenseBundleNormalizerSpec extends Specification {
         normalizerFile << """}"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), url: "different url") // should be normalized because name matches the bundle-name
-                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")   // should stay, because name is different
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), url: "different url")
+                            // should be normalized because name matches the bundle-name
+                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                            // should stay, because name is different
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                        }
                     }
                 }
             }
@@ -526,21 +535,27 @@ class LicenseBundleNormalizerSpec extends Specification {
         normalizerFile << """}"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), name: "different name") // should be normalized because url matches the bundle-url
-                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")   // should stay, because url is different
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), name: "different name")
+                            // should be normalized because url matches the bundle-url
+                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                            // should stay, because url is different
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE())
-                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE())
+                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                        }
                     }
                 }
             }
@@ -557,30 +572,155 @@ class LicenseBundleNormalizerSpec extends Specification {
         normalizerFile << """}"""
 
         ProjectData projectData = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), url: "different url")
-                        license(APACHE2_LICENSE(), name: "different name")
-                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), url: "different url")
+                            license(APACHE2_LICENSE(), name: "different name")
+                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                        }
                     }
                 }
             }
         }
         ProjectData expected = builder.project {
-            configuration("runtime") {
-                module("mod1") {
-                    pom("pom1") {
-                        license(APACHE2_LICENSE(), url: "different url")
-                        license(APACHE2_LICENSE(), name: "different name")
-                        license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(APACHE2_LICENSE(), url: "different url")
+                            license(APACHE2_LICENSE(), name: "different name")
+                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                        }
                     }
                 }
             }
         }
 
         when:
-        def result = newNormalizer(false).filter(projectData)
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "pom licenses where the two licenses are contained in one entry, are split up"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : ".*Apache 2.0.*" },
+                { "bundleName" : "mit", "licenseNamePattern" : ".*MIT.*" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache 2.0 + MIT", url: "some url")
+                        }
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                            license(name: "MIT License", url: "https://opensource.org/licenses/MIT")
+                        }
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "file licenses where the two licenses are contained in one entry, are split up"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseFileContentPattern" : ".*Apache 2.0.*" },
+                { "bundleName" : "mit", "licenseFileContentPattern" : ".*MIT.*" }
+              ]
+            }"""
+
+        new File(pluginOutputDir, "combined.license") << "Apache 2.0\nMIT"
+
+        ProjectData projectData = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "combined.license")
+                        }
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        licenseFiles {
+                            licenseFileDetails(file: "combined.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
+                            licenseFileDetails(file: "combined.license", license: "MIT License", licenseUrl: "https://opensource.org/licenses/MIT")
+                        }
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "manifest licenses where the two licenses are contained in one entry, are split up"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : ".*Apache 2.0.*" },
+                { "bundleName" : "mit", "licenseNamePattern" : ".*MIT.*" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache 2.0 + MIT")
+                        }
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license("Apache License, Version 2.0")
+                        }
+                        manifest("mani1") {
+                            license("MIT License")
+                        }
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
 
         then:
         json(result) == json(expected)
