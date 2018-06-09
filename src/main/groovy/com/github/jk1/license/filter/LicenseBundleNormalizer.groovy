@@ -217,23 +217,23 @@ class LicenseBundleNormalizer implements DependencyFilter {
         block(bundle)
     }
 
-    private def toConfig(Object slurpResult) {
+    private static def toConfig(Object slurpResult) {
         def config = new LicenseBundleNormalizerConfig()
         config.bundles = slurpResult.bundles.collect { new NormalizerLicenseBundle(it) }
         config.transformationRules = slurpResult.transformationRules.collect { new NormalizerTransformationRule(it) }
         config
     }
 
-    class LicenseBundleNormalizerConfig {
+    static class LicenseBundleNormalizerConfig {
         List<NormalizerLicenseBundle> bundles
         List<NormalizerTransformationRule> transformationRules
     }
-    class NormalizerLicenseBundle {
+    static class NormalizerLicenseBundle {
         String bundleName
         String licenseName
         String licenseUrl
     }
-    class NormalizerTransformationRule {
+    static class NormalizerTransformationRule {
         String licenseNamePattern
         String licenseUrlPattern
         String licenseFileContentPattern
