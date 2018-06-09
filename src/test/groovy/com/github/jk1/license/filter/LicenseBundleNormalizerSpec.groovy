@@ -19,7 +19,6 @@ import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import static com.github.jk1.license.ProjectBuilder.json
@@ -709,10 +708,10 @@ class LicenseBundleNormalizerSpec extends Specification {
                 configuration(configName) {
                     module("mod1") {
                         manifest("mani1") {
-                            license("Apache License, Version 2.0")
+                            license("MIT License")
                         }
                         manifest("mani1") {
-                            license("MIT License")
+                            license("Apache License, Version 2.0")
                         }
                     }
                 }
