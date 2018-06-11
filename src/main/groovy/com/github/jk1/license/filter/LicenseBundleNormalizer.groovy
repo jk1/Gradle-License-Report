@@ -148,7 +148,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     private List<NormalizerTransformationRule> findMatchingRulesForName(String name) {
         return normalizerConfig.transformationRules
-            .findAll { it.licenseNamePattern && name =~ it.licenseNamePattern }
+            .findAll { it.licenseNamePattern && (name == it.licenseNamePattern || name =~ it.licenseNamePattern) }
     }
     private List<NormalizerTransformationRule> findMatchingRulesForUrl(String url) {
         return normalizerConfig.transformationRules
