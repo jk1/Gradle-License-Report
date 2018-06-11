@@ -32,16 +32,20 @@ class ProjectReader {
         ProjectData data = new ProjectData()
         data.project = project
 
-        def projectsToScan = project.licenseReport.projects
-        LOGGER.info("Configured projects: " + projectsToScan.join(','))
-        List<Configuration> configurationsToScan = projectsToScan.collect {
-            findConfigurationsToScan(it)
+        Project[] projectsToScan = project.licenseReport.projects
+        LOGGER.info("Configured projects: ${projectsToScan.join(',')}")
+
+        List<ConfigurationData> readConfigurations = projectsToScan.collect { subProject ->
+            Set<Configuration> configurationsToScan = findConfigurationsToScan(subProject)
+
+            configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
+
+            LOGGER.info("Configurations(${subProject.name}): ${configurationsToScan.join(',')}")
+            readConfigurationData(configurationsToScan, subProject)
         }.flatten()
+        readConfigurations = mergeConfigurationDataWithSameName(readConfigurations)
 
-        configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
-
-        LOGGER.info("Configurations: " + configurationsToScan.join(','))
-        data.configurations.addAll(readConfigurationData(configurationsToScan, project))
+        data.configurations.addAll(readConfigurations)
         return data
     }
 
@@ -62,14 +66,9 @@ class ProjectReader {
     }
 
     private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, Project project) {
-        def configurationsByName = configurationsToScan.groupBy { it.name }
-
-        configurationsByName.collect { name, configs ->
-            List<ConfigurationData> configsPerName = configs.collect { config ->
-                LOGGER.info("Reading configuration: " + config)
-                configurationReader.read(project, config)
-            }
-            mergeConfigurations(configsPerName)
+        configurationsToScan.collect { config ->
+            LOGGER.info("Reading configuration: " + config)
+            configurationReader.read(project, config)
         }
     }
 
@@ -81,11 +80,15 @@ class ProjectReader {
         toScan.findAll { config -> !isResolvable(config) }
     }
 
-    static boolean isResolvable(Configuration config) {
-        config.hasProperty("canBeResolved") && config.canBeResolved
+    private static List<ConfigurationData> mergeConfigurationDataWithSameName(Collection<ConfigurationData> configData) {
+        def configurationsByName = configData.groupBy { it.name }
+
+        configurationsByName.collect { _, configs ->
+            mergeConfigurations(configs)
+        }
     }
 
-    static ConfigurationData mergeConfigurations(Collection<ConfigurationData> configs) {
+    private static ConfigurationData mergeConfigurations(Collection<ConfigurationData> configs) {
         ConfigurationData merged = new ConfigurationData()
 
         configs.forEach {
@@ -93,5 +96,9 @@ class ProjectReader {
             merged.dependencies.addAll(it.dependencies)
         }
         merged
+    }
+
+    static boolean isResolvable(Configuration config) {
+        config.hasProperty("canBeResolved") && config.canBeResolved
     }
 }

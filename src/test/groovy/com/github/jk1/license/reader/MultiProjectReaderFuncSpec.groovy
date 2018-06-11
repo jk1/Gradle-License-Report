@@ -42,21 +42,19 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 id 'com.github.jk1.dependency-license-report'
             }
             configurations {
-                forTesting1
+                mainConfig
             }
             repositories {
                 mavenCentral()
-                maven { url "https://dl.bintray.com/realm/maven" }
             }
 
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "$outputDir.absolutePath"
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
-                configurations = ['forTesting']
             }
             dependencies {
-                forTesting1 "org.apache.commons:commons-lang3:3.7"
+                mainConfig "org.apache.commons:commons-lang3:3.7"
             }
         """
     }
@@ -65,14 +63,14 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         setup:
         newSubBuildFile("sub1") << """
             configurations {
-                forTesting1
+                mainConfig
             }
             repositories {
                 mavenCentral()
             }
             dependencies {
-                forTesting1 "org.apache.commons:commons-lang3:3.7"
-                forTesting1 "org.jetbrains:annotations:16.0.1"
+                mainConfig "org.apache.commons:commons-lang3:3.7"
+                mainConfig "org.jetbrains:annotations:16.0.1"
             }
         """
 
@@ -184,7 +182,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "name": "annotations"
             }
         ],
-        "name": "forTesting1"
+        "name": "mainConfig"
     }
 ]"""
     }
@@ -193,13 +191,13 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         setup:
         newSubBuildFile("sub1") << """
             configurations {
-                forTesting2
+                subConfig
             }
             repositories {
                 mavenCentral()
             }
             dependencies {
-                forTesting2 "org.apache.commons:commons-lang3:3.7"
+                subConfig "org.apache.commons:commons-lang3:3.7"
             }
         """
 
@@ -274,7 +272,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "name": "commons-lang3"
             }
         ],
-        "name": "forTesting1"
+        "name": "mainConfig"
     },
     {
         "dependencies": [
@@ -336,20 +334,19 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "name": "commons-lang3"
             }
         ],
-        "name": "forTesting2"
+        "name": "subConfig"
     }
 ]"""
     }
 
     def "project filtering is respected"() {
         setup:
-        buildFile.newWriter().withWriter { w ->
-            w << """
+        buildFile.text = """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
             }
             configurations {
-                forTesting1
+                mainConfig
             }
             repositories {
                 mavenCentral()
@@ -360,23 +357,21 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 outputDir = "$outputDir.absolutePath"
                 projects = [project]
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
-                configurations = ['forTesting']
             }
             dependencies {
-                forTesting1 "org.apache.commons:commons-lang3:3.7"
+                mainConfig "org.apache.commons:commons-lang3:3.7"
             }
         """
-        }
 
         newSubBuildFile("sub1") << """
             configurations {
-                forTesting2
+                subConfig
             }
             repositories {
                 mavenCentral()
             }
             dependencies {
-                forTesting2 "org.apache.commons:commons-lang3:3.7"
+                subConfig "org.apache.commons:commons-lang3:3.7"
             }
         """
 
@@ -451,7 +446,89 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "name": "commons-lang3"
             }
         ],
-        "name": "forTesting1"
+        "name": "mainConfig"
+    }
+]"""
+    }
+
+    def "repositories of the sub-projects are used"() {
+        setup:
+        buildFile.text = """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+            }
+
+            import com.github.jk1.license.render.*
+            licenseReport {
+                outputDir = "$outputDir.absolutePath"
+                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+            }
+        """
+
+        newSubBuildFile("sub1") << """
+            configurations {
+                subConfig
+            }
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                subConfig "org.jetbrains:annotations:16.0.1"
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        configurationsString == """[
+    {
+        "dependencies": [
+            {
+                "group": "org.jetbrains",
+                "manifests": [
+                    {
+                        "vendor": null,
+                        "hasPackagedLicense": false,
+                        "version": null,
+                        "license": null,
+                        "description": null,
+                        "url": null,
+                        "name": null
+                    }
+                ],
+                "version": "16.0.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "https://github.com/JetBrains/java-annotations",
+                        "description": "A set of annotations used for code inspection support and code documentation.",
+                        "name": "JetBrains Java Annotations",
+                        "organization": null,
+                        "licenses": [
+                            {
+                                "comments": "",
+                                "distribution": "repo",
+                                "url": "http://www.apache.org/license/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    
+                ],
+                "empty": false,
+                "name": "annotations"
+            }
+        ],
+        "name": "subConfig"
     }
 ]"""
     }
