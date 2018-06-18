@@ -17,23 +17,50 @@ package com.github.jk1.license
 
 import com.github.jk1.license.reader.ProjectReader
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
+@CacheableTask
 class ReportTask extends DefaultTask {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
+    @InputFiles
+    FileCollection getClasspath() {
+        ProjectReader.findConfigured(getProject()).inject(project.files(), { FileCollection memo, eachConfiguration ->
+            memo + eachConfiguration
+        })
+    }
+
     @Input
-    String getConfigurationSnapshot(){
-        return getProject().licenseReport.snapshot
+    String getConfigurationSnapshot() {
+        LicenseReportExtension licenseReport = getProject().licenseReport
+        def snapshot = []
+        snapshot << 'projects'
+        snapshot += licenseReport.projects.collect { it.path }
+        snapshot << 'renderers'
+        snapshot += licenseReport.renderers.collect { it.class.name }
+        snapshot << 'importers'
+        snapshot += licenseReport.importers.collect { it.class.name }
+        snapshot << 'filters'
+        snapshot += licenseReport.filters.collect { it.class.name }
+        snapshot << 'configurations '
+        snapshot += licenseReport.configurations
+        snapshot << 'exclude'
+        snapshot += licenseReport.excludeGroups
+        snapshot << 'excludes'
+        snapshot += licenseReport.excludes
+        snapshot.join("!")
     }
 
     @OutputDirectory
-    File getOutputFolder(){
+    File getOutputFolder() {
         return new File(getProject().licenseReport.outputDir)
     }
 
