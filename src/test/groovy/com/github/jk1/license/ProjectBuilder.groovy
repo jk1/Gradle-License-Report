@@ -20,9 +20,9 @@ import groovy.json.JsonBuilder
 import static com.github.jk1.license.ProjectDataFixture.GRADLE_PROJECT
 
 class ProjectBuilder extends BuilderSupport {
+
     @Override
     protected void setParent(Object name, Object o1) { }
-
 
     @Override
     protected Object createNode(Object name) {
@@ -124,6 +124,7 @@ class ProjectBuilder extends BuilderSupport {
         configurationData.dependencies << module
         module
     }
+
     private PomData addPom(String id) {
         ModuleData module = (ModuleData)current
 
@@ -140,6 +141,7 @@ class ProjectBuilder extends BuilderSupport {
         module.poms << pom
         pom
     }
+
     private ManifestData addManifest(String id) {
         ModuleData module = (ModuleData)current
 
@@ -205,6 +207,7 @@ class ProjectBuilder extends BuilderSupport {
         pom.licenses << licenseToUse
         licenseToUse
     }
+    
     private String addManifestLicense(Object license) {
         ManifestData manifest = (ManifestData)current
         String licenseText
