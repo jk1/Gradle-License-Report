@@ -39,7 +39,7 @@ class LicenseReportExtension {
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
         configurations = ['runtime']
-        excludeGroups = [project.group]
+        excludeGroups = []
         excludes = []
         importers = []
         filters = []
@@ -65,7 +65,8 @@ class LicenseReportExtension {
     }
 
     boolean isExcluded(ResolvedDependency module) {
-        return excludeGroups.contains(module.moduleGroup) ||
+        return projects.any { module.moduleGroup == it.group } ||
+                excludeGroups.contains(module.moduleGroup) ||
                 excludes.contains("$module.moduleGroup:$module.moduleName")
     }
 
