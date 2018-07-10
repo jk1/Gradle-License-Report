@@ -70,16 +70,4 @@ class LicenseReportExtension {
                 excludes.contains("$module.moduleGroup:$module.moduleName")
     }
 
-    // configuration snapshot for the up-to-date check
-    String getSnapshot() {
-        StringBuilder builder = new StringBuilder()
-        projects.each { builder.append(it.name) }
-        renderers.each { builder.append(it.class.name) }
-        importers.each { builder.append(it.class.name) }
-        filters.each { builder.append(it.class.name) }
-        configurations.each { builder.append(it) }
-        excludeGroups.each { builder.append(it) }
-        excludes.each { builder.append(it) }
-        return builder.toString()
-    }
 }

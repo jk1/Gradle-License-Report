@@ -72,7 +72,7 @@ class ProjectReader {
         }
     }
 
-    private static Set<Configuration> findConfigured(Project project) {
+    static Set<Configuration> findConfigured(Project project) {
         project.configurations.findAll { config -> config.name in project.licenseReport.configurations }
     }
 
