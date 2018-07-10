@@ -22,8 +22,7 @@ import org.gradle.api.artifacts.ResolvedArtifact
 import java.util.concurrent.atomic.AtomicInteger
 
 class CachingArtifactResolver {
-
-    private static AtomicInteger counter = new AtomicInteger()
+    private static final String configName = "dependencyLicenseReport"
     private Map<Map<String, String>, Collection<ResolvedArtifact>> cache =
             new HashMap<Map<String, String>, Collection<ResolvedArtifact>>()
     private Project project
@@ -42,17 +41,20 @@ class CachingArtifactResolver {
     }
 
     private Collection<ResolvedArtifact> doResolveArtifact(Object spec) {
-        String configName = "dependencyLicenseReport${counter.incrementAndGet()}"
         project.configurations.create("$configName")
         project.dependencies."$configName"(spec)
         Configuration config = project.configurations.getByName(configName)
-        Collection<ResolvedArtifact> artifacts = config.resolvedConfiguration.resolvedArtifacts
-        if (artifacts != null) {
-            // Exercise #getFile() to download the file and catch exceptions here
-            for (ResolvedArtifact artifact : artifacts) {
-                artifact.getFile()
+        try {
+            Collection<ResolvedArtifact> artifacts = config.resolvedConfiguration.resolvedArtifacts
+            if (artifacts != null) {
+                // Exercise #getFile() to download the file and catch exceptions here
+                for (ResolvedArtifact artifact : artifacts) {
+                    artifact.getFile()
+                }
             }
+            return artifacts
+        } finally {
+            project.configurations.remove(config)
         }
-        return artifacts
     }
 }
