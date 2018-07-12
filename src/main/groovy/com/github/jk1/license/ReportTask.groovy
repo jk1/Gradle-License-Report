@@ -31,6 +31,11 @@ class ReportTask extends DefaultTask {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
+    ReportTask() {
+        group = 'Reporting'
+        description = 'Generates license report for all dependencies of this project and its subprojects'
+    }
+
     @InputFiles
     FileCollection getClasspath() {
         ProjectReader.findConfigured(getProject()).inject(project.files(), { FileCollection memo, eachConfiguration ->
