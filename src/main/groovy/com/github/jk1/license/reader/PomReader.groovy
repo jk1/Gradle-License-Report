@@ -27,6 +27,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.xml.sax.SAXException
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -96,7 +97,15 @@ class PomReader {
         }
         LOGGER.debug("Searching for POM file in $archiveToSearch -- found ${pomEntry?.name}")
         if (!pomEntry) return null
-        return createParser().parse(archive.getInputStream(pomEntry))
+        try {
+            return createParser().parse(archive.getInputStream(pomEntry))
+        } catch (SAXException e) {
+            LOGGER.warn("Error parsing $pomEntry.name in $archiveToSearch", e)
+            return null
+        } catch (IOException e) {
+            LOGGER.warn("Error reading $pomEntry.name in $archiveToSearch", e)
+            return null
+        }
     }
 
     private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact) {
@@ -211,8 +220,16 @@ class PomReader {
         return pomData
     }
 
-    private static GPathResult slurpPomItself(File toSlurp) {
-        return createParser().parse(toSlurp)
+    private GPathResult slurpPomItself(File toSlurp) {
+        try {
+            return createParser().parse(toSlurp)
+        } catch (SAXException e) {
+            LOGGER.warn("Error parsing $toSlurp", e)
+            return null
+        } catch (IOException e) {
+            LOGGER.warn("Error reading $toSlurp", e)
+            return null
+        }
     }
 
     private static XmlSlurper createParser() {
