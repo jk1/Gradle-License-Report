@@ -32,6 +32,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
             repositories {
                 mavenCentral()
                 maven { url "https://dl.bintray.com/realm/maven" }
+                maven { url "https://maven.repository.redhat.com/ga" }
             }
 
             import com.github.jk1.license.render.*
@@ -237,6 +238,20 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         where:
         dependency                  | expectedContent
         DEPENDENCY_COMMONS_LANG3    | EXPECTED_CONTENT_COMMONS_LANG3
+    }
+
+    def "it ignores POM parsing errors"(){
+        buildFile << """
+            dependencies {
+                forTesting "org.codehaus.woodstox:stax2-api:3.1.3.redhat-1" // has invalid pom.xml
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
     }
 
 
