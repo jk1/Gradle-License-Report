@@ -20,11 +20,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 
 @CacheableTask
 class ReportTask extends DefaultTask {
@@ -38,9 +34,9 @@ class ReportTask extends DefaultTask {
 
     @InputFiles
     FileCollection getClasspath() {
-        ProjectReader.findConfigured(getProject()).inject(project.files(), { FileCollection memo, eachConfiguration ->
-            memo + eachConfiguration
-        })
+        (getProject().subprojects + getProject())
+            .collectMany { ProjectReader.findConfigured(it) }
+            .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
     }
 
     @Input
