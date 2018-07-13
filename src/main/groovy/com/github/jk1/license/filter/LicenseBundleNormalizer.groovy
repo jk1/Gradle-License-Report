@@ -15,6 +15,8 @@
  */
 package com.github.jk1.license.filter
 
+import com.github.jk1.license.ImportedModuleBundle
+import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseFileDetails
 import com.github.jk1.license.LicenseReportExtension
@@ -83,6 +85,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         data.configurations*.dependencies.flatten().forEach { normalizePoms(it) }
         data.configurations*.dependencies.flatten().forEach { normalizeManifest(it) }
         data.configurations*.dependencies.flatten().forEach { normalizeLicenseFileDetailsLicense(it) }
+        data.importedModules.forEach { normalizeImportedModuleBundle(it) }
 
         data = duplicateFilter.filter(data)
 
@@ -108,6 +111,14 @@ class LicenseBundleNormalizer implements DependencyFilter {
             licenseFiles.fileDetails.clear()
             licenseFiles.fileDetails.addAll(normalizedDetails)
         }
+    }
+
+    private def normalizeImportedModuleBundle(ImportedModuleBundle importedModuleBundle) {
+        List<ModuleData> normalizedModuleData = importedModuleBundle.modules.collect {
+            normalizeModuleData(it)
+        }.flatten()
+        importedModuleBundle.modules.clear()
+        importedModuleBundle.modules.addAll(normalizedModuleData)
     }
 
     private Collection<License> normalizePomLicense(License license) {
@@ -144,6 +155,17 @@ class LicenseBundleNormalizer implements DependencyFilter {
         if (rules.isEmpty()) return [licenseFileDetails]
 
         rules.collect { normalizeLicenseFileDetailsLicense(it, licenseFileDetails) }
+    }
+
+    private Collection<ImportedModuleData> normalizeModuleData(ImportedModuleData importedModuleData) {
+        List<NormalizerTransformationRule> rules = []
+
+        rules += findMatchingRulesForName(importedModuleData.license)
+        rules += findMatchingRulesForUrl(importedModuleData.licenseUrl)
+
+        if (rules.isEmpty()) return [importedModuleData]
+
+        rules.collect { normalizeModuleDataLicense(it, importedModuleData) }
     }
 
     private List<NormalizerTransformationRule> findMatchingRulesForName(String name) {
@@ -198,6 +220,23 @@ class LicenseBundleNormalizer implements DependencyFilter {
             file: details.file,
             license: details.license,
             licenseUrl: details.licenseUrl
+        )
+
+        normalizeWithBundle(rule) { NormalizerLicenseBundle bundle ->
+            if (rule.transformName) normalized.license = bundle.licenseName
+            if (rule.transformUrl) normalized.licenseUrl = bundle.licenseUrl
+        }
+        normalized
+    }
+
+
+    private ImportedModuleData normalizeModuleDataLicense(NormalizerTransformationRule rule, ImportedModuleData importedModuleData) {
+        ImportedModuleData normalized = new ImportedModuleData(
+            name: importedModuleData.name,
+            version: importedModuleData.version,
+            projectUrl: importedModuleData.projectUrl,
+            license: importedModuleData.license,
+            licenseUrl: importedModuleData.licenseUrl
         )
 
         normalizeWithBundle(rule) { NormalizerLicenseBundle bundle ->

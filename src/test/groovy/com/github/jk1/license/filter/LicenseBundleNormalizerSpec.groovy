@@ -15,6 +15,8 @@
  */
 package com.github.jk1.license.filter
 
+import com.github.jk1.license.ImportedModuleBundle
+import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
 import org.junit.Rule
@@ -202,6 +204,50 @@ class LicenseBundleNormalizerSpec extends Specification {
                 }
             }
         }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
+    def "all bundles of all imported modules are normalized"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2.*" }
+              ]
+            }"""
+
+        ProjectData projectData = new ProjectData(project: GRADLE_PROJECT(), importedModules:
+            [
+                new ImportedModuleBundle('name', [
+                    new ImportedModuleData(
+                        name: 'name',
+                        version: 'version',
+                        projectUrl: 'projectUrl',
+                        license: 'Apache 2.0',
+                        licenseUrl: 'licenseUrl'
+                    )
+                ]
+                )
+            ]
+        )
+
+        ProjectData expected = new ProjectData(project: GRADLE_PROJECT(), importedModules:
+            [
+                new ImportedModuleBundle('name', [
+                    new ImportedModuleData(
+                        name: 'name',
+                        version: 'version',
+                        projectUrl: 'projectUrl',
+                        license: 'Apache License, Version 2.0',
+                        licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0'
+                    )
+                ]
+                )
+            ]
+        )
 
         when:
         def result = newNormalizer().filter(projectData)
