@@ -1,1 +1,3 @@
 rootProject.name = 'gradle-license-report'
+
+enableFeaturePreview('STABLE_PUBLISHING')
