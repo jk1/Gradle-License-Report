@@ -21,6 +21,7 @@
     { "bundleName" : "bsd-3",   "licenseName" : "The 3-Clause BSD License", "licenseUrl" : "https://opensource.org/licenses/BSD-3-Clause" },
     { "bundleName" : "cc0",     "licenseName" : "Creative Commons Legal Code", "licenseUrl" : "https://repository.jboss.org/licenses/cc0-1.0.txt" },
     { "bundleName" : "cddl1",   "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0", "licenseUrl" : "https://oss.oracle.com/licenses/CDDL" },
+    { "bundleName" : "cddl1.1", "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1", "licenseUrl" : "https://oss.oracle.com/licenses/CDDL-1.1" },
     { "bundleName" : "cpl-1.0", "licenseName" : "Common Public License - v 1.0", "licenseUrl" : "https://www.eclipse.org/legal/cpl-v10.html" },
     { "bundleName" : "epl1",    "licenseName" : "Eclipse Public License - v 1.0", "licenseUrl" : "http://www.eclipse.org/legal/epl-v10.html" },
     { "bundleName" : "epl2",    "licenseName" : "Eclipse Public License - v 2.0", "licenseUrl" : "https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt" },
