@@ -24,6 +24,8 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 class PluginCompatibilityTest extends Specification {
+    private final static def supportedGradleVersions = [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7", "4.8", "4.9", "4.10" ]
+    private final static def unsupportedGradleVersions = [ "3.2" ]
 
     @Rule
     TemporaryFolder testProjectDir = new TemporaryFolder()
@@ -109,7 +111,7 @@ class PluginCompatibilityTest extends Specification {
 }"""
 
         where:
-        gradleVersion << [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7", "4.8" ]
+        gradleVersion << supportedGradleVersions
     }
 
     @Unroll
@@ -122,7 +124,7 @@ class PluginCompatibilityTest extends Specification {
         ex.message.contains("License Report Plugin requires Gradle")
 
         where:
-        gradleVersion << [ "3.2" ]
+        gradleVersion << unsupportedGradleVersions
     }
 
     private def runGradle(String gradleVersion) {
