@@ -42,15 +42,24 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         output.text = """
 <html>
 <head>
-<title>Dependency License Report for $project.name</title>
+    <title>
+        Dependency License Report for $project.name
+    </title>
 <head>
 <body>
-<h1>Dependency License Report for $project.name ${if (!'unspecified'.equals(project.version)) project.version else ''}</h1>
+    <h1>
+        Dependency License Report for $project.name ${if (!'unspecified'.equals(project.version)) project.version else ''}
+    </h1>
 """
         printDependencies(data)
         output << """
-<hr />
-<p id="timestamp">This report was generated at <em>${new Date()}</em>.</p>
+    <hr />
+        <p id="timestamp">
+            This report was generated at 
+            <em>
+                ${new Date()}
+            </em>.
+        </p>
 </body>
 </html>
 """
@@ -64,15 +73,23 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
 
     private String printDependency(ModuleData data) {
         boolean projectUrlDone = false
-        output << "<hr />"
-        output << "<p><strong> ${++counter}.</strong> "
-        if (data.group) output << "<strong>Group:</strong> $data.group "
-        if (data.name) output << "<strong>Name:</strong> $data.name "
-        if (data.version) output << "<strong>Version:</strong> $data.version "
-        output << "</p>"
-
+        output << "\n    <hr />"
+        output << "" +
+            "\n        <p>" +
+            "\n            <strong>${++counter}.</strong>"
+        if (data.group) output << "" +
+            "\n            <strong>Group:</strong> $data.group"
+        if (data.name) output << "" +
+            "\n            <strong>Name:</strong> $data.name"
+        if (data.version) output << "" +
+            "\n            <strong>Version:</strong> $data.version"
+        output << "" +
+            "\n        </p>"
         if (data.poms.isEmpty() && data.manifests.isEmpty()) {
-            output << "<p><strong>No license information found</strong></p>"
+            output << "" +
+                "\n        <p>" +
+                "\n            <strong>No license information found</strong>" +
+                "\n        </p>"
             return
         }
 
@@ -80,7 +97,15 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
             ManifestData manifest = data.manifests.first()
             PomData pomData = data.poms.first()
             if (manifest.url && pomData.projectUrl && manifest.url == pomData.projectUrl) {
-                output << "<p><strong>Project URL:</strong> <code><a href=\"$manifest.url\">$manifest.url</a></code></p>"
+                output << "" +
+                    "\n        <p>" +
+                    "\n            <strong>Project URL:</strong>" +
+                    "\n            <code>" +
+                    "\n                <a href=\"$manifest.url\">" +
+                    "\n                    $manifest.url" +
+                    "\n                </a>" +
+                    "\n            </code>" +
+                    "\n        </p>"
                 projectUrlDone = true
             }
         }
@@ -88,15 +113,38 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         if (!data.manifests.isEmpty()) {
             ManifestData manifest = data.manifests.first()
             if (manifest.url && !projectUrlDone) {
-                output << "<p><strong>Manifest Project URL:</strong> <code><a href=\"$manifest.url\">$manifest.url</a></code></p>"
+                output << "" +
+                    "\n        <p>" +
+                    "\n            <strong>Manifest Project URL:</strong>" +
+                    "\n            <code>" +
+                    "\n                <a href=\"$manifest.url\">" +
+                    "\n                    $manifest.url" +
+                    "\n                </a>" +
+                    "\n            </code>" +
+                    "\n        </p>"
             }
             if (manifest.license) {
                 if (manifest.license.startsWith("http")) {
-                    output << "<p><strong>Manifest license URL:</strong> <a href=\"$manifest.license\">$manifest.license</a></p>"
+                    output << "" +
+                        "\n        <p>" +
+                        "\n            <strong>Manifest license URL:</strong>" +
+                        "\n            <a href=\"$manifest.license\">" +
+                        "\n                $manifest.license" +
+                        "\n            </a>" +
+                        "\n        </p>"
                 } else if (manifest.hasPackagedLicense) {
-                    output << "<p><strong>Packaged License File:</strong> <a href=\"$manifest.url\">$manifest.license</a></p>"
+                    output << "" +
+                        "\n        <p>" +
+                        "\n            <strong>Packaged License File:</strong>" +
+                        "\n            <a href=\"$manifest.url\">" +
+                        "\n                $manifest.license" +
+                        "\n            </a>" +
+                        "\n        </p>"
                 } else {
-                    output << "<p><strong>Manifest License:</strong> $manifest.license (Not packaged)</p>"
+                    output << "" +
+                        "\n        <p>" +
+                        "\n            <strong>Manifest License:</strong> $manifest.license (Not packaged)" +
+                        "\n        </p>"
                 }
             }
         }
@@ -104,25 +152,51 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         if (!data.poms.isEmpty()) {
             PomData pomData = data.poms.first()
             if (pomData.projectUrl && !projectUrlDone) {
-                output << "<p><strong>POM Project URL:</strong> <code><a href=\"$pomData.projectUrl\">$pomData.projectUrl</a></code></p>"
+                output << "" +
+                    "\n        <p>" +
+                    "\n            <strong>POM Project URL:</strong>" +
+                    "\n            <code>" +
+                    "\n                <a href=\"$pomData.projectUrl\">" +
+                    "\n                    $pomData.projectUrl" +
+                    "\n                </a>" +
+                    "\n            </code>" +
+                    "\n        </p>"
             }
             if (pomData.licenses) {
                 pomData.licenses.each { License license ->
-                    output << "<p><strong>POM License: $license.name</strong>"
+                    output << "" +
+                        "\n        <p>" +
+                        "\n            <strong>POM License: $license.name</strong>"
                     if (license.url) {
                         if (license.url.startsWith("http")) {
-                            output << " - <a href=\"$license.url\">$license.url</a>"
+                            output << "" +
+                                "\n            - " +
+                                "\n            <a href=\"$license.url\">" +
+                                "\n                $license.url" +
+                                "\n            </a>"
                         } else {
-                            output << "<p><strong>License:</strong> $license.url</p>"
+                            output << "" +
+                                "\n        <p>" +
+                                "\n            <strong>License:</strong> " +
+                                "\n            $license.url" +
+                                "\n        </p>"
                         }
+                        output << "\n        </p>"
                     }
                 }
             }
         }
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
-            output << '<p><strong>Embedded license files:</strong> '
-            output << data.licenseFiles.first().fileDetails.collect({ "<a href=\"$it.file\">$it.file</a> " }).join('')
-            output << '</p>'
+            output << '' +
+                '\n        <p>' +
+                '\n            <strong>Embedded license files:</strong> '
+            output << data.licenseFiles.first().fileDetails.collect({ "" +
+                "\n            <a href=\"$it.file\">" +
+                "\n                $it.file" +
+                "\n            </a> " }).join('')
+            output << '' +
+                '\n        </p>'
         }
+        output << '\n'
     }
 }
