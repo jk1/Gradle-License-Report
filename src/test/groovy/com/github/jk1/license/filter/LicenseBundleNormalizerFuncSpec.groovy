@@ -198,7 +198,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleLicenses": [
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 }
             ]
         },
@@ -211,7 +211,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleLicenses": [
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 }
             ]
         },
@@ -224,7 +224,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleLicenses": [
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
                 }
             ]
         }

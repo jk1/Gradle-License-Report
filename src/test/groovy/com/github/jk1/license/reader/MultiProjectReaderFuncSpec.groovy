@@ -130,7 +130,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "license": null
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             }
@@ -257,7 +257,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "license": null
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             }
@@ -319,7 +319,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "license": null
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             }
@@ -431,7 +431,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "license": null
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             }

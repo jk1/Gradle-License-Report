@@ -86,7 +86,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "license": null
             },
             {
-                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                 "license": "Apache License, Version 2.0"
             }
@@ -352,7 +352,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-logging-1.1.1.jar/META-INF/LICENSE",
                                 "license": "Apache License, Version 2.0"
                             },
@@ -414,7 +414,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                                 "license": null
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             }
@@ -466,7 +466,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "ehcache-3.3.1.jar/LICENSE",
                                 "license": "Apache License, Version 2.0"
                             },
@@ -563,12 +563,12 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "spring-beans-3.2.3.RELEASE.jar/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "spring-beans-3.2.3.RELEASE.jar/META-INF/license.txt",
                                 "license": "Apache License, Version 2.0"
                             }
@@ -620,12 +620,12 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt",
                                 "license": "Apache License, Version 2.0"
                             }
@@ -677,12 +677,12 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "spring-tx-3.2.3.RELEASE.jar/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
-                                "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0",
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "spring-tx-3.2.3.RELEASE.jar/META-INF/license.txt",
                                 "license": "Apache License, Version 2.0"
                             }
