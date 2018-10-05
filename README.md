@@ -81,6 +81,9 @@ licenseReport {
     // Set importers to import any external dependency information, i.e. from npm.
     // Custom importer should implement DependencyDataImporter interface.
     importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
+    
+    // This is for the allowed-licenses-file in checkLicense Task
+    allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
 }
 ```
 
@@ -331,4 +334,73 @@ licenseReport {
 ```
 
 The same technique can be used to create a filter or a renderer to support custom report formats.
+
+## Check Dependency Licenses
+
+This task is for checking dependencies/imported modules if their licenses are allowed to be used.  
+
+```batch
+./gradlew checkLicense
+```
+
+If there are not allowed licenses, the task will fail and a report like the following
+will be generated under `$outputDir` which you specified in the configuration:
+
+```json
+{
+  "dependenciesWithoutAllowedLicenses": [
+    {
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
+      "moduleVersion": "1.2.51"
+    },
+    {
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-common",
+      "moduleVersion": "1.2.51"
+    }
+  ]
+}
+```
+
+### Allowed licenses file
+
+Defines which licenses are allowed to be used:
+
+```json
+{
+  "allowedLicenses": [
+    {
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
+      "moduleVersion": "1.2.60"
+    },
+    {
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleName": "org.jetbrains.kotlin*",
+      "moduleVersion": ".*"
+    },
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": ".*"
+    },
+    {
+      "moduleLicense": "MIT License"
+    },
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": ""
+    }
+  ]
+}
+
+```
+
+Also specify the allowed license file in the configuration:
+
+```groovy
+licenseReport {
+    allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
+}
+```
 
