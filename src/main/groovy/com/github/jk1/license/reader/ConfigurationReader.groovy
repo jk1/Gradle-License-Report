@@ -26,16 +26,18 @@ import org.gradle.api.logging.Logging
 
 import static com.github.jk1.license.reader.ProjectReader.isResolvable
 
-
 class ConfigurationReader {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
-    private ModuleReader moduleReader = new ModuleReader()
+    private CachedModuleReader moduleReader
     private LicenseReportExtension config
+
+    ConfigurationReader(CachedModuleReader moduleReader) {
+        this.moduleReader = moduleReader
+    }
 
     ConfigurationData read(Project project, Configuration configuration) {
         config = project.licenseReport
-
         ConfigurationData data = new ConfigurationData()
         data.name = configuration.name
 
@@ -51,6 +53,7 @@ class ConfigurationReader {
         for (ResolvedDependency dependency : configuration.resolvedConfiguration.getFirstLevelModuleDependencies()) {
             collectDependencies(dependencies, dependency)
         }
+
         LOGGER.info("Processing dependencies for configuration [$configuration]: " + dependencies.join(','))
         for (ResolvedDependency dependency : dependencies) {
             LOGGER.debug("Processing dependency: $dependency")

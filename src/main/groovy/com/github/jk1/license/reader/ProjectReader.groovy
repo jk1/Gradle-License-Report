@@ -26,7 +26,8 @@ import org.gradle.api.logging.Logging
 class ProjectReader {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
-    private ConfigurationReader configurationReader = new ConfigurationReader()
+    private CachedModuleReader moduleReader = new CachedModuleReader()
+    private ConfigurationReader configurationReader = new ConfigurationReader(moduleReader)
 
     ProjectData read(Project project) {
         ProjectData data = new ProjectData()
