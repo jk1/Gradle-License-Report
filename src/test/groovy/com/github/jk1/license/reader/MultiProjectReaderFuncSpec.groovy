@@ -125,14 +125,14 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            },
-                            {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
+                            },
+                            {
+                                "licenseUrl": null,
+                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "license": null
                             }
                         ],
                         "files": [
@@ -252,14 +252,14 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            },
-                            {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
+                            },
+                            {
+                                "licenseUrl": null,
+                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "license": null
                             }
                         ],
                         "files": [
@@ -314,14 +314,14 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            },
-                            {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
+                            },
+                            {
+                                "licenseUrl": null,
+                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "license": null
                             }
                         ],
                         "files": [
@@ -426,14 +426,14 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                     {
                         "fileDetails": [
                             {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            },
-                            {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
                                 "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
+                            },
+                            {
+                                "licenseUrl": null,
+                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "license": null
                             }
                         ],
                         "files": [
