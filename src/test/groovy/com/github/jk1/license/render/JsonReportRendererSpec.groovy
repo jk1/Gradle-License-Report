@@ -78,6 +78,7 @@ class JsonReportRendererSpec extends Specification {
             }
             importedModulesBundle("bundle1") {
                 importedModule(name: "mod1", license: "Apache  2", licenseUrl: "apache-url")
+                importedModule(name: "mod2", license: "Apache  2", licenseUrl: "apache-url")
             }
         }
     }
@@ -110,13 +111,22 @@ class JsonReportRendererSpec extends Specification {
     "importedModules": [
         {
             "moduleName": "bundle1",
-            "dependencies": {
-                "moduleName": "mod1",
-                "moduleUrl": "some-projectUrl",
-                "moduleVersion": "some-version",
-                "moduleLicense": "Apache  2",
-                "moduleLicenseUrl": "apache-url"
-            }
+            "dependencies": [
+                {
+                    "moduleName": "mod1",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                },
+                {
+                    "moduleName": "mod2",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                }
+            ]
         }
     ]
 }"""
@@ -178,13 +188,22 @@ class JsonReportRendererSpec extends Specification {
     "importedModules": [
         {
             "moduleName": "bundle1",
-            "dependencies": {
-                "moduleName": "mod1",
-                "moduleUrl": "some-projectUrl",
-                "moduleVersion": "some-version",
-                "moduleLicense": "Apache  2",
-                "moduleLicenseUrl": "apache-url"
-            }
+            "dependencies": [
+                {
+                    "moduleName": "mod1",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                },
+                {
+                    "moduleName": "mod2",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                }
+            ]
         }
     ]
 }"""

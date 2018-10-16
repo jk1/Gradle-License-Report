@@ -157,7 +157,7 @@ class JsonReportRenderer implements ReportRenderer {
     }
 
     static def readModuleDependencies(def modules) {
-        modules.collectEntries {
+        modules.collect {
             trimAndRemoveNullEntries([moduleName      : it.name,
                                       moduleUrl       : it.projectUrl,
                                       moduleVersion   : it.version,
