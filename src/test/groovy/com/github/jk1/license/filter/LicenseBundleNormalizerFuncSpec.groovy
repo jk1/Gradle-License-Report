@@ -198,7 +198,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleLicenses": [
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
                 }
             ]
         },
@@ -211,7 +211,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleLicenses": [
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
                 }
             ]
         },
@@ -224,7 +224,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             "moduleLicenses": [
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
                 }
             ]
         }
@@ -260,36 +260,36 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         "fileDetails": [
             {
                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                "file": "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
+                "file": "joda-time_joda-time_2.9.9/META-INF/LICENSE.txt",
                 "license": "Apache License, Version 2.0"
             },
             {
                 "licenseUrl": null,
-                "file": "joda-time-2.9.9.jar/META-INF/NOTICE.txt",
+                "file": "joda-time_joda-time_2.9.9/META-INF/NOTICE.txt",
                 "license": null
             }
         ],
         "files": [
-            "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
-            "joda-time-2.9.9.jar/META-INF/NOTICE.txt"
+            "joda-time_joda-time_2.9.9/META-INF/LICENSE.txt",
+            "joda-time_joda-time_2.9.9/META-INF/NOTICE.txt"
         ]
     },
     {
         "fileDetails": [
             {
                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                "file": "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt",
                 "license": "Apache License, Version 2.0"
             },
             {
                 "licenseUrl": null,
-                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                "file": "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
                 "license": null
             }
         ],
         "files": [
-            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+            "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
+            "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt"
         ]
     }
 ]"""
@@ -423,17 +423,17 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         "fileDetails": [
             {
                 "licenseUrl": "https://opensource.org/licenses/CDDL-1.0",
-                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
+                "file": "javax.annotation_javax.annotation-api_1.3.2/META-INF/LICENSE.txt",
                 "license": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"
             },
             {
                 "licenseUrl": "https://www.gnu.org/licenses/gpl-2.0",
-                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
+                "file": "javax.annotation_javax.annotation-api_1.3.2/META-INF/LICENSE.txt",
                 "license": "GNU GENERAL PUBLIC LICENSE, Version 2"
             }
         ],
         "files": [
-            "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt"
+            "javax.annotation_javax.annotation-api_1.3.2/META-INF/LICENSE.txt"
         ]
     }
 ]"""

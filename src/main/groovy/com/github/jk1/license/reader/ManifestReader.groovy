@@ -19,6 +19,7 @@ import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ReportTask
 import com.github.jk1.license.util.Files
+import com.github.jk1.license.util.Paths
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
@@ -56,11 +57,13 @@ class ManifestReader {
                 if (mf) {
                     ManifestData data = manifestToData(mf)
                     def path = findLicenseFile(artifact.file, data.license)
-                    if (path != null){
+                    if (path != null) {
                         data.hasPackagedLicense = true
-                        File dest = new File(config.outputDir, "${artifact.file.name}/${data.license}.html")
-                        data.url="${artifact.file.name}/${data.license}.html"
+                        String fileName = Paths.createPathNameFrom(artifact)
+                        String destPath = "${config.outputDir}/${fileName}/EMBEDDED-MANIFEST-LICENSES"
+                        File dest = new File(destPath, data.license)
                         writeLicenseFile(artifact.file, path, dest)
+                        data.url = "${fileName}/EMBEDDED-MANIFEST-LICENSES/${data.license}"
                     }
                     return data
                 }
@@ -113,12 +116,12 @@ class ManifestReader {
         }
     }
 
-    private void writeLicenseFile(File artifactFile, String licenseFileName, File destinationFile) {
+    private void writeLicenseFile(File artifactFile, String licenseFileName, File dest) {
         try {
             ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
             ZipEntry entry = file.getEntry(licenseFileName)
-            destinationFile.parentFile.mkdirs()
-            destinationFile.text = file.getInputStream(entry).text
+            dest.parentFile.mkdirs()
+            dest.text = file.getInputStream(entry).text
         } catch (Exception e) {
             LOGGER.warn("Failed to write license file $licenseFileName from $artifactFile", e)
         }

@@ -80,8 +80,8 @@ class PluginCompatibilityTest extends Specification {
             "moduleName": "org.ehcache:ehcache",
             "moduleVersion": "3.3.1",
             "moduleUrls": [
-                "ehcache-3.3.1.jar/LICENSE.html",
-                "http://ehcache.org"
+                "http://ehcache.org",
+                "org.ehcache_ehcache_3.3.1/EMBEDDED-MANIFEST-LICENSES/LICENSE"
             ],
             "moduleLicenses": [
                 {
@@ -90,7 +90,7 @@ class PluginCompatibilityTest extends Specification {
                 },
                 {
                     "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
                 }
             ]
         },

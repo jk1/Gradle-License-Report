@@ -57,8 +57,8 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        new File(outputDir, "commons-lang3-3.7.jar/META-INF/NOTICE.txt").exists()
-        new File(outputDir, "commons-lang3-3.7.jar/META-INF/LICENSE.txt").exists()
+        new File(outputDir, "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt").exists()
+        new File(outputDir, "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt").exists()
     }
 
     def "the project-data contains the license-file information"() {
@@ -82,18 +82,18 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "fileDetails": [
             {
                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                "file": "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt",
                 "license": "Apache License, Version 2.0"
             },
             {
                 "licenseUrl": null,
-                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                "file": "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
                 "license": null
             }
         ],
         "files": [
-            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+            "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
+            "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt"
         ]
     }
 ]"""
@@ -353,18 +353,18 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-logging-1.1.1.jar/META-INF/LICENSE",
+                                "file": "commons-logging_commons-logging_1.1.1/META-INF/LICENSE",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": null,
-                                "file": "commons-logging-1.1.1.jar/META-INF/NOTICE",
+                                "file": "commons-logging_commons-logging_1.1.1/META-INF/NOTICE",
                                 "license": null
                             }
                         ],
                         "files": [
-                            "commons-logging-1.1.1.jar/META-INF/LICENSE",
-                            "commons-logging-1.1.1.jar/META-INF/NOTICE"
+                            "commons-logging_commons-logging_1.1.1/META-INF/LICENSE",
+                            "commons-logging_commons-logging_1.1.1/META-INF/NOTICE"
                         ]
                     }
                 ],
@@ -410,18 +410,18 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
                                 "license": null
                             }
                         ],
                         "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+                            "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
+                            "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -437,7 +437,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "version": "3.3.1",
                         "license": "LICENSE",
                         "description": "Ehcache is an open-source caching library, compliant with the JSR-107 standard.",
-                        "url": "ehcache-3.3.1.jar/LICENSE.html",
+                        "url": "org.ehcache_ehcache_3.3.1/EMBEDDED-MANIFEST-LICENSES/LICENSE",
                         "name": "ehcache 3"
                     }
                 ],
@@ -467,18 +467,18 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "ehcache-3.3.1.jar/LICENSE",
+                                "file": "org.ehcache_ehcache_3.3.1/LICENSE",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": null,
-                                "file": "ehcache-3.3.1.jar/NOTICE",
+                                "file": "org.ehcache_ehcache_3.3.1/NOTICE",
                                 "license": null
                             }
                         ],
                         "files": [
-                            "ehcache-3.3.1.jar/LICENSE",
-                            "ehcache-3.3.1.jar/NOTICE"
+                            "org.ehcache_ehcache_3.3.1/LICENSE",
+                            "org.ehcache_ehcache_3.3.1/NOTICE"
                         ]
                     }
                 ],
@@ -564,18 +564,18 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-beans-3.2.3.RELEASE.jar/META-INF/license.txt",
+                                "file": "org.springframework_spring-beans_3.2.3.RELEASE/META-INF/license.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-beans-3.2.3.RELEASE.jar/META-INF/notice.txt",
+                                "file": "org.springframework_spring-beans_3.2.3.RELEASE/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             }
                         ],
                         "files": [
-                            "spring-beans-3.2.3.RELEASE.jar/META-INF/notice.txt",
-                            "spring-beans-3.2.3.RELEASE.jar/META-INF/license.txt"
+                            "org.springframework_spring-beans_3.2.3.RELEASE/META-INF/notice.txt",
+                            "org.springframework_spring-beans_3.2.3.RELEASE/META-INF/license.txt"
                         ]
                     }
                 ],
@@ -621,18 +621,18 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt",
+                                "file": "org.springframework_spring-core_3.2.3.RELEASE/META-INF/license.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
+                                "file": "org.springframework_spring-core_3.2.3.RELEASE/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             }
                         ],
                         "files": [
-                            "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
-                            "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt"
+                            "org.springframework_spring-core_3.2.3.RELEASE/META-INF/notice.txt",
+                            "org.springframework_spring-core_3.2.3.RELEASE/META-INF/license.txt"
                         ]
                     }
                 ],
@@ -678,18 +678,18 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-tx-3.2.3.RELEASE.jar/META-INF/license.txt",
+                                "file": "org.springframework_spring-tx_3.2.3.RELEASE/META-INF/license.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "spring-tx-3.2.3.RELEASE.jar/META-INF/notice.txt",
+                                "file": "org.springframework_spring-tx_3.2.3.RELEASE/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             }
                         ],
                         "files": [
-                            "spring-tx-3.2.3.RELEASE.jar/META-INF/notice.txt",
-                            "spring-tx-3.2.3.RELEASE.jar/META-INF/license.txt"
+                            "org.springframework_spring-tx_3.2.3.RELEASE/META-INF/notice.txt",
+                            "org.springframework_spring-tx_3.2.3.RELEASE/META-INF/license.txt"
                         ]
                     }
                 ],

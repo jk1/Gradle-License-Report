@@ -18,6 +18,7 @@ package com.github.jk1.license.render
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseFileDetails
 import com.github.jk1.license.ModuleData
+import com.github.jk1.license.util.Urls
 
 class LicenseDataCollector {
 
@@ -48,7 +49,7 @@ class LicenseDataCollector {
                 info.moduleUrls << manifest.url
             }
             if (manifest.license) {
-                if (isValidUrl(manifest.license)) {
+                if (Urls.isValidUrl(manifest.license)) {
                     if (!info.licenses.find { it.url == manifest.license })
                         info.licenses << new License(url: manifest.license)
                 } else {
@@ -66,15 +67,6 @@ class LicenseDataCollector {
             }
         }
         info
-    }
-
-    private static boolean isValidUrl(String url) {
-        try {
-            new URI(url)
-            return true
-        } catch (URISyntaxException e) {
-            return false
-        }
     }
 
     private static def lastOrNull(Collection l) {
