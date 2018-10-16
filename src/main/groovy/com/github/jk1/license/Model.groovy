@@ -89,7 +89,7 @@ class LicenseFileData {
     @Deprecated
     Collection<String> files = []
 
-    Collection<LicenseFileDetails> fileDetails = []
+    Collection<LicenseFileDetails> fileDetails = new TreeSet<LicenseFileDetails>()
 }
 
 @Sortable

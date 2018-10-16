@@ -84,7 +84,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         data.configurations*.dependencies.flatten().forEach { normalizePoms(it) }
         data.configurations*.dependencies.flatten().forEach { normalizeManifest(it) }
-        data.configurations*.dependencies.flatten().forEach { normalizeLicenseFileDetailsLicense(it) }
+        data.configurations*.dependencies.flatten().forEach { normalizeLicenseFileDetails(it) }
         data.importedModules.forEach { normalizeImportedModuleBundle(it) }
 
         data = duplicateFilter.filter(data)
@@ -100,16 +100,18 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
     }
     private def normalizeManifest(ModuleData dependency) {
-        List<ManifestData> normalizedManifests = dependency.manifests.collect { normalizeManifestLicense(it) }.flatten()
+        List<ManifestData> normalizedManifests = dependency.manifests.collect {
+            normalizeManifestLicense(it)
+        }.flatten()
         dependency.manifests.clear()
         dependency.manifests.addAll(normalizedManifests)
     }
-    private def normalizeLicenseFileDetailsLicense(ModuleData dependency) {
-        dependency.licenseFiles.forEach { licenseFiles ->
+    private def normalizeLicenseFileDetails(ModuleData dependency) {
+        dependency.licenseFiles.forEach { licenseFile ->
             List<LicenseFileDetails> normalizedDetails =
-                licenseFiles.fileDetails.collect { normalizeLicenseFileDetailsLicense(it) }.flatten()
-            licenseFiles.fileDetails.clear()
-            licenseFiles.fileDetails.addAll(normalizedDetails)
+                licenseFile.fileDetails.collect { normalizeLicenseFileDetailsLicense(it) }.flatten()
+            licenseFile.fileDetails.clear()
+            licenseFile.fileDetails.addAll(normalizedDetails)
         }
     }
 

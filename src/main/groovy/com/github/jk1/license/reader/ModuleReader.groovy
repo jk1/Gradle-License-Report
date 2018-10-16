@@ -31,8 +31,8 @@ class ModuleReader {
     private ManifestReader manifestReader = new ManifestReader()
     private LicenseFilesReader filesReader = new LicenseFilesReader()
 
-    ModuleData read(Project project, ResolvedDependency dependency){
-        ModuleData data = new ModuleData(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
+    ModuleData read(Project project, ResolvedDependency dependency) {
+        ModuleData moduleData = new ModuleData(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
         dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
             LOGGER.info("Processing artifact: $artifact ($artifact.file)")
             if (artifact.file.exists()){
@@ -40,13 +40,13 @@ class ModuleReader {
                 def manifest = manifestReader.readManifestData(project, artifact)
                 def licenseFile = filesReader.read(project, artifact)
 
-                if (pom) data.poms << pom
-                if (manifest) data.manifests << manifest
-                if (licenseFile) data.licenseFiles << licenseFile
+                if (pom) moduleData.poms << pom
+                if (manifest) moduleData.manifests << manifest
+                if (licenseFile) moduleData.licenseFiles << licenseFile
             } else {
                 LOGGER.info("Skipping artifact file $artifact.file as it does not exist")
             }
         }
-        data
+        return moduleData
     }
 }
