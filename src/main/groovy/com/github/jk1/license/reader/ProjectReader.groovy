@@ -16,6 +16,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ConfigurationData
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.ReportTask
 import org.gradle.api.Project
@@ -49,20 +50,29 @@ class ProjectReader {
         return data
     }
 
-    private static Set<Configuration> findConfigurationsToScan(Project project) {
-        Set<Configuration> toScan = findConfigured(project)
-        Set<Configuration> unresolvable = findUnresolvable(toScan)
-        if (unresolvable) {
-            throw new UnresolvableConfigurationException("Unable to resolve configurations: $unresolvable")
-        }
-        if (!toScan) {
-            toScan = project.configurations.findAll { config -> isResolvable(config) }
+    private Set<Configuration> findConfigurationsToScan(Project project) {
+        LicenseReportExtension extension = project.licenseReport
+
+        Set<Configuration> toScan
+        if (extension.configurations.length == 0) {
+            LOGGER.info("No configuration defined. Use all resolvable configurations.")
+            toScan = findResolvableConfigurations(project)
+        } else {
+            toScan = findConfiguredConfigurations(project)
+            Set<Configuration> unresolvable = findUnresolvable(toScan)
+            if (unresolvable) {
+                throw new UnresolvableConfigurationException("Unable to resolve configurations: $unresolvable")
+            }
         }
         toScan
     }
 
+    private static Set<Configuration> findResolvableConfigurations(Project project) {
+        project.configurations.findAll { config -> isResolvable(config) }
+    }
+
     private static Set<Configuration> getAllExtendedConfigurations(Collection<Configuration> configurationsToScan) {
-        configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }
+        configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }.toSet()
     }
 
     private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, Project project) {
@@ -72,7 +82,7 @@ class ProjectReader {
         }
     }
 
-    static Set<Configuration> findConfigured(Project project) {
+    static Set<Configuration> findConfiguredConfigurations(Project project) {
         project.configurations.findAll { config -> config.name in project.licenseReport.configurations }
     }
 

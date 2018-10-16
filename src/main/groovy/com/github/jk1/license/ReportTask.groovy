@@ -35,7 +35,7 @@ class ReportTask extends DefaultTask {
     @InputFiles
     FileCollection getClasspath() {
         (getProject().subprojects + getProject())
-            .collectMany { ProjectReader.findConfigured(it) }
+            .collectMany { ProjectReader.findConfiguredConfigurations(it) }
             .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
     }
 

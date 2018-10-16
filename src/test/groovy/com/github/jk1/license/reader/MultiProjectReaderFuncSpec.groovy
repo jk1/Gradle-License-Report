@@ -52,6 +52,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             licenseReport {
                 outputDir = "$outputDir.absolutePath"
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                configurations = []
             }
             dependencies {
                 mainConfig "org.apache.commons:commons-lang3:3.7"
@@ -357,6 +358,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 outputDir = "$outputDir.absolutePath"
                 projects = [project]
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                configurations = []
             }
             dependencies {
                 mainConfig "org.apache.commons:commons-lang3:3.7"
@@ -462,6 +464,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             licenseReport {
                 outputDir = "$outputDir.absolutePath"
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                configurations = []
             }
         """
 
@@ -531,5 +534,79 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         "name": "subConfig"
     }
 ]"""
+    }
+
+    def "only defined configurations (and their extended forms) are considered"() {
+        setup:
+        newSubBuildFile("sub1") << """
+            configurations {
+                subConfig
+            }
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                subConfig "org.jetbrains:annotations:16.0.1"
+            }
+        """
+
+        buildFile.text = """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+            }
+            configurations {
+                mainConfig
+            }
+            repositories {
+                mavenCentral()
+            }
+
+            import com.github.jk1.license.render.*
+            licenseReport {
+                outputDir = "$outputDir.absolutePath"
+                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                configurations = ['mainConfig']
+            }
+            dependencies {
+                mainConfig "org.apache.commons:commons-lang3:3.7"
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        configurationsGPath.name == ["mainConfig"]
+    }
+
+    def "use all configurations if none are defined"() {
+        setup:
+        newSubBuildFile("sub1") << """
+            configurations {
+                subConfig
+            }
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                subConfig "org.jetbrains:annotations:16.0.1"
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        configurationsGPath.name == ["mainConfig", "subConfig"]
     }
 }
