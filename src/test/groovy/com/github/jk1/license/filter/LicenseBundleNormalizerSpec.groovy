@@ -814,6 +814,67 @@ class LicenseBundleNormalizerSpec extends Specification {
         json(result) == json(expected)
     }
 
+    def "The regular expression must be matched"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2.0" }
+              ]
+            }"""
+
+        ProjectData projectData = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache 2.0 should not be matched")
+                        }
+                        pom("pom2") {
+                            license(name: "Should not be matched - Apache 2.0")
+                        }
+                        pom("pom3") {
+                            license(name: "Apache 2.0")
+                        }
+                        manifest("mani1") {
+                            license("Apache 2.0 should not be matched")
+                        }
+                        manifest("mani2") {
+                            license("Apache 2.0")
+                        }
+                    }
+                }
+            }
+        }
+        ProjectData expected = builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        pom("pom1") {
+                            license(name: "Apache 2.0 should not be matched")
+                        }
+                        pom("pom2") {
+                            license(name: "Should not be matched - Apache 2.0")
+                        }
+                        pom("pom3") {
+                            license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
+                        }
+                        manifest("mani1") {
+                            license("Apache 2.0 should not be matched")
+                        }
+                        manifest("mani2") {
+                            license("Apache License, Version 2.0")
+                        }
+                    }
+                }
+            }
+        }
+
+        when:
+        def result = newNormalizer().filter(projectData)
+
+        then:
+        json(result) == json(expected)
+    }
+
     private LicenseBundleNormalizer newNormalizer(boolean createDefaultTransformationRules = false) {
         new LicenseBundleNormalizer(bundlePath: normalizerFile.absolutePath, createDefaultTransformationRules: createDefaultTransformationRules)
     }
