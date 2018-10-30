@@ -28,12 +28,14 @@ import groovy.json.JsonSlurper
 import groovy.json.JsonParserType
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.tasks.Input
 
 
 class LicenseBundleNormalizer implements DependencyFilter {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
+    private String normalizerText
     ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
     LicenseReportExtension config
     LicenseBundleNormalizerConfig normalizerConfig
@@ -44,14 +46,13 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     LicenseBundleNormalizer(String bundlePath, boolean createDefaultTransformationRules) {
-        InputStream inputStream
         if (bundlePath == null) {
-            inputStream = getClass().getResourceAsStream("/default-license-normalizer-bundle.json")
+            normalizerText = getClass().getResourceAsStream("/default-license-normalizer-bundle.json").text
         } else {
-            inputStream = new FileInputStream(new File(bundlePath))
+            normalizerText = new File(bundlePath).text
         }
 
-        normalizerConfig = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(inputStream))
+        normalizerConfig = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(normalizerText.chars))
 
         bundleMap = normalizerConfig.bundles.collectEntries {
             [it.bundleName, it]
@@ -61,6 +62,9 @@ class LicenseBundleNormalizer implements DependencyFilter {
             initializeDefaultTransformationRules()
         }
     }
+
+    @Input
+    private String getNormalizerTextCache() { return this.normalizerText }
 
     private def initializeDefaultTransformationRules() {
         Set<String> rulePatternNames = normalizerConfig.transformationRules*.licenseNamePattern as Set

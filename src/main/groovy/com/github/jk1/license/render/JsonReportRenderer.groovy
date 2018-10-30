@@ -21,6 +21,7 @@ import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import groovy.json.JsonBuilder
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 
 import static com.github.jk1.license.render.LicenseDataCollector.singleModuleLicenseInfo
 import static com.github.jk1.license.render.LicenseDataCollector.multiModuleLicenseInfo
@@ -101,6 +102,12 @@ class JsonReportRenderer implements ReportRenderer {
         this.fileName = fileName
         this.onlyOneLicensePerModule = onlyOneLicensePerModule
     }
+
+    @Input
+    private Boolean getOnlyOneLicensePerModuleCahce() { return this.onlyOneLicensePerModule }
+
+    @Input
+    private String getFileNameCache() { return this.fileName }
 
     void render(ProjectData data) {
         project = data.project

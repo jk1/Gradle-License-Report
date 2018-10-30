@@ -22,6 +22,7 @@ import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 
 class SimpleHtmlReportRenderer implements ReportRenderer {
 
@@ -34,6 +35,9 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     SimpleHtmlReportRenderer(String fileName = 'index.html') {
         this.fileName = fileName
     }
+
+    @Input
+    private String getFileNameCache() { return this.fileName }
 
     void render(ProjectData data) {
         project = data.project

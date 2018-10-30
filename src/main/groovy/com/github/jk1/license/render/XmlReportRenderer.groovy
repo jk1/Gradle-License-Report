@@ -20,6 +20,7 @@ import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 
 /**
  * Renders dependency report in the following XML notation:
@@ -55,6 +56,12 @@ class XmlReportRenderer extends SingleInfoReportRenderer {
         this.fileName = fileName
         this.chapterName = chapterName
     }
+
+    @Input
+    private String getFileNameCache() { return this.fileName }
+
+    @Input
+    private String getChapterNameCache() { return this.chapterName }
 
     void render(ProjectData data) {
         project = data.project
