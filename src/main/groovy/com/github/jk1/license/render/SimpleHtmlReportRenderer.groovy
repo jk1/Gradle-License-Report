@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.render
 
+import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
@@ -67,11 +68,14 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
 
     private void printDependencies(ProjectData data) {
         data.allDependencies.sort().each {
-            printDependency(it)
+            printModuleDependency(it)
+        }
+        data.importedModules.modules.flatten().sort().each {
+            printImportedModuleDependency(it)
         }
     }
 
-    private String printDependency(ModuleData data) {
+    private void printModuleDependency(ModuleData data) {
         boolean projectUrlDone = false
         output << "\n    <hr />"
         output << "" +
@@ -199,4 +203,46 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         }
         output << '\n'
     }
+
+    private void printImportedModuleDependency(ImportedModuleData module) {
+        output << "\n    <hr />"
+        output << "" +
+            "\n        <p>" +
+            "\n            <strong>${++counter}.</strong>"
+        output << "" +
+            "\n            <strong>Name:</strong> $module.name" +
+            "\n            <strong>Version:</strong> $module.version"
+        output << "" +
+            "\n        </p>"
+
+        if (module.projectUrl?.startsWith("http")) {
+            output << "" +
+                "\n        <p>" +
+                "\n            <strong>Project URL:</strong>" +
+                "\n            <code>" +
+                "\n                <a href=\"$module.projectUrl\">" +
+                "\n                    $module.projectUrl" +
+                "\n                </a>" +
+                "\n            </code>" +
+                "\n        </p>"
+        }
+
+        if (module.licenseUrl?.startsWith("http")) {
+            output << "" +
+                "\n        <p>" +
+                "\n            <strong>License:</strong> $module.license - " +
+                "\n            <a href=\"$module.licenseUrl\">" +
+                "\n                $module.licenseUrl" +
+                "\n            </a>" +
+                "\n        </p>"
+        } else {
+            output << "" +
+                "\n        <p>" +
+                "\n            <strong>License:</strong> $module.license" +
+                "\n        </p>"
+        }
+
+        output << '\n'
+    }
+
 }
