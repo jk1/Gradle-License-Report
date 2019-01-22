@@ -39,25 +39,9 @@ class ReportTask extends DefaultTask {
             .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
     }
 
-    @Input
-    String getConfigurationSnapshot() {
-        LicenseReportExtension licenseReport = getProject().licenseReport
-        def snapshot = []
-        snapshot << 'projects'
-        snapshot += licenseReport.projects.collect { it.path }
-        snapshot << 'renderers'
-        snapshot += licenseReport.renderers.collect { it.class.name }
-        snapshot << 'importers'
-        snapshot += licenseReport.importers.collect { it.class.name }
-        snapshot << 'filters'
-        snapshot += licenseReport.filters.collect { it.class.name }
-        snapshot << 'configurations '
-        snapshot += licenseReport.configurations
-        snapshot << 'exclude'
-        snapshot += licenseReport.excludeGroups
-        snapshot << 'excludes'
-        snapshot += licenseReport.excludes
-        snapshot.join("!")
+    @Nested
+    LicenseReportExtension getConfig() {
+        return getProject().licenseReport
     }
 
     @OutputDirectory
@@ -68,7 +52,6 @@ class ReportTask extends DefaultTask {
     @TaskAction
     void generateReport() {
         LOGGER.info("Processing dependencies for project ${getProject().name}")
-        LicenseReportExtension config = getProject().licenseReport
         new File(config.outputDir).mkdirs()
         ProjectData data = new ProjectReader().read(getProject())
         LOGGER.info("Importing external dependency data. A total of ${config.importers.length} configured.")

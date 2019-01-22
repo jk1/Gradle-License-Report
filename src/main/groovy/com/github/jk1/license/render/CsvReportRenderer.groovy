@@ -18,6 +18,7 @@ package com.github.jk1.license.render
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
+import org.gradle.api.tasks.Input
 
 /**
  * Simple CSV license report renderer
@@ -59,6 +60,9 @@ class CsvReportRenderer extends SingleInfoReportRenderer {
     CsvReportRenderer(String filename = 'licenses.csv') {
         this.filename = filename
     }
+
+    @Input
+    private String getFileNameCache() { return this.filename }
 
     @Override
     void render(ProjectData data) {

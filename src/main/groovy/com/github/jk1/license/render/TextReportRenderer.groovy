@@ -22,6 +22,7 @@ import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 
 class TextReportRenderer implements ReportRenderer{
 
@@ -34,6 +35,9 @@ class TextReportRenderer implements ReportRenderer{
     public TextReportRenderer(String filename = 'THIRD-PARTY-NOTICES.txt') {
         this.fileName = filename
     }
+
+    @Input
+    private String getFileNameCache() { return this.fileName }
 
     void render(ProjectData data) {
         project = data.project

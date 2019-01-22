@@ -24,6 +24,7 @@ import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
 import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 
 class InventoryHtmlReportRenderer implements ReportRenderer {
 
@@ -40,6 +41,9 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         this.fileName = fileName
         if (overridesFilename) overrides = parseOverrides(overridesFilename)
     }
+
+    @Input
+    private String getFileNameCache() { return this.fileName }
 
     private Map<String, Map<String, String>> parseOverrides(File file) {
         overrides = [:]

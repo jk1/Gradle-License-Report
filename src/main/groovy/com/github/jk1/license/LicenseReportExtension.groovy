@@ -21,6 +21,8 @@ import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
 
 class LicenseReportExtension {
     public static final String[] ALL = []
@@ -45,6 +47,35 @@ class LicenseReportExtension {
         filters = []
     }
 
+    @Input
+    private String getLicenseReportExtensionSnapshot() {
+        def snapshot = []
+        snapshot << 'projects'
+        snapshot += projects.collect { it.path }
+        snapshot << 'renderers'
+        snapshot += renderers.collect { it.class.name }
+        snapshot << 'importers'
+        snapshot += importers.collect { it.class.name }
+        snapshot << 'filters'
+        snapshot += filters.collect { it.class.name }
+        snapshot << 'configurations '
+        snapshot += configurations
+        snapshot << 'exclude'
+        snapshot += excludeGroups
+        snapshot << 'excludes'
+        snapshot += excludes
+        snapshot.join("!")
+    }
+
+    @Nested
+    private List<ReportRenderer> getRenderersCache() { return this.renderers }
+
+    @Nested
+    private List<DependencyDataImporter> getImportersCache() { return this.importers }
+
+    @Nested
+    private List<DependencyFilter> getFiltersCache() { return this.filters }
+
     /**
      * Use #renderers instead
      */
@@ -66,8 +97,8 @@ class LicenseReportExtension {
 
     boolean isExcluded(ResolvedDependency module) {
         return projects.any { module.moduleGroup == it.group } ||
-                excludeGroups.contains(module.moduleGroup) ||
-                excludes.contains("$module.moduleGroup:$module.moduleName")
+            excludeGroups.contains(module.moduleGroup) ||
+            excludes.contains("$module.moduleGroup:$module.moduleName")
     }
 
 }
