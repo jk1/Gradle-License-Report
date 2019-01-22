@@ -283,7 +283,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         externalInventories.keySet().sort().each { String name ->
             output << "<h1>${name}</h1>\n"
             externalInventories[name].each { String license, List<ImportedModuleData> dependencies ->
-                output << "<a id='${sanitize(name, license)}'></a>\n"
+                output << "<a id='${sanitize(name, license)}'></a>\n" << "<h2>${license}</h2>\n"
                 dependencies.each { ImportedModuleData importedData ->
                     printImportedDependency(importedData)
                 }
