@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.filter
 
+import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.LicenseFileData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
@@ -32,6 +33,11 @@ class ReduceDuplicateLicensesFilter implements DependencyFilter {
         projectData.configurations*.dependencies.flatten().licenseFiles.flatten().forEach { LicenseFileData files ->
             files.fileDetails = files.fileDetails.unique()
             files.files = files.files.unique()
+        }
+
+        // remove imported modules duplicates
+        projectData.importedModules.forEach { ImportedModuleBundle bundle ->
+            bundle.modules = bundle.modules.unique()
         }
 
         return projectData
