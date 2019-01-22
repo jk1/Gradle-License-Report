@@ -165,6 +165,49 @@ licenseReport {
 }
 ```
 
+### DownloadLicensesRenderer
+
+The DownloadLicensesRenderer will download all the license files which include url. You can specified licenseUrl to 
+certain license file. When no value pass to DownloadLicenseRenderer the default value is empty Map.
+
+```groovy
+import com.github.jk1.license.render.*
+Map<String, File> customizeLicenseFile = [
+   "http://www.opensource.org/licenses/mit-license.php" : new File("./gradle/default_license/MIT.txt")
+]
+
+licenseReport {
+    renderers = [new DownloadLicensesRenderer(customizeLicenseFile)]
+}
+```
+
+After download all the license files, it will generate a report for all license files report as below. 
+And also a html file containing all html file content inside, which could specified customizeLicenseFile much easier.
+
+```json
+{
+  "noLicenseFileDependencies": [
+    "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.6.2"
+  ],
+  "noLicenseFileImportedModules": [
+        
+  ],
+  "downloadedHtmlLicenseFileDirectories": [
+    "org.projectlombok_lombok_1.16.20/DOWNLOADED-POM-LICENSES/MIT_License.html"
+  ],
+  "downloadedTextLicenseFileDirectories": [
+    "com.couchbase.client_core-io_1.6.1/DOWNLOADED-POM-LICENSES/Apache_License_Version_2_0.txt"
+  ],
+  "embeddedLicenseFileDirectories": [
+    "com.couchbase.client_core-io_1.5.7/META-INF/LICENSE"
+  ]
+}
+```
+```html
+<html><body><div><a href = "http://www.apache.org/licenses/">http://www.apache.org/licenses/</a></div></body></html>
+<html><body><div><a href = "http://www.gnu.org/software/classpath/license.html">http://www.gnu.org/software/classpath/license.html</a></div></body></html>
+<html><body><div><a href = "https://github.com/javaee/javax.annotation/blob/master/LICENSE">https://github.com/javaee/javax.annotation/blob/master/LICENSE</a></div></body></html>
+```
 
 ## Importers
 Importer adds license information from an external source to your report. Importer may come in handy if

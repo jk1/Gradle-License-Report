@@ -16,7 +16,7 @@
 {
   "bundles" : [
     { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-1.1" },
-    { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" },
+    { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0.txt" },
     { "bundleName" : "bsd-2",   "licenseName" : "The 2-Clause BSD License", "licenseUrl" : "https://opensource.org/licenses/BSD-2-Clause" },
     { "bundleName" : "bsd-3",   "licenseName" : "The 3-Clause BSD License", "licenseUrl" : "https://opensource.org/licenses/BSD-3-Clause" },
     { "bundleName" : "cc0",     "licenseName" : "Creative Commons Legal Code", "licenseUrl" : "https://repository.jboss.org/licenses/cc0-1.0.txt" },
@@ -25,11 +25,11 @@
     { "bundleName" : "cpl-1.0", "licenseName" : "Common Public License - v 1.0", "licenseUrl" : "https://www.eclipse.org/legal/cpl-v10.html" },
     { "bundleName" : "epl1",    "licenseName" : "Eclipse Public License - v 1.0", "licenseUrl" : "http://www.eclipse.org/legal/epl-v10.html" },
     { "bundleName" : "epl2",    "licenseName" : "Eclipse Public License - v 2.0", "licenseUrl" : "https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt" },
-    { "bundleName" : "gpl1",    "licenseName" : "GNU GENERAL PUBLIC LICENSE, Version 1", "licenseUrl" : "https://www.gnu.org/licenses/gpl-1.0" },
-    { "bundleName" : "gpl2",    "licenseName" : "GNU GENERAL PUBLIC LICENSE, Version 2", "licenseUrl" : "https://www.gnu.org/licenses/gpl-2.0" },
-    { "bundleName" : "gpl3",    "licenseName" : "GNU GENERAL PUBLIC LICENSE, Version 3", "licenseUrl" : "https://www.gnu.org/licenses/gpl-3.0" },
-    { "bundleName" : "lgpl2.1", "licenseName" : "GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-2.1" },
-    { "bundleName" : "lgpl3",   "licenseName" : "GNU LESSER GENERAL PUBLIC LICENSE, Version 3", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-3.0" },
+    { "bundleName" : "gpl1",    "licenseName" : "GNU GENERAL PUBLIC LICENSE, Version 1", "licenseUrl" : "https://www.gnu.org/licenses/gpl-1.0.txt" },
+    { "bundleName" : "gpl2",    "licenseName" : "GNU GENERAL PUBLIC LICENSE, Version 2", "licenseUrl" : "https://www.gnu.org/licenses/gpl-2.0.txt" },
+    { "bundleName" : "gpl3",    "licenseName" : "GNU GENERAL PUBLIC LICENSE, Version 3", "licenseUrl" : "https://www.gnu.org/licenses/gpl-3.0.txt" },
+    { "bundleName" : "lgpl2.1", "licenseName" : "GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-2.1.txt" },
+    { "bundleName" : "lgpl3",   "licenseName" : "GNU LESSER GENERAL PUBLIC LICENSE, Version 3", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-3.0.txt" },
     { "bundleName" : "mit",     "licenseName" : "MIT License", "licenseUrl" : "https://opensource.org/licenses/MIT" },
     { "bundleName" : "mpl1.1",  "licenseName" : "Mozilla Public License Version 1.1", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/1.1" },
     { "bundleName" : "mpl2",    "licenseName" : "Mozilla Public License, Version 2.0", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/2.0" }
@@ -43,6 +43,13 @@
     { "bundleName" : "mit",     "licenseUrlPattern" : ".*www.opensource.org/licenses/mit-license.php" },
     { "bundleName" : "apache2", "licenseFileContentPattern" : ".*Apache License, Version 2.0.*" },
     { "bundleName" : "apache1", "licenseFileContentPattern" : ".*Apache Software License, Version 1.1.*" },
-    { "bundleName" : "cddl1",   "licenseFileContentPattern" : ".*CDDL.*1.0" }
+    { "bundleName" : "cddl1",   "licenseFileContentPattern" : ".*CDDL.*1.0" },
+    { "bundleName" : "apache2", "licenseUrlPattern" : "https://www.apache.org/licenses/LICENSE-2.0" },
+    { "bundleName" : "gpl1",    "licenseUrlPattern" : "https://www.gnu.org/licenses/gpl-1.0" },
+    { "bundleName" : "gpl2",    "licenseUrlPattern" : "https://www.gnu.org/licenses/gpl-2.0" },
+    { "bundleName" : "gpl3",    "licenseUrlPattern" : "https://www.gnu.org/licenses/gpl-3.0" },
+    { "bundleName" : "lgpl2.1", "licenseUrlPattern" : "https://www.gnu.org/licenses/lgpl-2.1" },
+    { "bundleName" : "lgpl3",   "licenseUrlPattern" : "https://www.gnu.org/licenses/lgpl-3.0" },
+    { "bundleName" : "mit",     "licenseUrlPattern" : "https://opensource.org/licenses/MIT" }
   ]
 }

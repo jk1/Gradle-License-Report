@@ -20,6 +20,7 @@ import com.github.jk1.license.LicenseFileDetails
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ReportTask
 import com.github.jk1.license.util.Files
+import com.github.jk1.license.util.Paths
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
@@ -79,7 +80,8 @@ class LicenseFilesReader {
         return entryNames.collect { ZipEntry entry ->
             String entryName = entry.name
             if (!entryName.startsWith("/")) entryName = "/$entryName"
-            String path = "${artifact.file.name}${entryName}"
+            String fileName = Paths.createPathNameFrom(artifact)
+            String path = "${fileName}${entryName}"
             File file = new File(config.outputDir, path)
             file.parentFile.mkdirs()
             file.text = zipFile.getInputStream(entry).text

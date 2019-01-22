@@ -127,18 +127,18 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
                                 "license": null
                             }
                         ],
                         "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+                            "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
+                            "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -254,18 +254,18 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
                                 "license": null
                             }
                         ],
                         "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+                            "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
+                            "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -316,18 +316,18 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
                                 "license": null
                             }
                         ],
                         "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+                            "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
+                            "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -429,18 +429,18 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "fileDetails": [
                             {
                                 "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt",
                                 "license": "Apache License, Version 2.0"
                             },
                             {
                                 "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
+                                "file": "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
                                 "license": null
                             }
                         ],
                         "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
+                            "org.apache.commons_commons-lang3_3.7/META-INF/NOTICE.txt",
+                            "org.apache.commons_commons-lang3_3.7/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
