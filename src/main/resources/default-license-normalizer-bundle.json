@@ -37,14 +37,14 @@
     { "bundleName" : "mpl2",        "licenseName" : "Mozilla Public License, Version 2.0", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/2.0" }
   ],
   "transformationRules" : [
-    { "bundleName" : "apache2", "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" },
-    { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2.*" },
-    { "bundleName" : "apache2", "licenseNamePattern" : "ASL 2.0" },
-    { "bundleName" : "apache2", "licenseUrlPattern" : ".*www.apache.org/licenses/LICENSE-2.0.*" },
-    { "bundleName" : "lgpl2.1", "licenseUrlPattern" : ".*www.gnu.org/licenses/old-licenses/lgpl-2.1.html" },
-    { "bundleName" : "mit",     "licenseUrlPattern" : ".*www.opensource.org/licenses/mit-license.php" },
-    { "bundleName" : "apache2", "licenseFileContentPattern" : ".*Apache License, Version 2.0.*" },
-    { "bundleName" : "apache1", "licenseFileContentPattern" : ".*Apache Software License, Version 1.1.*" },
-    { "bundleName" : "cddl1",   "licenseFileContentPattern" : ".*CDDL.*1.0" }
+    { "bundleName" : "apache2",     "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" },
+    { "bundleName" : "apache2",     "licenseNamePattern" : "Apache 2.*" },
+    { "bundleName" : "apache2",     "licenseNamePattern" : "ASL 2.0" },
+    { "bundleName" : "apache2",     "licenseUrlPattern" : ".*www.apache.org/licenses/LICENSE-2.0.*" },
+    { "bundleName" : "lgpl2.1",     "licenseUrlPattern" : ".*www.gnu.org/licenses/old-licenses/lgpl-2.1.html" },
+    { "bundleName" : "mit",         "licenseUrlPattern" : ".*www.opensource.org/licenses/mit-license.php" },
+    { "bundleName" : "apache2",     "licenseFileContentPattern" : ".*Apache License,?( Version)? 2.0.*" },
+    { "bundleName" : "apache1",     "licenseFileContentPattern" : ".*Apache Software License, Version 1.1.*" },
+    { "bundleName" : "cddl1",       "licenseFileContentPattern" : ".*CDDL.*1.0" },
   ]
 }
