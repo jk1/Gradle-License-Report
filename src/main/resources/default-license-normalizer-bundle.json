@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-{
+ {
   "bundles" : [
     { "bundleName" : "apache1",     "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-1.1" },
     { "bundleName" : "apache2",     "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" },
@@ -34,8 +34,9 @@
     { "bundleName" : "lgpl3",       "licenseName" : "GNU LESSER GENERAL PUBLIC LICENSE, Version 3", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-3.0" },
     { "bundleName" : "mit",         "licenseName" : "MIT License", "licenseUrl" : "https://opensource.org/licenses/MIT" },
     { "bundleName" : "mpl1.1",      "licenseName" : "Mozilla Public License Version 1.1", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/1.1" },
-    { "bundleName" : "mpl2",        "licenseName" : "Mozilla Public License, Version 2.0", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/2.0" }
-  ],
+    { "bundleName" : "mpl2",        "licenseName" : "Mozilla Public License, Version 2.0", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/2.0" },
+    { "bundleName" : "public",      "licenseName" : "PUBLIC DOMAIN", "licenseUrl" : "" }
+],
   "transformationRules" : [
     { "bundleName" : "apache2",     "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" },
     { "bundleName" : "apache2",     "licenseNamePattern" : "Apache 2.*" },
@@ -61,6 +62,9 @@
     { "bundleName" : "lgpl2.1",     "licenseUrlPattern" : ".*www.gnu.org/licenses/lgpl-2\\.1.html" },
     { "bundleName" : "lgpl2.1",     "licenseNamePattern" : "LGPL 2\\.1" },
     { "bundleName" : "mit",         "licenseNamePattern" : "(The\\s)?MIT(\\s[l|L]icence)?" },
-    { "bundleName" : "mpl1.1",      "licenseNamePattern" : "MPL 1\\.1" }
-  ]
+    { "bundleName" : "mpl1.1",      "licenseNamePattern" : "MPL 1\\.1" },
+    { "bundleName" : "public",      "licenseNamePattern" : "(([p|P]ublic|PUBLIC)\\s([d|D]omain|DOMAIN)).*", "transformUrl" : false },
+    { "bundleName" : "public",      "licenseFileContentPattern" : ".*([c|C]reative|CREATIVE)\\s([c|C]ommons|COMMONS).*", "transformUrl" : false },
+    { "bundleName" : "public",      "licenseFileContentPattern" : ".*(([p|P]ublic|PUBLIC)\\s([d|D]omain|DOMAIN)).*", "transformUrl" : false }
+]
 }
