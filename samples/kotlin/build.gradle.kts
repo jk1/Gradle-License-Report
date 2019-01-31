@@ -1,8 +1,10 @@
+import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "0.9"
+    id("com.github.jk1.dependency-license-report") version "1.4"
     id("java")
 }
 
@@ -18,6 +20,6 @@ dependencies {
 }
 
 licenseReport {
-    renderers = arrayOf(InventoryHtmlReportRenderer("report.html","Backend"))
-    filters = arrayOf(LicenseBundleNormalizer())
+    renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html","Backend"))
+    filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 }

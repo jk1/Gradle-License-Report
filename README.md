@@ -87,7 +87,9 @@ Plugin is compatible with build scripts written in kotlin. Configuration syntax 
 Consider the following sample:
 
 ```kotlin
+import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
@@ -95,8 +97,8 @@ plugins {
 }
 
 licenseReport {
-    renderers = arrayOf(InventoryHtmlReportRenderer("report.html","Backend"))
-    filters = arrayOf(LicenseBundleNormalizer())
+    renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html","Backend"))
+    filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 }
 
 ```
