@@ -40,7 +40,7 @@ class LicenseReportExtension {
         outputDir = "${project.buildDir}/reports/dependency-license"
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
-        configurations = ['runtime']
+        configurations = ['runtimeClasspath']
         excludeGroups = []
         excludes = []
         importers = []
