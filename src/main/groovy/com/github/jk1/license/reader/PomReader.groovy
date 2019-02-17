@@ -42,18 +42,19 @@ class PomReader {
         resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file)
         boolean pomRepresentsArtifact = true
+        boolean pomHasLicense = true
 
         if (pomContent) {
             pomRepresentsArtifact = areArtifactAndPomGroupAndArtifactIdEqual(artifact, pomContent)
-
             if (!pomRepresentsArtifact) {
                 LOGGER.debug("Use remote pom because the found pom seems not to represent artifact. " +
                     "Artifact: ${artifact.moduleVersion.id.group}:${artifact.moduleVersion.id.name} / " +
                     "Pom: ${pomContent.groupId.text()}:${pomContent.artifactId.text()})")
             }
+            pomHasLicense = hasLicense(pomContent)
         }
 
-        if (!pomContent || !pomRepresentsArtifact) {
+        if (!pomContent || !pomRepresentsArtifact || !pomHasLicense) {
             pomContent = fetchRemoteArtifactPom(artifact) ?: pomContent
         }
 
@@ -238,11 +239,15 @@ class PomReader {
     }
 
     private static boolean areArtifactAndPomGroupAndArtifactIdEqual(ResolvedArtifact artifact, GPathResult pom) {
-        if (pom == null || artifact == null) return false
-
+        if (artifact == null) return false
         artifact.moduleVersion.id.group == tryReadGroupId(pom) &&
             artifact.moduleVersion.id.name == pom.artifactId.text()
     }
+
+    private static boolean hasLicense(GPathResult pom) {
+        return pom.licenses != null && !pom.licenses.isEmpty()
+    }
+
     private static String tryReadGroupId(GPathResult pom) {
         pom.groupId?.text() ?: pom.parent?.groupId?.text()
     }

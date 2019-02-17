@@ -27,6 +27,7 @@ import static com.github.jk1.license.ProjectBuilder.json
 import static com.github.jk1.license.ProjectDataFixture.*
 
 class LicenseBundleNormalizerSpec extends Specification {
+
     @Rule
     TemporaryFolder testProjectDir = new TemporaryFolder()
     File normalizerFile

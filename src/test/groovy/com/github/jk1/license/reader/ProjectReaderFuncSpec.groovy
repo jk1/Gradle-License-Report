@@ -254,6 +254,46 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
     }
 
+    def "it fetches remote POM if packaged one contains no license"(){
+        buildFile << """
+            dependencies {
+                forTesting("org.opensaml:opensaml:2.6.4") {
+                    transitive = false
+                }
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations[0].dependencies[0].poms
+        def configurationsString = prettyPrintJson(configurationsGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+        configurationsString == """[
+    {
+        "inceptionYear": "2006",
+        "projectUrl": "http://opensaml.org/",
+        "description": "\\n        The OpenSAML-J library provides tools to support developers working with the Security Assertion Markup Language\\n        (SAML).\\n    ",
+        "name": "OpenSAML-J",
+        "organization": {
+            "url": "http://www.internet2.edu/",
+            "name": "Internet2"
+        },
+        "licenses": [
+            {
+                "comments": "",
+                "distribution": "repo",
+                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                "name": "Apache 2"
+            }
+        ]
+    }
+]"""
+    }
+
 
     def "it reads dependencies correctly"() {
         buildFile << """
