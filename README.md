@@ -32,7 +32,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'gradle.plugin.com.github.jk1:gradle-license-report:1.5'
+        classpath 'com.github.jk1:gradle-license-report:1.5'
     }
 }
 apply plugin: 'com.github.jk1.dependency-license-report'
