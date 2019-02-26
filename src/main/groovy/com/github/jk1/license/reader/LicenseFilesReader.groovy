@@ -20,7 +20,6 @@ import com.github.jk1.license.LicenseFileDetails
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ReportTask
 import com.github.jk1.license.util.Files
-import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -30,12 +29,15 @@ import java.util.zip.ZipFile
 
 
 class LicenseFilesReader {
-
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
+
     private LicenseReportExtension config
 
-    LicenseFileData read(Project project, ResolvedArtifact artifact) {
-        config = project.licenseReport
+    LicenseFilesReader(LicenseReportExtension config) {
+        this.config = config
+    }
+
+    LicenseFileData read(ResolvedArtifact artifact) {
         String fileExtension = Files.getExtension(artifact.file.name)?.toLowerCase()
         if (!fileExtension) {
             LOGGER.debug("No file extension found for file: $artifact.file")

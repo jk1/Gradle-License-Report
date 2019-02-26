@@ -16,6 +16,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.License
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.PomData
 import com.github.jk1.license.PomDeveloper
 import com.github.jk1.license.PomOrganization
@@ -34,9 +35,14 @@ import java.util.zip.ZipFile
 
 
 class PomReader {
-
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
+
+    private LicenseReportExtension config
     private CachingArtifactResolver resolver
+
+    PomReader(LicenseReportExtension config) {
+        this.config = config
+    }
 
     PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)

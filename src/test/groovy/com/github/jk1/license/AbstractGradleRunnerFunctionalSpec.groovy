@@ -27,6 +27,7 @@ import spock.lang.Specification
 abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
     @Rule
     TemporaryFolder testProjectDir = new TemporaryFolder()
+    File settingsGradle
     File buildFile
     File outputDir
     File rawJsonFile
@@ -53,6 +54,16 @@ abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
             .withPluginClasspath(pluginClasspath)
             .forwardOutput()
             .build()
+    }
+
+    protected File newSubBuildFile(String subFolderName) {
+        File subFolder = new File(testProjectDir.root, subFolderName)
+        subFolder.mkdirs()
+        settingsGradle << "include '${subFolderName.replace('/', ':')}'\n"
+
+        File buildFile = new File(subFolder, "build.gradle")
+        buildFile.createNewFile()
+        buildFile
     }
 
     static String prettyPrintJson(Object obj) {

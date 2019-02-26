@@ -111,7 +111,7 @@ class JsonReportRenderer implements ReportRenderer {
 
     void render(ProjectData data) {
         project = data.project
-        config = project?.licenseReport
+        config = project.licenseReport
         output = new File(config.outputDir, fileName)
 
         def jsonReport = [:]

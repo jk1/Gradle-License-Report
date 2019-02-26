@@ -35,7 +35,7 @@ class ReportTask extends DefaultTask {
     @InputFiles
     FileCollection getClasspath() {
         (getProject().subprojects + getProject())
-            .collectMany { ProjectReader.findConfiguredConfigurations(it) }
+            .collectMany { ProjectReader.findConfiguredConfigurations(it, getConfig()) }
             .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
     }
 
@@ -46,14 +46,14 @@ class ReportTask extends DefaultTask {
 
     @OutputDirectory
     File getOutputFolder() {
-        return new File(getProject().licenseReport.outputDir)
+        return new File(getConfig().outputDir)
     }
 
     @TaskAction
     void generateReport() {
         LOGGER.info("Processing dependencies for project ${getProject().name}")
         new File(config.outputDir).mkdirs()
-        ProjectData data = new ProjectReader().read(getProject())
+        ProjectData data = new ProjectReader(config).read(getProject())
         LOGGER.info("Importing external dependency data. A total of ${config.importers.length} configured.")
         config.importers.each {
             data.importedModules.addAll(it.doImport())
