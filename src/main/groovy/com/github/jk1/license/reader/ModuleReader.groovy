@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.reader
 
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ReportTask
 import org.gradle.api.Project
@@ -23,13 +24,24 @@ import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
-class ModuleReader {
+interface ModuleReader {
+    ModuleData read(Project project, ResolvedDependency dependency)
+}
 
+class ModuleReaderImpl implements ModuleReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private PomReader pomReader = new PomReader()
-    private ManifestReader manifestReader = new ManifestReader()
-    private LicenseFilesReader filesReader = new LicenseFilesReader()
+    private LicenseReportExtension config
+    private PomReader pomReader
+    private ManifestReader manifestReader
+    private LicenseFilesReader filesReader
+
+    ModuleReaderImpl(LicenseReportExtension config) {
+        this.config = config
+        this.pomReader = new PomReader(config)
+        this.manifestReader = new ManifestReader(config)
+        this.filesReader = new LicenseFilesReader(config)
+    }
 
     ModuleData read(Project project, ResolvedDependency dependency) {
         ModuleData moduleData = new ModuleData(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
@@ -37,8 +49,8 @@ class ModuleReader {
             LOGGER.info("Processing artifact: $artifact ($artifact.file)")
             if (artifact.file.exists()){
                 def pom = pomReader.readPomData(project, artifact)
-                def manifest = manifestReader.readManifestData(project, artifact)
-                def licenseFile = filesReader.read(project, artifact)
+                def manifest = manifestReader.readManifestData(artifact)
+                def licenseFile = filesReader.read(artifact)
 
                 if (pom) moduleData.poms << pom
                 if (manifest) moduleData.manifests << manifest
@@ -48,5 +60,21 @@ class ModuleReader {
             }
         }
         return moduleData
+    }
+}
+
+class CachedModuleReader implements ModuleReader {
+    private Map<String, ModuleData> moduleDataCache = [:]
+    private ModuleReader actualReader
+
+    CachedModuleReader(LicenseReportExtension config) {
+        this.actualReader = new ModuleReaderImpl(config)
+    }
+
+    ModuleData read(Project project, ResolvedDependency dependency) {
+        String dataName = "${dependency.moduleGroup}:${dependency.moduleName}:${dependency.moduleVersion}"
+        return moduleDataCache.computeIfAbsent(dataName) {
+            actualReader.read(project, dependency)
+        }
     }
 }

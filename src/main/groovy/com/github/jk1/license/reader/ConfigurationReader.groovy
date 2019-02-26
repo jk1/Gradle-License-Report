@@ -27,17 +27,17 @@ import org.gradle.api.logging.Logging
 import static com.github.jk1.license.reader.ProjectReader.isResolvable
 
 class ConfigurationReader {
-
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
-    private CachedModuleReader moduleReader
-    private LicenseReportExtension config
 
-    ConfigurationReader(CachedModuleReader moduleReader) {
+    private LicenseReportExtension config
+    private ModuleReader moduleReader
+
+    ConfigurationReader(LicenseReportExtension config, ModuleReader moduleReader) {
+        this.config = config
         this.moduleReader = moduleReader
     }
 
     ConfigurationData read(Project project, Configuration configuration) {
-        config = project.licenseReport
         ConfigurationData data = new ConfigurationData()
         data.name = configuration.name
 

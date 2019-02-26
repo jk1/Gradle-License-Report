@@ -25,16 +25,21 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 class ProjectReader {
-
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
-    private CachedModuleReader moduleReader = new CachedModuleReader()
-    private ConfigurationReader configurationReader = new ConfigurationReader(moduleReader)
+
+    private LicenseReportExtension config
+    private ConfigurationReader configurationReader
+
+    ProjectReader(LicenseReportExtension config) {
+        this.config = config
+        this.configurationReader = new ConfigurationReader(config, new CachedModuleReader(config))
+    }
 
     ProjectData read(Project project) {
         ProjectData data = new ProjectData()
         data.project = project
 
-        Project[] projectsToScan = project.licenseReport.projects
+        Project[] projectsToScan = config.projects
         LOGGER.info("Configured projects: ${projectsToScan.join(',')}")
 
         List<ConfigurationData> readConfigurations = projectsToScan.collect { subProject ->
@@ -52,14 +57,12 @@ class ProjectReader {
     }
 
     private Set<Configuration> findConfigurationsToScan(Project project) {
-        LicenseReportExtension extension = project.licenseReport
-
         Set<Configuration> toScan
-        if (extension.configurations.length == 0) {
+        if (config.configurations.length == 0) {
             LOGGER.info("No configuration defined. Use all resolvable configurations.")
             toScan = findResolvableConfigurations(project)
         } else {
-            toScan = findConfiguredConfigurations(project)
+            toScan = findConfiguredConfigurations(project, config)
             Set<Configuration> unresolvable = findUnresolvable(toScan)
             if (unresolvable) {
                 throw new UnresolvableConfigurationException("Unable to resolve configurations: $unresolvable")
@@ -83,8 +86,8 @@ class ProjectReader {
         }
     }
 
-    static Set<Configuration> findConfiguredConfigurations(Project project) {
-        project.configurations.findAll { config -> config.name in project.licenseReport.configurations }
+    static Set<Configuration> findConfiguredConfigurations(Project project, LicenseReportExtension extension) {
+        project.configurations.findAll { config -> config.name in extension.configurations }
     }
 
     private static Set<Configuration> findUnresolvable(Set<Configuration> toScan) {

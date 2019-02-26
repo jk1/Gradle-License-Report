@@ -22,18 +22,6 @@ import static com.github.jk1.license.reader.ProjectReaderFuncSpec.removeDevelope
 
 class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
 
-    File settingsGradle
-
-    private File newSubBuildFile(String subFolderName) {
-        File subFolder = new File(testProjectDir.root, subFolderName)
-        subFolder.mkdirs()
-        settingsGradle << "include '${subFolderName.replace('/', ':')}'"
-
-        File buildFile = new File(subFolder, "build.gradle")
-        buildFile.createNewFile()
-        buildFile
-    }
-
     def setup() {
         settingsGradle = testProjectDir.newFile("settings.gradle")
 
