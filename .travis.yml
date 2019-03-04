@@ -7,3 +7,6 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+install: true
+script:
+  - ./gradlew --scan build
