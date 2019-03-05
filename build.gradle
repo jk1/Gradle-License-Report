@@ -1,11 +1,17 @@
 plugins {
+    id 'com.gradle.build-scan' version '2.2.1'
     id 'idea'
     id 'groovy'
     id 'maven-publish'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.10.0'
+    id 'com.gradle.plugin-publish' version '0.10.1'
     id "com.palantir.idea-test-fix" version "0.1.0"
     id "com.github.hierynomus.license" version"0.15.0"
+}
+
+buildScan {
+    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 group = "com.github.jk1"
