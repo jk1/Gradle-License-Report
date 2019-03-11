@@ -65,78 +65,74 @@ class LicenseBundleNormalizerSpec extends Specification {
         noExceptionThrown()
     }
 
-    def "normalize license of manifest (when stored as name)"() {
+    def "normalize license of manifest by matching license name"() {
         normalizerFile << """,
             "transformationRules" : [
                 { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2.*" }
               ]
             }"""
 
-        ProjectData projectData = builder.project {
-            configurations(["runtime", "test"]) { configName ->
-                configuration(configName) {
-                    module("mod1") {
-                        manifest("mani1") {
-                            license("Apache 2")
-                        }
-                    }
-                }
-            }
-        }
-        ProjectData expected = builder.project {
-            configurations(["runtime", "test"]) { configName ->
-                configuration(configName) {
-                    module("mod1") {
-                        manifest("mani1") {
-                            license("Apache License, Version 2.0")
-                        }
-                    }
-                }
-            }
-        }
-
         when:
-        def result = newNormalizer().filter(projectData)
+        def result = newNormalizer().filter(buildProjectWithManifestLicense("Apache 2"))
 
         then:
-        json(result) == json(expected)
+        json(result) == json(buildProjectWithManifestLicense("Apache License, Version 2.0"))
     }
 
-    def "normalize the manifests license or to the appropriate bundle-license-name"() {
+    def "normalize license of manifest by checking license name for equality"() {
         normalizerFile << """,
             "transformationRules" : [
-                { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-2.0.*" }
+                { "bundleName" : "apache2", "licenseNamePattern" : "Apache+2" }
               ]
             }"""
 
-        ProjectData projectData = builder.project {
-            configurations(["runtime", "test"]) { configName ->
-                configuration(configName) {
-                    module("mod1") {
-                        manifest("mani1") {
-                            license("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        }
-                    }
-                }
-            }
-        }
-        ProjectData expected = builder.project {
-            configurations(["runtime", "test"]) { configName ->
-                configuration(configName) {
-                    module("mod1") {
-                        manifest("mani1") {
-                            license("Apache License, Version 2.0")
-                        }
-                    }
-                }
-            }
-        }
-
         when:
-        def result = newNormalizer().filter(projectData)
+        def result = newNormalizer().filter(buildProjectWithManifestLicense("Apache+2"))
 
         then:
-        json(result) == json(expected)
+        json(result) == json(buildProjectWithManifestLicense("Apache License, Version 2.0"))
+    }
+
+    def "normalize the manifests license by matching license url"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-3.0.*" }
+              ]
+            }"""
+
+        when:
+        def result = newNormalizer().filter(buildProjectWithManifestLicense("http://www.apache.org/licenses/LICENSE-3.0.txt"))
+
+        then:
+        json(result) == json(buildProjectWithManifestLicense("Apache License, Version 2.0"))
+    }
+
+    def "normalize the manifests license by checking license url for equality"() {
+        normalizerFile << """,
+            "transformationRules" : [
+                { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE+2.0.txt" }
+              ]
+            }"""
+
+        when:
+        def result = newNormalizer().filter(buildProjectWithManifestLicense("http://www.apache.org/licenses/LICENSE+2.0.txt"))
+
+        then:
+        json(result) == json(buildProjectWithManifestLicense("Apache License, Version 2.0"))
+    }
+
+    private ProjectData buildProjectWithManifestLicense(String name){
+        return builder.project {
+            configurations(["runtime", "test"]) { configName ->
+                configuration(configName) {
+                    module("mod1") {
+                        manifest("mani1") {
+                            license(name)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     def "all poms of all configurations are normalized"() {
@@ -183,34 +179,11 @@ class LicenseBundleNormalizerSpec extends Specification {
               ]
             }"""
 
-        ProjectData projectData = builder.project {
-            configurations(["runtime", "test"]) { configName ->
-                configuration(configName) {
-                    module("mod1") {
-                        manifest("mani1") {
-                            license("Apache 2")
-                        }
-                    }
-                }
-            }
-        }
-        ProjectData expected = builder.project {
-            configurations(["runtime", "test"]) { configName ->
-                configuration(configName) {
-                    module("mod1") {
-                        manifest("mani1") {
-                            license("Apache License, Version 2.0")
-                        }
-                    }
-                }
-            }
-        }
-
         when:
-        def result = newNormalizer().filter(projectData)
+        def result = newNormalizer().filter(buildProjectWithManifestLicense("Apache 2"))
 
         then:
-        json(result) == json(expected)
+        json(result) == json(buildProjectWithManifestLicense("Apache License, Version 2.0"))
     }
 
     def "all bundles of all imported modules are normalized"() {

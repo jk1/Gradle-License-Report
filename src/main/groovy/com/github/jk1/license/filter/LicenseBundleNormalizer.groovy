@@ -46,10 +46,13 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     LicenseBundleNormalizer(String bundlePath, boolean createDefaultTransformationRules) {
+        LOGGER.debug("This build has requested module license bundle normalization")
         if (bundlePath == null) {
             normalizerText = getClass().getResourceAsStream("/default-license-normalizer-bundle.json").text
+            LOGGER.debug("Using default normalizer bundle")
         } else {
             normalizerText = new File(bundlePath).text
+            LOGGER.debug("Using supplied normalizer bundle from {}: {}", bundlePath, normalizerText)
         }
 
         normalizerConfig = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(normalizerText.chars))
@@ -61,6 +64,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         if (createDefaultTransformationRules) {
             initializeDefaultTransformationRules()
         }
+        LOGGER.debug("Bundle normalizer initialized")
     }
 
     @Input
@@ -84,19 +88,23 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     @Override
     ProjectData filter(ProjectData data) {
+        LOGGER.debug("Performing module license normalization")
         config = data.project.licenseReport
-
+        LOGGER.debug("Normalizing pom.xml license section...")
         data.configurations*.dependencies.flatten().forEach { normalizePoms(it) }
+        LOGGER.debug("Normalizing JAR manifest licenses...")
         data.configurations*.dependencies.flatten().forEach { normalizeManifest(it) }
+        LOGGER.debug("Normalizing embeded license files...")
         data.configurations*.dependencies.flatten().forEach { normalizeLicenseFileDetails(it) }
         data.importedModules.forEach { normalizeImportedModuleBundle(it) }
-
+        LOGGER.debug("Modules normalized, removing duplicates...")
         data = duplicateFilter.filter(data)
-
+        LOGGER.debug("Module license normalization complete")
         return data
     }
 
     private def normalizePoms(ModuleData dependency) {
+        LOGGER.debug("Checking module {}:{}:{}", dependency.group, dependency.name, dependency.version)
         dependency.poms.forEach { pom ->
             List<License> normalizedLicense = pom.licenses.collect { normalizePomLicense(it) }.flatten()
             pom.licenses.clear()
@@ -104,6 +112,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
     }
     private def normalizeManifest(ModuleData dependency) {
+        LOGGER.debug("Checking module {}:{}:{}", dependency.group, dependency.name, dependency.version)
         List<ManifestData> normalizedManifests = dependency.manifests.collect {
             normalizeManifestLicense(it)
         }.flatten()
@@ -111,6 +120,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         dependency.manifests.addAll(normalizedManifests)
     }
     private def normalizeLicenseFileDetails(ModuleData dependency) {
+        LOGGER.debug("Checking module {}:{}:{}", dependency.group, dependency.name, dependency.version)
         dependency.licenseFiles.forEach { licenseFile ->
             List<LicenseFileDetails> normalizedDetails =
                 licenseFile.fileDetails.collect { normalizeLicenseFileDetailsLicense(it) }.flatten()
@@ -132,6 +142,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         rules += findMatchingRulesForName(license.name)
         rules += findMatchingRulesForUrl(license.url)
+        LOGGER.debug("License {} ({}) matches the following rules: [{}]", license.name, license.url, rules.join(","))
 
         if (rules.isEmpty()) return [license]
 
@@ -142,6 +153,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         rules += findMatchingRulesForName(manifest.license)
         rules += findMatchingRulesForUrl(manifest.license)
+        LOGGER.debug("License {} ({}) matches the following rules: [{}]", manifest.name, manifest.url, rules.join(","))
 
         if (rules.isEmpty()) return [manifest]
 
@@ -157,6 +169,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         rules += findMatchingRulesForContentPattern(licenseFileContent)
         rules += findMatchingRulesForName(licenseFileDetails.license)
         rules += findMatchingRulesForUrl(licenseFileDetails.licenseUrl)
+        LOGGER.debug("License {} ({}) matches the following rules: [{}]", licenseFileDetails.license, licenseFileDetails.licenseUrl, rules.join(","))
 
         if (rules.isEmpty()) return [licenseFileDetails]
 
@@ -180,7 +193,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
     private List<NormalizerTransformationRule> findMatchingRulesForUrl(String url) {
         return normalizerConfig.transformationRules
-            .findAll { it.licenseUrlPattern && url ==~ it.licenseUrlPattern }
+            .findAll { it.licenseUrlPattern && (url == it.licenseUrlPattern || url ==~ it.licenseUrlPattern) }
     }
     private List<NormalizerTransformationRule> findMatchingRulesForContentPattern(String content) {
         return normalizerConfig.transformationRules
@@ -255,7 +268,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     private def normalizeWithBundle(NormalizerTransformationRule rule, Closure block) {
         def bundle = findBundleForRule(rule)
         if (bundle == null) {
-            LOGGER.info("No bundle found for bundle-name: ${rule?.bundleName}")
+            LOGGER.warn("No bundle found for bundle-name: ${rule?.bundleName}")
             return
         }
 
@@ -285,5 +298,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
         String bundleName
         boolean transformName = true
         boolean transformUrl = true
+
+        @Override
+        String toString() {
+            "$bundleName:name=[$licenseNamePattern],url=[$licenseUrlPattern],content=[$licenseFileContentPattern]"
+        }
     }
 }

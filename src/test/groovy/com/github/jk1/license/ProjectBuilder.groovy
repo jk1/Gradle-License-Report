@@ -142,7 +142,7 @@ class ProjectBuilder extends BuilderSupport {
         pom
     }
 
-    private ManifestData addManifest(String id) {
+    private ManifestData addManifest(String id, String url = "http://dummy-mani-url") {
         ModuleData module = (ModuleData)current
 
         def manifest = new ManifestData(
@@ -151,7 +151,7 @@ class ProjectBuilder extends BuilderSupport {
             description: "dummy-mani-desc",
             vendor: "dummy-mani-vendor",
             license: "Apache 2.0",
-            url: "http://dummy-mani-url"
+            url: url
         )
 
         module.manifests << manifest
