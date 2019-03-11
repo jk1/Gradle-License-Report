@@ -24,6 +24,7 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class ReportTaskTestSpec extends Specification {
+
     @Rule
     final TemporaryFolder testProjectDir = new TemporaryFolder()
 

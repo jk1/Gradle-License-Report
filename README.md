@@ -52,23 +52,6 @@ licenseReport {
     // Set output directory for the report data.
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = "$projectDir/build/licenses"
-    
-    // List the groups ids to exclude from dependency report.
-    // By default project's own group is excluded.
-    // For finer granularity, see: excludes.
-    excludeGroups = ['do.not.want']
-
-    // List the ids (in module:name format) to exclude from dependency report.
-    // By default excludes is empty.
-    excludes = ['moduleGroup:moduleName']
-
-    // Set custom report renderer, implementing ReportRenderer.
-    // Yes, you can write your own to support any format necessary.
-    renderers = [new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')]
-
-    // Set importers to import any external dependency information, i.e. from npm.
-    // Custom importer should implement DependencyDataImporter interface.
-    importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
 
     // Select projects to examine for dependencies.
     // Defaults to current project and all its subprojects
@@ -78,6 +61,26 @@ licenseReport {
     configurations = ['compile']
     // Use 'ALL' to dynamically resolve all configurations:
     // configurations = ALL
+
+
+    // List the groups ids to exclude from dependency report.
+    // For finer granularity, see: excludes.
+    excludeGroups = ['do.not.want']
+
+    // List the ids (in module:name format) to exclude from dependency report.
+    // By default excludes is empty.
+    excludes = ['moduleGroup:moduleName']
+
+    // Don't include artifacts of project's own group into the report
+    excludeOwnGroup = true
+
+    // Set custom report renderer, implementing ReportRenderer.
+    // Yes, you can write your own to support any format necessary.
+    renderers = [new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')]
+
+    // Set importers to import any external dependency information, i.e. from npm.
+    // Custom importer should implement DependencyDataImporter interface.
+    importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
 }
 ```
 

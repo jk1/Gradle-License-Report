@@ -33,6 +33,7 @@ class LicenseReportExtension {
     public DependencyDataImporter[] importers
     public DependencyFilter[] filters
     public String[] configurations
+    public boolean excludeOwnGroup
     public String[] excludeGroups
     public String[] excludes
 
@@ -41,6 +42,7 @@ class LicenseReportExtension {
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
         configurations = ['runtimeClasspath']
+        excludeOwnGroup = true
         excludeGroups = []
         excludes = []
         importers = []
@@ -60,6 +62,8 @@ class LicenseReportExtension {
         snapshot += filters.collect { it.class.name }
         snapshot << 'configurations '
         snapshot += configurations
+        snapshot << 'excludeOwnGroup'
+        snapshot += excludeOwnGroup
         snapshot << 'exclude'
         snapshot += excludeGroups
         snapshot << 'excludes'
@@ -95,8 +99,9 @@ class LicenseReportExtension {
         return null
     }
 
+    // todo: migrate me to a filter and cover me with tests
     boolean isExcluded(ResolvedDependency module) {
-        return projects.any { module.moduleGroup == it.group } ||
+        return (projects.any { module.moduleGroup == it.group } && excludeOwnGroup) ||
             excludeGroups.contains(module.moduleGroup) ||
             excludes.contains("$module.moduleGroup:$module.moduleName")
     }
