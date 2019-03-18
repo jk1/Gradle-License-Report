@@ -18,7 +18,6 @@ package com.github.jk1.license.filter
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
 
-import static com.github.jk1.license.reader.ProjectReaderFuncSpec.prettyPrintJson
 import static com.github.jk1.license.reader.ProjectReaderFuncSpec.removeDevelopers
 
 class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec {
@@ -46,8 +45,8 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             import com.github.jk1.license.render.*
             import com.github.jk1.license.reader.*
             licenseReport {
-                outputDir = "$outputDir.absolutePath"
-                filters = new LicenseBundleNormalizer(bundlePath: "$normalizerFile.absolutePath", createDefaultTransformationRules: false)
+                outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
+                filters = new LicenseBundleNormalizer(bundlePath: "${fixPathForBuildFile(normalizerFile.absolutePath)}", createDefaultTransformationRules: false)
                 renderer = new MultiReportRenderer(new JsonReportRenderer(onlyOneLicensePerModule: false), new RawProjectDataJsonRenderer())
                 configurations = ['forTesting']
             }
@@ -169,7 +168,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             import com.github.jk1.license.filter.*
             import com.github.jk1.license.render.*
             licenseReport {
-                outputDir = "$licenseResultJsonFile.parentFile.absolutePath"
+                outputDir = "${fixPathForBuildFile(licenseResultJsonFile.parentFile.absolutePath)}"
                 filters = new LicenseBundleNormalizer()
                 renderer = new JsonReportRenderer(onlyOneLicensePerModule: false)
                 configurations = ['forTesting']

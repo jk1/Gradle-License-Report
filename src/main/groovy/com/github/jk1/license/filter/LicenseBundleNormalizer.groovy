@@ -32,13 +32,15 @@ import org.gradle.api.tasks.Input
 
 
 class LicenseBundleNormalizer implements DependencyFilter {
-
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private String normalizerText
+    private String filterConfig = ""
     ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
     LicenseReportExtension config
-    LicenseBundleNormalizerConfig normalizerConfig
+    LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
+        bundles: new ArrayList<NormalizerLicenseBundle>(),
+        transformationRules: new ArrayList<NormalizerTransformationRule>()
+    )
     Map<String, NormalizerLicenseBundle> bundleMap
 
     LicenseBundleNormalizer(Map params = ["bundlePath": null, "createDefaultTransformationRules": true]) {
@@ -47,44 +49,31 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     LicenseBundleNormalizer(String bundlePath, boolean createDefaultTransformationRules) {
         LOGGER.debug("This build has requested module license bundle normalization")
-        if (bundlePath == null) {
-            normalizerText = getClass().getResourceAsStream("/default-license-normalizer-bundle.json").text
-            LOGGER.debug("Using default normalizer bundle")
-        } else {
-            normalizerText = new File(bundlePath).text
+
+        filterConfig += "bundlePath = $bundlePath\n"
+        filterConfig += "createDefaultTransformationRules = $createDefaultTransformationRules\n"
+
+        if (bundlePath != null) {
+            def normalizerText = new File(bundlePath).text
+            filterConfig += "normalizerText = $normalizerText\n"
+
             LOGGER.debug("Using supplied normalizer bundle from {}: {}", bundlePath, normalizerText)
-        }
 
-        normalizerConfig = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(normalizerText.chars))
+            def config = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(normalizerText.chars))
 
-        bundleMap = normalizerConfig.bundles.collectEntries {
-            [it.bundleName, it]
+            mergeConfigIntoGlobalConfig(config)
         }
 
         if (createDefaultTransformationRules) {
-            initializeDefaultTransformationRules()
+            applyDefaultNormalizerBundleFile()
+            applyBundleNamesAndUrlsAsExactMatchRules()
         }
-        LOGGER.debug("Bundle normalizer initialized")
+
+        LOGGER.debug("Bundle normalizer initialized (Bundles: ${normalizerConfig.bundles.size()}, Rules: ${normalizerConfig.transformationRules.size()})")
     }
 
     @Input
-    private String getNormalizerTextCache() { return this.normalizerText }
-
-    private def initializeDefaultTransformationRules() {
-        Set<String> rulePatternNames = normalizerConfig.transformationRules*.licenseNamePattern as Set
-        Set<String> rulePatternUrls = normalizerConfig.transformationRules*.licenseUrlPattern as Set
-
-        normalizerConfig.bundles.each { NormalizerLicenseBundle bundle ->
-            if (!rulePatternNames.contains(bundle.licenseName)) {
-                normalizerConfig.transformationRules <<
-                    new NormalizerTransformationRule(bundleName: bundle.bundleName, licenseNamePattern: bundle.licenseName)
-            }
-            if (!rulePatternUrls.contains(bundle.licenseUrl)) {
-                normalizerConfig.transformationRules <<
-                    new NormalizerTransformationRule(bundleName: bundle.bundleName, licenseUrlPattern: bundle.licenseUrl)
-            }
-        }
-    }
+    private String getFilterConfigForCache() { return this.filterConfig }
 
     @Override
     ProjectData filter(ProjectData data) {
@@ -101,6 +90,47 @@ class LicenseBundleNormalizer implements DependencyFilter {
         data = duplicateFilter.filter(data)
         LOGGER.debug("Module license normalization complete")
         return data
+    }
+
+    private def applyDefaultNormalizerBundleFile() {
+        LOGGER.debug("Applying default normalizer bundles")
+
+        def normalizerTextStream = getClass().getResourceAsStream("/default-license-normalizer-bundle.json")
+        def defaultConfig = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(normalizerTextStream))
+
+        mergeConfigIntoGlobalConfig(defaultConfig)
+    }
+
+    private def applyBundleNamesAndUrlsAsExactMatchRules() {
+        Set<String> rulePatternNames = normalizerConfig.transformationRules*.licenseNamePattern as Set
+        Set<String> rulePatternUrls = normalizerConfig.transformationRules*.licenseUrlPattern as Set
+
+        normalizerConfig.bundles.each { NormalizerLicenseBundle bundle ->
+            if (!rulePatternNames.contains(bundle.licenseName)) {
+                normalizerConfig.transformationRules <<
+                    new NormalizerTransformationRule(bundleName: bundle.bundleName, licenseNamePattern: bundle.licenseName)
+            }
+            if (!rulePatternUrls.contains(bundle.licenseUrl)) {
+                normalizerConfig.transformationRules <<
+                    new NormalizerTransformationRule(bundleName: bundle.bundleName, licenseUrlPattern: bundle.licenseUrl)
+            }
+        }
+    }
+
+    private void mergeConfigIntoGlobalConfig(LicenseBundleNormalizerConfig mergeIn) {
+        def existingBungleNames = normalizerConfig.bundles*.bundleName
+
+        mergeIn.bundles.each { NormalizerLicenseBundle bundle ->
+            if (!existingBungleNames.contains(bundle.bundleName)) {
+                normalizerConfig.bundles << bundle
+            }
+        }
+
+        normalizerConfig.transformationRules.addAll(mergeIn.transformationRules)
+
+        bundleMap = normalizerConfig.bundles.collectEntries {
+            [it.bundleName, it]
+        }
     }
 
     private def normalizePoms(ModuleData dependency) {

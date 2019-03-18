@@ -523,7 +523,7 @@ class LicenseBundleNormalizerSpec extends Specification {
                         pom("pom1") {
                             license(APACHE2_LICENSE(), url: "different url")
                             // should be normalized because name matches the bundle-name
-                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                            license(APACHE2_LICENSE(), name: "Apache -2.0", url: "different url")
                             // should stay, because name is different
                         }
                     }
@@ -536,7 +536,7 @@ class LicenseBundleNormalizerSpec extends Specification {
                     module("mod1") {
                         pom("pom1") {
                             license(APACHE2_LICENSE())
-                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                            license(APACHE2_LICENSE(), name: "Apache -2.0", url: "different url")
                         }
                     }
                 }
@@ -560,7 +560,7 @@ class LicenseBundleNormalizerSpec extends Specification {
                         pom("pom1") {
                             license(APACHE2_LICENSE(), name: "different name")
                             // should be normalized because url matches the bundle-url
-                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                            license(APACHE2_LICENSE(), name: "Apache -2.0", url: "different url")
                             // should stay, because url is different
                         }
                     }
@@ -573,7 +573,7 @@ class LicenseBundleNormalizerSpec extends Specification {
                     module("mod1") {
                         pom("pom1") {
                             license(APACHE2_LICENSE())
-                            license(APACHE2_LICENSE(), name: "Apache 2.0", url: "different url")
+                            license(APACHE2_LICENSE(), name: "Apache -2.0", url: "different url")
                         }
                     }
                 }

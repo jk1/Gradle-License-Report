@@ -23,6 +23,8 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathForBuildFile
+
 class PluginCompatibilityTest extends Specification {
     private final static def supportedGradleVersions = [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7", "4.8", "4.9", "4.10", "5.0", "5.1", "5.2" ]
     private final static def unsupportedGradleVersions = [ "3.2" ]
@@ -57,7 +59,7 @@ class PluginCompatibilityTest extends Specification {
             import com.github.jk1.license.filter.*
             import com.github.jk1.license.render.*
             licenseReport {
-                outputDir = "$outputDir.absolutePath"
+                outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
                 filters = [ new LicenseBundleNormalizer() ]
                 renderers = [ new InventoryHtmlReportRenderer('report.html','Backend'), new JsonReportRenderer(onlyOneLicensePerModule: false) ]
                 configurations = ALL
