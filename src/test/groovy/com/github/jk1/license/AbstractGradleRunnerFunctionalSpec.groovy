@@ -79,4 +79,9 @@ abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
         }
     }
 
+    // When a path is used in a gradle build script, a single backslash breaks the script.
+    // Therefore to avoid any problems, a normal slash is used (and it seems to work)
+    static String fixPathForBuildFile(String path) {
+        return path.replaceAll("\\\\", "/")
+    }
 }
