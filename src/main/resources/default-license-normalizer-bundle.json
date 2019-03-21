@@ -59,7 +59,7 @@
     { "bundleName" : "gpl2+ce",     "licenseNamePattern" : "GNU General Public License, [v|V]ersion 2.*, with the classpath exception" },
     { "bundleName" : "gpl2+ce",     "licenseNamePattern" : "GPL2 w/ CPE" },
     { "bundleName" : "lgpl2.1",     "licenseUrlPattern" : ".*www\\.opensource\\.org/licenses/LGPL-2\\.1" },
-    { "bundleName" : "lgpl2.1",     "licenseUrlPattern" : ".*www\\.gnu\\.org/licenses/lgpl-2\\.1.html" },
+    { "bundleName" : "lgpl2.1",     "licenseUrlPattern" : ".*www\\.gnu\\.org/licenses/lgpl-2\\.1\\.html" },
     { "bundleName" : "lgpl2.1",     "licenseNamePattern" : "LGPL 2\\.1" },
     { "bundleName" : "mit",         "licenseNamePattern" : "(The\\s)?MIT(\\s[l|L]icen[c|s]e)?" },
     { "bundleName" : "mpl1.1",      "licenseNamePattern" : "MPL 1\\.1" },
