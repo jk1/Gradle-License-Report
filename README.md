@@ -5,7 +5,6 @@ Gradle License Report
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A plugin for generating reports about the licenses of the dependencies for your Gradle project.
-This plugin is a fork of https://github.com/RobertFischer/Gradle-License-Report.
 
 This plugin will resolve all your dependencies, and then scour them for anything that looks like relevant licensing information. The theory is
 to automatically generate a report that you can hand to corporate IP lawyers in order to keep them busy.
