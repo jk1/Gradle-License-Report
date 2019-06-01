@@ -23,7 +23,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-class ReportTaskTestSpec extends Specification {
+class ReportTaskCachingSpec extends Specification {
 
     @Rule
     final TemporaryFolder testProjectDir = new TemporaryFolder()
@@ -41,27 +41,23 @@ class ReportTaskTestSpec extends Specification {
             }
         }
     """
-
-    }
-
-    def "should cache task outputs"() {
-        given:
         buildFile << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
+                id 'java'
             }
             
             repositories {
                 mavenCentral()
             }
             
-            apply plugin: 'java'
-            
             dependencies {
                 compile "junit:junit:\${project.ext.junitVersion}"
             }
         """
+    }
 
+    def "should calculate up-to-date correctly"() {
         when:
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
@@ -82,6 +78,19 @@ class ReportTaskTestSpec extends Specification {
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.UP_TO_DATE
 
+    }
+
+    def "should cache task outputs"() {
+        when:
+        BuildResult result = GradleRunner.create()
+            .withPluginClasspath()
+            .withProjectDir(testProjectDir.getRoot())
+            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
+            .build()
+
+        then:
+        result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
+
         when:
         result = GradleRunner.create()
             .withPluginClasspath()
@@ -91,6 +100,41 @@ class ReportTaskTestSpec extends Specification {
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.FROM_CACHE
+    }
+
+    def "should rebuild report on dependency change"() {
+        when:
+        BuildResult result = GradleRunner.create()
+            .withPluginClasspath()
+            .withProjectDir(testProjectDir.getRoot())
+            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
+            .build()
+
+        then:
+        result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
+
+        when:
+        result = GradleRunner.create()
+            .withPluginClasspath()
+            .withProjectDir(testProjectDir.getRoot())
+            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.11")
+            .build()
+
+        then:
+        result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
+
+    }
+
+    def "should rebuild report on configured projects change"() {
+        when:
+        BuildResult result = GradleRunner.create()
+            .withPluginClasspath()
+            .withProjectDir(testProjectDir.getRoot())
+            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
+            .build()
+
+        then:
+        result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
         result = GradleRunner.create()
