@@ -44,7 +44,7 @@ import org.gradle.api.tasks.Input
  *   </chapter>
  * </topic>
  */
-class XmlReportRenderer extends SingleInfoReportRenderer {
+class XmlReportRenderer implements ReportRenderer {
 
     private String fileName
     private String chapterName

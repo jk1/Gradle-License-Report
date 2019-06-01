@@ -208,7 +208,6 @@ class ProjectBuilderSpec extends Specification {
         }
 
         then:
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().files.flatten() == ["file1", "file2", "file3"]
         data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file == ["file1", "file2", "file3"]
         data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license == ["lic1", "lic2", "lic3"]
         data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl == ["licUrl1", "licUrl2", "licUrl3"]
@@ -269,7 +268,6 @@ class ProjectBuilderSpec extends Specification {
             assert it.dependencies.flatten().manifests.flatten().find { it.name == "mani1" }*.license == [APACHE2_LICENSE().name]
             assert it.dependencies.flatten().manifests.flatten().find { it.name == "mani2" }*.license == [MIT_LICENSE().name]
 
-            assert it.dependencies.flatten().licenseFiles.flatten().files.flatten() == ["file1", "file2"]
             assert it.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file == ["file1", "file2"]
             assert it.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license == ["lic1", "lic2"]
             assert it.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl == ["licUrl1", "licUrl2"]

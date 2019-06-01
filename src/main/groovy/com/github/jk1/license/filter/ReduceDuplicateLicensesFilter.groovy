@@ -32,7 +32,6 @@ class ReduceDuplicateLicensesFilter implements DependencyFilter {
         // remove license-file duplicates
         projectData.configurations*.dependencies.flatten().licenseFiles.flatten().forEach { LicenseFileData files ->
             files.fileDetails = files.fileDetails.unique()
-            files.files = files.files.unique()
         }
 
         // remove imported modules duplicates

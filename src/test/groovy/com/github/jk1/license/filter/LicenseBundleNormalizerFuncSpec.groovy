@@ -47,7 +47,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
                 filters = new LicenseBundleNormalizer(bundlePath: "${fixPathForBuildFile(normalizerFile.absolutePath)}", createDefaultTransformationRules: false)
-                renderer = new MultiReportRenderer(new JsonReportRenderer(onlyOneLicensePerModule: false), new RawProjectDataJsonRenderer())
+                renderers = [new JsonReportRenderer(onlyOneLicensePerModule: false), new RawProjectDataJsonRenderer()]
                 configurations = ['forTesting']
             }
         """
@@ -267,10 +267,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 "file": "joda-time-2.9.9.jar/META-INF/NOTICE.txt",
                 "license": null
             }
-        ],
-        "files": [
-            "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
-            "joda-time-2.9.9.jar/META-INF/NOTICE.txt"
         ]
     },
     {
@@ -285,10 +281,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
                 "license": null
             }
-        ],
-        "files": [
-            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
         ]
     }
 ]"""
@@ -430,9 +422,6 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
                 "license": "GNU GENERAL PUBLIC LICENSE, Version 2"
             }
-        ],
-        "files": [
-            "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt"
         ]
     }
 ]"""

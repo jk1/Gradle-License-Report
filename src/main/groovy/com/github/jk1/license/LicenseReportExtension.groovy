@@ -25,6 +25,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 
 class LicenseReportExtension {
+
     public static final String[] ALL = []
 
     public String outputDir
@@ -81,18 +82,10 @@ class LicenseReportExtension {
     @Nested
     private List<DependencyFilter> getFiltersCache() { return this.filters }
 
-    /**
-     * Use #renderers instead
-     */
-    @Deprecated
     void setRenderer(ReportRenderer renderer) {
         renderers = renderer
     }
 
-    /**
-     * Use #renderers instead
-     */
-    @Deprecated
     ReportRenderer getRenderer() {
         if (renderers != null && renderers.size() > 0) {
             return renderers[0]

@@ -95,8 +95,7 @@ class MultiProjectReportCachingSpec extends Specification {
         result = GradleRunner.create()
             .withPluginClasspath()
             .withProjectDir(testProjectDir.getRoot())
-            .withArguments('--build-cache', "generateLicenseReport", "--debug")
-            .forwardOutput()
+            .withArguments('--build-cache', "generateLicenseReport")
             .build()
 
         then:

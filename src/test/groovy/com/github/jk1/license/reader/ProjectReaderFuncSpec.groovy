@@ -90,10 +90,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
                 "license": null
             }
-        ],
-        "files": [
-            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
         ]
     }
 ]"""
@@ -401,10 +397,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "commons-logging-1.1.1.jar/META-INF/NOTICE",
                                 "license": null
                             }
-                        ],
-                        "files": [
-                            "commons-logging-1.1.1.jar/META-INF/LICENSE",
-                            "commons-logging-1.1.1.jar/META-INF/NOTICE"
                         ]
                     }
                 ],
@@ -458,10 +450,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
                                 "license": null
                             }
-                        ],
-                        "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -515,10 +503,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "ehcache-3.3.1.jar/NOTICE",
                                 "license": null
                             }
-                        ],
-                        "files": [
-                            "ehcache-3.3.1.jar/LICENSE",
-                            "ehcache-3.3.1.jar/NOTICE"
                         ]
                     }
                 ],
@@ -612,10 +596,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "spring-beans-3.2.3.RELEASE.jar/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             }
-                        ],
-                        "files": [
-                            "spring-beans-3.2.3.RELEASE.jar/META-INF/notice.txt",
-                            "spring-beans-3.2.3.RELEASE.jar/META-INF/license.txt"
                         ]
                     }
                 ],
@@ -669,10 +649,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             }
-                        ],
-                        "files": [
-                            "spring-core-3.2.3.RELEASE.jar/META-INF/notice.txt",
-                            "spring-core-3.2.3.RELEASE.jar/META-INF/license.txt"
                         ]
                     }
                 ],
@@ -726,10 +702,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "spring-tx-3.2.3.RELEASE.jar/META-INF/notice.txt",
                                 "license": "Apache License, Version 2.0"
                             }
-                        ],
-                        "files": [
-                            "spring-tx-3.2.3.RELEASE.jar/META-INF/notice.txt",
-                            "spring-tx-3.2.3.RELEASE.jar/META-INF/license.txt"
                         ]
                     }
                 ],

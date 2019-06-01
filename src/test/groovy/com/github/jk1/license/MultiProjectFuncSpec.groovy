@@ -38,7 +38,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
             import com.github.jk1.license.render.*
             licenseReport {
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 filters = new com.github.jk1.license.filter.LicenseBundleNormalizer()
                 configurations = []
             }
@@ -60,7 +60,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
             import com.github.jk1.license.render.*
             licenseReport {
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 filters = new com.github.jk1.license.filter.LicenseBundleNormalizer()
                 configurations = []
             }
@@ -111,7 +111,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
             import com.github.jk1.license.render.*
             licenseReport {
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 filters = new com.github.jk1.license.filter.LicenseBundleNormalizer()
                 configurations = []
             }
@@ -133,7 +133,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
             import com.github.jk1.license.render.*
             licenseReport {
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 filters = new com.github.jk1.license.filter.LicenseBundleNormalizer()
                 configurations = []
             }
@@ -155,7 +155,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
             import com.github.jk1.license.render.*
             licenseReport {
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 filters = new com.github.jk1.license.filter.LicenseBundleNormalizer()
                 configurations = []
             }

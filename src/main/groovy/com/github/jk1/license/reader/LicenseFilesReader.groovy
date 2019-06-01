@@ -51,7 +51,6 @@ class LicenseFilesReader {
 
                 def data = new LicenseFileData()
                 files.forEach {
-                    data.files << it
                     data.fileDetails << createFileDetails(it)
                 }
                 return data

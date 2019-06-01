@@ -29,7 +29,7 @@ import org.gradle.api.tasks.Input
  * <br/>
  * Setting
  * <br/>
- * licenseReport.renderer = new com.github.jk1.license.render.CsvReportRenderer()
+ * licenseReport.renderers = [new com.github.jk1.license.render.CsvReportRenderer()]
  * <br/>
  * licenseReport.renderer.quote = "'"
  * <br/>
@@ -48,7 +48,7 @@ import org.gradle.api.tasks.Input
  * String separator = ','<br/>
  * String nl = '\r\n'<br/>
  */
-class CsvReportRenderer extends SingleInfoReportRenderer {
+class CsvReportRenderer implements ReportRenderer {
 
     String filename
     boolean includeHeaderLine = true

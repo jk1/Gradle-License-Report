@@ -82,13 +82,6 @@ class License {
 
 @Canonical
 class LicenseFileData {
-
-    /**
-     * @Deprecated Use #fileDetails instead. This will be removed in the future
-     */
-    @Deprecated
-    Collection<String> files = []
-
     Collection<LicenseFileDetails> fileDetails = new TreeSet<LicenseFileDetails>()
 }
 

@@ -123,10 +123,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
                                 "license": null
                             }
-                        ],
-                        "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -250,10 +246,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
                                 "license": null
                             }
-                        ],
-                        "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -312,10 +304,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
                                 "license": null
                             }
-                        ],
-                        "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
                         ]
                     }
                 ],
@@ -425,10 +413,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                                 "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
                                 "license": null
                             }
-                        ],
-                        "files": [
-                            "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                            "commons-lang3-3.7.jar/META-INF/LICENSE.txt"
                         ]
                     }
                 ],

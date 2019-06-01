@@ -11,8 +11,8 @@ buildscript {
     }
 }
 
-apply plugin:'java'
-apply plugin:'com.github.jk1.dependency-license-report'
+apply plugin: 'java'
+apply plugin: 'com.github.jk1.dependency-license-report'
 
 repositories { mavenCentral() }
 
@@ -38,7 +38,7 @@ task printDependencies {
     }
 }
 
-task printResolvedFiles  {
+task printResolvedFiles {
     doLast {
         def resolved = configurations.compile.resolvedConfiguration
         resolved.firstLevelModuleDependencies.each { ResolvedDependency resolvedDep ->
