@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license
 
+import org.gradle.api.Project
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.testkit.runner.UnexpectedBuildFailure
@@ -25,7 +26,8 @@ import spock.lang.Unroll
 
 import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathForBuildFile
 
-class PluginCompatibilityTest extends Specification {
+class PluginSpec extends Specification {
+
     private final static def supportedGradleVersions = [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7", "4.8", "4.9", "4.10", "5.0", "5.1", "5.2" ]
     private final static def unsupportedGradleVersions = [ "3.2" ]
 
@@ -65,6 +67,16 @@ class PluginCompatibilityTest extends Specification {
                 configurations = ALL
             }
         """
+    }
+
+    def "plugin should be applicable to a project"() {
+        Project project = org.gradle.testfixtures.ProjectBuilder.builder().build()
+
+        when:
+        project.pluginManager.apply 'com.github.jk1.dependency-license-report'
+
+        then:
+        project.licenseReport
     }
 
     @Unroll

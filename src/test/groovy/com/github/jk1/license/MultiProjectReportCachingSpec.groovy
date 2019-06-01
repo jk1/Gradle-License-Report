@@ -72,8 +72,7 @@ class MultiProjectReportCachingSpec extends Specification {
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
-        buildFile.delete()
-        testProjectDir.newFile('build.gradle') << """
+        buildFile.text = """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
             }
