@@ -108,7 +108,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "licenses": [
             {
                 "comments": "",
-                "distribution": "repo",
                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                 "name": "The Apache Software License, Version 2.0"
             }
@@ -131,7 +130,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "licenses": [
             {
                 "comments": "",
-                "distribution": "repo",
                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                 "name": "The Apache Software License, Version 2.0"
             }
@@ -149,7 +147,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "licenses": [
             {
                 "comments": "",
-                "distribution": "repo",
                 "url": "http://www.opensource.org/licenses/mit-license.php",
                 "name": "MIT License"
             }
@@ -200,7 +197,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "licenses": [
             {
                 "comments": "",
-                "distribution": "repo",
                 "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                 "name": "Apache License, Version 2.0"
             }
@@ -281,7 +277,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "licenses": [
             {
                 "comments": "",
-                "distribution": "repo",
                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                 "name": "Apache 2"
             }
@@ -337,7 +332,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "",
                                 "url": "",
                                 "name": "Public Domain"
                             }
@@ -377,7 +371,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "repo",
                                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "The Apache Software License, Version 2.0"
                             }
@@ -430,7 +423,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "repo",
                                 "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "Apache License, Version 2.0"
                             }
@@ -483,7 +475,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "repo",
                                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "The Apache Software License, Version 2.0"
                             }
@@ -536,7 +527,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "repo",
                                 "url": "http://www.opensource.org/licenses/mit-license.php",
                                 "name": "MIT License"
                             }
@@ -576,7 +566,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "repo",
                                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "The Apache Software License, Version 2.0"
                             }
@@ -629,7 +618,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "repo",
                                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "The Apache Software License, Version 2.0"
                             }
@@ -682,7 +670,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "licenses": [
                             {
                                 "comments": "",
-                                "distribution": "repo",
                                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "The Apache Software License, Version 2.0"
                             }

@@ -32,7 +32,6 @@ class ProjectDataFixture {
         new License(
             name: "Apache License, Version 2.0",
             url: "https://www.apache.org/licenses/LICENSE-2.0",
-            distribution: "repo",
             comments: "A business-friendly OSS license"
         )
     }
@@ -40,7 +39,6 @@ class ProjectDataFixture {
         new License(
             name: "MIT License",
             url: "https://opensource.org/licenses/MIT",
-            distribution: "repo",
             comments: "A short and simple permissive license"
         )
     }
@@ -48,7 +46,6 @@ class ProjectDataFixture {
         new License(
             name: "GNU LESSER GENERAL PUBLIC LICENSE, Version 3",
             url: "https://www.gnu.org/licenses/lgpl-3.0",
-            distribution: "repo",
             comments: "A weak copyleft license"
         )
     }

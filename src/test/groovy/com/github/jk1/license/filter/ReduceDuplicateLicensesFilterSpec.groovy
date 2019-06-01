@@ -72,7 +72,6 @@ class ReduceDuplicateLicensesFilterSpec extends Specification {
                         pom("pom1") {
                             license(APACHE2_LICENSE())
                             license(APACHE2_LICENSE(), url: "someting else")
-                            license(APACHE2_LICENSE(), distribution: "someting else")
                             license(APACHE2_LICENSE(), comments: "someting else")
                         }
                     }

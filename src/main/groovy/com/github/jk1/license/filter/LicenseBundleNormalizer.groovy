@@ -237,7 +237,6 @@ class LicenseBundleNormalizer implements DependencyFilter {
         License normalized = new License(
             name: license.name,
             url:  license.url,
-            distribution:  license.distribution,
             comments:  license.comments
         )
 

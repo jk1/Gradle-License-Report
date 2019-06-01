@@ -217,7 +217,6 @@ class PomReader {
                 pomData.licenses << new License(
                     name: license.name?.text(),
                     url: license.url?.text(),
-                    distribution: license.distribution?.text(),
                     comments: license.comments?.text()
                 )
             }
