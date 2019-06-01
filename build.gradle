@@ -15,7 +15,7 @@ buildScan {
 }
 
 group = "com.github.jk1"
-version = "1.6"
+version = "1.7"
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
