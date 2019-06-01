@@ -21,7 +21,7 @@ import com.github.jk1.license.ModuleData
 
 class LicenseDataCollector {
 
-    protected static List<String> singleModuleLicenseInfo(ModuleData data) {
+    static List<String> singleModuleLicenseInfo(ModuleData data) {
         def info = multiModuleLicenseInfo(data)
         def moduleUrl = lastOrNull(info.moduleUrls)
         def license = lastOrNull(info.licenses)
@@ -31,7 +31,7 @@ class LicenseDataCollector {
         [moduleUrl, moduleLicense, moduleLicenseUrl]
     }
 
-    protected static MultiLicenseInfo multiModuleLicenseInfo(ModuleData data) {
+    static MultiLicenseInfo multiModuleLicenseInfo(ModuleData data) {
         MultiLicenseInfo info = new MultiLicenseInfo()
 
         data.poms.each {
