@@ -372,12 +372,10 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
 
         pomsString == """[
     {
-        "comments": "A business-friendly OSS license",
         "url": "https://github.com/javaee/javax.annotation/blob/master/LICENSE",
         "name": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"
     },
     {
-        "comments": "A business-friendly OSS license",
         "url": "https://github.com/javaee/javax.annotation/blob/master/LICENSE",
         "name": "GNU GENERAL PUBLIC LICENSE, Version 2"
     }

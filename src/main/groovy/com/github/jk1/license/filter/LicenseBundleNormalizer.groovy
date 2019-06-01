@@ -236,8 +236,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     private License normalizePomLicense(NormalizerTransformationRule rule, License license) {
         License normalized = new License(
             name: license.name,
-            url:  license.url,
-            comments:  license.comments
+            url:  license.url
         )
 
         normalizeWithBundle(rule) { NormalizerLicenseBundle bundle ->

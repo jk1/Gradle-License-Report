@@ -77,7 +77,7 @@ class PomDeveloper {
 @Sortable(includes = "name")
 @Canonical
 class License {
-    String name, url, comments
+    String name, url
 }
 
 @Canonical

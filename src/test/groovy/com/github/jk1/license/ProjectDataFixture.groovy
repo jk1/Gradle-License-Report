@@ -31,22 +31,19 @@ class ProjectDataFixture {
     static License APACHE2_LICENSE() {
         new License(
             name: "Apache License, Version 2.0",
-            url: "https://www.apache.org/licenses/LICENSE-2.0",
-            comments: "A business-friendly OSS license"
+            url: "https://www.apache.org/licenses/LICENSE-2.0"
         )
     }
     static License MIT_LICENSE() {
         new License(
             name: "MIT License",
-            url: "https://opensource.org/licenses/MIT",
-            comments: "A short and simple permissive license"
+            url: "https://opensource.org/licenses/MIT"
         )
     }
     static License LGPL_LICENSE() {
         new License(
             name: "GNU LESSER GENERAL PUBLIC LICENSE, Version 3",
-            url: "https://www.gnu.org/licenses/lgpl-3.0",
-            comments: "A weak copyleft license"
+            url: "https://www.gnu.org/licenses/lgpl-3.0"
         )
     }
 }

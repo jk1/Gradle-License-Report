@@ -231,8 +231,7 @@ class ProjectBuilder extends BuilderSupport {
     static License cloneLicense(License license) {
         new License(
             name: license.name,
-            url: license.url,
-            comments: license.comments
+            url: license.url
         )
     }
 

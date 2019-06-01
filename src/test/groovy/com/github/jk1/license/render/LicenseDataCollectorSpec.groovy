@@ -124,17 +124,14 @@ class LicenseDataCollectorSpec extends Specification {
     ],
     "licenses": [
         {
-            "comments": null,
             "url": "https://someUrl",
             "name": null
         },
         {
-            "comments": null,
             "url": null,
             "name": "Apache 2.0"
         },
         {
-            "comments": "A business-friendly OSS license",
             "url": "https://www.apache.org/licenses/LICENSE-2.0",
             "name": "Apache License, Version 2.0"
         }
@@ -173,7 +170,6 @@ class LicenseDataCollectorSpec extends Specification {
     ],
     "licenses": [
         {
-            "comments": "A business-friendly OSS license",
             "url": "https://www.apache.org/licenses/LICENSE-2.0",
             "name": "Apache License, Version 2.0"
         }
@@ -207,12 +203,10 @@ class LicenseDataCollectorSpec extends Specification {
     ],
     "licenses": [
         {
-            "comments": null,
             "url": "https://www.apache.org/licenses/LICENSE-2.0",
             "name": "Apache 2.0"
         },
         {
-            "comments": "A business-friendly OSS license",
             "url": "https://www.apache.org/licenses/LICENSE-2.0",
             "name": "Apache License, Version 2.0"
         }
@@ -247,7 +241,6 @@ class LicenseDataCollectorSpec extends Specification {
     ],
     "licenses": [
         {
-            "comments": "A business-friendly OSS license",
             "url": "https://www.apache.org/licenses/LICENSE-2.0",
             "name": "Apache License, Version 2.0"
         }

@@ -216,8 +216,7 @@ class PomReader {
                 LOGGER.debug("Processing license: ${license.name.text()}")
                 pomData.licenses << new License(
                     name: license.name?.text(),
-                    url: license.url?.text(),
-                    comments: license.comments?.text()
+                    url: license.url?.text()
                 )
             }
         }

@@ -102,7 +102,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         },
                         "licenses": [
                             {
-                                "comments": "",
                                 "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "Apache License, Version 2.0"
                             }
@@ -151,7 +150,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "organization": null,
                         "licenses": [
                             {
-                                "comments": "",
                                 "url": "http://www.apache.org/license/LICENSE-2.0.txt",
                                 "name": "The Apache Software License, Version 2.0"
                             }
@@ -223,7 +221,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         },
                         "licenses": [
                             {
-                                "comments": "",
                                 "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "Apache License, Version 2.0"
                             }
@@ -280,7 +277,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         },
                         "licenses": [
                             {
-                                "comments": "",
                                 "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "Apache License, Version 2.0"
                             }
@@ -388,7 +384,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         },
                         "licenses": [
                             {
-                                "comments": "",
                                 "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "Apache License, Version 2.0"
                             }
@@ -483,7 +478,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "organization": null,
                         "licenses": [
                             {
-                                "comments": "",
                                 "url": "http://www.apache.org/license/LICENSE-2.0.txt",
                                 "name": "The Apache Software License, Version 2.0"
                             }
