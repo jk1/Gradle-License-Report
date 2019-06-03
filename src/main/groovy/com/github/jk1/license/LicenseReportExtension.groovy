@@ -34,6 +34,7 @@ class LicenseReportExtension {
     public DependencyDataImporter[] importers
     public DependencyFilter[] filters
     public String[] configurations
+    public boolean includeTransitiveDeps
     public boolean excludeOwnGroup
     public String[] excludeGroups
     public String[] excludes
@@ -44,6 +45,7 @@ class LicenseReportExtension {
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
         configurations = ['runtimeClasspath']
+        includeTransitiveDeps = true
         excludeOwnGroup = true
         excludeGroups = []
         excludes = []
@@ -64,6 +66,8 @@ class LicenseReportExtension {
         snapshot += filters.collect { it.class.name }
         snapshot << 'configurations '
         snapshot += configurations
+        snapshot << 'includeTransitiveDeps'
+        snapshot += includeTransitiveDeps
         snapshot << 'excludeOwnGroup'
         snapshot += excludeOwnGroup
         snapshot << 'exclude'

@@ -72,6 +72,9 @@ licenseReport {
 
     // Don't include artifacts of project's own group into the report
     excludeOwnGroup = true
+    
+    // Include transitive dependencies into the report
+    includeTransitiveDeps = true
 
     // Set custom report renderer, implementing ReportRenderer.
     // Yes, you can write your own to support any format necessary.

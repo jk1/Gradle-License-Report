@@ -74,7 +74,9 @@ class ConfigurationReader {
                 LOGGER.debug("Collecting dependency ${root.name}")
                 accumulator.add(root)
             }
-            root.children.each { collectDependencies(accumulator, visitedExcludes, it)}
+            if (config.includeTransitiveDeps) {
+                root.children.each { collectDependencies(accumulator, visitedExcludes, it) }
+            }
         }
         accumulator
     }
