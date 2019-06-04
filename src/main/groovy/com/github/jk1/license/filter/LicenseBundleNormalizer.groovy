@@ -66,8 +66,8 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         if (createDefaultTransformationRules) {
             applyDefaultNormalizerBundleFile()
-            applyBundleNamesAndUrlsAsExactMatchRules()
         }
+        applyBundleNamesAndUrlsAsExactMatchRules()
 
         LOGGER.debug("Bundle normalizer initialized (Bundles: ${normalizerConfig.bundles.size()}, Rules: ${normalizerConfig.transformationRules.size()})")
     }
