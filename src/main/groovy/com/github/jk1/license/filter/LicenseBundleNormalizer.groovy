@@ -26,10 +26,13 @@ import com.github.jk1.license.ProjectData
 import com.github.jk1.license.ReportTask
 import groovy.json.JsonSlurper
 import groovy.json.JsonParserType
+import groovy.transform.CompileStatic
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.Input
 
+import java.util.regex.Pattern
+import java.util.stream.Collectors
 
 class LicenseBundleNormalizer implements DependencyFilter {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
@@ -134,26 +137,29 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     private def normalizePoms(ModuleData dependency) {
-        LOGGER.debug("Checking module {}:{}:{}", dependency.group, dependency.name, dependency.version)
+        String module = dependency.group + ':' + dependency.name + ':' + dependency.version
+        LOGGER.debug("Checking module {}", module)
         dependency.poms.forEach { pom ->
-            List<License> normalizedLicense = pom.licenses.collect { normalizePomLicense(it) }.flatten()
+            List<License> normalizedLicense = pom.licenses.collect { normalizePomLicense(it, module) }.flatten()
             pom.licenses.clear()
             pom.licenses.addAll(normalizedLicense)
         }
     }
     private def normalizeManifest(ModuleData dependency) {
-        LOGGER.debug("Checking module {}:{}:{}", dependency.group, dependency.name, dependency.version)
+        String module = dependency.group + ':' + dependency.name + ':' + dependency.version
+        LOGGER.debug("Checking module {}", module)
         List<ManifestData> normalizedManifests = dependency.manifests.collect {
-            normalizeManifestLicense(it)
+            normalizeManifestLicense(it, module)
         }.flatten()
         dependency.manifests.clear()
         dependency.manifests.addAll(normalizedManifests)
     }
     private def normalizeLicenseFileDetails(ModuleData dependency) {
-        LOGGER.debug("Checking module {}:{}:{}", dependency.group, dependency.name, dependency.version)
+        String module = dependency.group + ':' + dependency.name + ':' + dependency.version
+        LOGGER.debug("Checking module {}", module)
         dependency.licenseFiles.forEach { licenseFile ->
             List<LicenseFileDetails> normalizedDetails =
-                licenseFile.fileDetails.collect { normalizeLicenseFileDetailsLicense(it) }.flatten()
+                licenseFile.fileDetails.collect { normalizeLicenseFileDetailsLicense(it, module) }.flatten()
             licenseFile.fileDetails.clear()
             licenseFile.fileDetails.addAll(normalizedDetails)
         }
@@ -167,38 +173,46 @@ class LicenseBundleNormalizer implements DependencyFilter {
         importedModuleBundle.modules.addAll(normalizedModuleData)
     }
 
-    private Collection<License> normalizePomLicense(License license) {
-        List<NormalizerTransformationRule> rules = [ ]
+    @CompileStatic
+    private Collection<License> normalizePomLicense(License license,
+                                                    String module) {
+        List<NormalizerTransformationRule> rules = transformationRulesFor(module, license.name, license.url)
 
-        rules += findMatchingRulesForName(license.name)
-        rules += findMatchingRulesForUrl(license.url)
         LOGGER.debug("License {} ({}) matches the following rules: [{}]", license.name, license.url, rules.join(","))
 
         if (rules.isEmpty()) return [license]
 
         rules.collect { normalizePomLicense(it, license) }
     }
-    private Collection<ManifestData> normalizeManifestLicense(ManifestData manifest) {
-        List<NormalizerTransformationRule> rules = [ ]
 
-        rules += findMatchingRulesForName(manifest.license)
-        rules += findMatchingRulesForUrl(manifest.license)
+    @CompileStatic
+    private Collection<ManifestData> normalizeManifestLicense(ManifestData manifest,
+                                                              String module) {
+        List<NormalizerTransformationRule> rules = transformationRulesFor(module, null, manifest.license)
+
         LOGGER.debug("License {} ({}) matches the following rules: [{}]", manifest.name, manifest.url, rules.join(","))
 
         if (rules.isEmpty()) return [manifest]
 
         rules.collect { normalizeManifestLicense(it, manifest) }
     }
-    private Collection<LicenseFileDetails> normalizeLicenseFileDetailsLicense(LicenseFileDetails licenseFileDetails) {
+
+    @CompileStatic
+    private Collection<LicenseFileDetails> normalizeLicenseFileDetailsLicense(LicenseFileDetails licenseFileDetails,
+                                                                              String module) {
         if (licenseFileDetails.file == null || licenseFileDetails.file.isEmpty()) return [licenseFileDetails]
 
-        List<NormalizerTransformationRule> rules = [ ]
+        def licenseFileContent = { new File("$config.outputDir/$licenseFileDetails.file").text }.memoize()
 
-        String licenseFileContent = new File("$config.outputDir/$licenseFileDetails.file").text
+        List<NormalizerTransformationRule> rules = normalizerConfig.transformationRules.stream()
+                .filter({
+                    it.moduleMatches(module) ||
+                            it.licenseNameMatches(licenseFileDetails.license) ||
+                            it.licenseUrlMatches(licenseFileDetails.licenseUrl) ||
+                            it.licenseFileContentMatches(licenseFileContent())
+                })
+                .collect(Collectors.toList())
 
-        rules += findMatchingRulesForContentPattern(licenseFileContent)
-        rules += findMatchingRulesForName(licenseFileDetails.license)
-        rules += findMatchingRulesForUrl(licenseFileDetails.licenseUrl)
         LOGGER.debug("License {} ({}) matches the following rules: [{}]", licenseFileDetails.license, licenseFileDetails.licenseUrl, rules.join(","))
 
         if (rules.isEmpty()) return [licenseFileDetails]
@@ -206,33 +220,34 @@ class LicenseBundleNormalizer implements DependencyFilter {
         rules.collect { normalizeLicenseFileDetailsLicense(it, licenseFileDetails) }
     }
 
+    @CompileStatic
     private Collection<ImportedModuleData> normalizeModuleData(ImportedModuleData importedModuleData) {
-        List<NormalizerTransformationRule> rules = []
+        String module = importedModuleData.name + ':' + importedModuleData.version
 
-        rules += findMatchingRulesForName(importedModuleData.license)
-        rules += findMatchingRulesForUrl(importedModuleData.licenseUrl)
+        List<NormalizerTransformationRule> rules = transformationRulesFor(module, importedModuleData.license, importedModuleData.licenseUrl)
 
         if (rules.isEmpty()) return [importedModuleData]
 
         rules.collect { normalizeModuleDataLicense(it, importedModuleData) }
     }
 
-    private List<NormalizerTransformationRule> findMatchingRulesForName(String name) {
-        return normalizerConfig.transformationRules
-            .findAll { it.licenseNamePattern && (name == it.licenseNamePattern || name ==~ it.licenseNamePattern) }
+    @CompileStatic
+    private List<NormalizerTransformationRule> transformationRulesFor(String module, String license, String licenseUrl) {
+        return normalizerConfig.transformationRules.stream()
+                .filter({
+                    it.moduleMatches(module) ||
+                            it.licenseNameMatches(license) ||
+                            it.licenseUrlMatches(licenseUrl)
+                })
+                .collect(Collectors.toList())
     }
-    private List<NormalizerTransformationRule> findMatchingRulesForUrl(String url) {
-        return normalizerConfig.transformationRules
-            .findAll { it.licenseUrlPattern && (url == it.licenseUrlPattern || url ==~ it.licenseUrlPattern) }
-    }
-    private List<NormalizerTransformationRule> findMatchingRulesForContentPattern(String content) {
-        return normalizerConfig.transformationRules
-            .findAll { it.licenseFileContentPattern  && content =~ it.licenseFileContentPattern }
-    }
+
+    @CompileStatic
     private NormalizerLicenseBundle findBundleForRule(NormalizerTransformationRule rule) {
         return bundleMap[rule?.bundleName]
     }
 
+    @CompileStatic
     private License normalizePomLicense(NormalizerTransformationRule rule, License license) {
         License normalized = new License(
             name: license.name,
@@ -245,6 +260,8 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
         normalized
     }
+
+    @CompileStatic
     private ManifestData normalizeManifestLicense(NormalizerTransformationRule rule, ManifestData manifest) {
         ManifestData normalized = new ManifestData(
             name: manifest.name,
@@ -261,6 +278,8 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
         normalized
     }
+
+    @CompileStatic
     private LicenseFileDetails normalizeLicenseFileDetailsLicense(NormalizerTransformationRule rule,
                                                                   LicenseFileDetails details) {
         LicenseFileDetails normalized = new LicenseFileDetails(
@@ -276,7 +295,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         normalized
     }
 
-
+    @CompileStatic
     private ImportedModuleData normalizeModuleDataLicense(NormalizerTransformationRule rule, ImportedModuleData importedModuleData) {
         ImportedModuleData normalized = new ImportedModuleData(
             name: importedModuleData.name,
@@ -293,6 +312,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         normalized
     }
 
+    @CompileStatic
     private def normalizeWithBundle(NormalizerTransformationRule rule, Closure block) {
         def bundle = findBundleForRule(rule)
         if (bundle == null) {
@@ -310,22 +330,89 @@ class LicenseBundleNormalizer implements DependencyFilter {
         config
     }
 
+    @CompileStatic
     static class LicenseBundleNormalizerConfig {
         List<NormalizerLicenseBundle> bundles
         List<NormalizerTransformationRule> transformationRules
     }
+    @CompileStatic
     static class NormalizerLicenseBundle {
         String bundleName
         String licenseName
         String licenseUrl
     }
+    @CompileStatic
     static class NormalizerTransformationRule {
         String licenseNamePattern
         String licenseUrlPattern
         String licenseFileContentPattern
+        String modulePattern
         String bundleName
         boolean transformName = true
         boolean transformUrl = true
+        private Pattern licenseNameRegex
+        private Pattern licenseUrlRegex
+        private Pattern licenseFileContentRegex
+        private Pattern moduleRegex
+
+        boolean licenseNameMatches(String name) {
+            if (name != null && licenseNamePattern != null) {
+                if (licenseNamePattern == name) {
+                    return true
+                }
+                if (licenseNameRegex == null) {
+                    licenseNameRegex = Pattern.compile(licenseNamePattern)
+                }
+                if (licenseNameRegex.matcher(name).matches())
+                    return true
+            }
+            return false
+        }
+
+        boolean licenseUrlMatches(String url) {
+            if (url != null && licenseUrlPattern != null) {
+                if (licenseUrlPattern == url) {
+                    return true
+                }
+                if (licenseUrlRegex == null) {
+                    licenseUrlRegex = Pattern.compile(licenseUrlPattern)
+                }
+                if (licenseUrlRegex.matcher(url).matches()) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        boolean licenseFileContentMatches(String content) {
+            if (content != null && licenseFileContentPattern != null) {
+                if (licenseFileContentPattern == content) {
+                    return true
+                }
+                if (licenseFileContentRegex == null) {
+                    licenseFileContentRegex = Pattern.compile(licenseFileContentPattern)
+                }
+                if (licenseFileContentRegex.matcher(content).matches()) {
+                    return true
+                }
+            }
+            return false
+        }
+
+        boolean moduleMatches(String module) {
+            if (module != null && modulePattern != null) {
+                if (modulePattern == module) {
+                    return true
+                }
+                if (moduleRegex == null) {
+                    moduleRegex = Pattern.compile(modulePattern)
+                }
+                if (moduleRegex.matcher(module).matches()) {
+                    return true
+                }
+            }
+            return false
+        }
 
         @Override
         String toString() {
