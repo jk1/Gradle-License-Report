@@ -392,9 +392,9 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         NormalizerTransformationRuleMatcher(NormalizerTransformationRule rule) {
             this.rule = rule
-            licenseNameRegex = rule.licenseNamePattern != null ? Pattern.compile(rule.licenseNamePattern) : null
-            licenseUrlRegex = rule.licenseUrlPattern != null ? Pattern.compile(rule.licenseUrlPattern) : null
-            licenseFileContentRegex = rule.licenseFileContentPattern != null ? Pattern.compile(rule.licenseFileContentPattern) : null
+            licenseNameRegex = rule.licenseNamePattern != null ? Pattern.compile(rule.licenseNamePattern, Pattern.MULTILINE | Pattern.DOTALL) : null
+            licenseUrlRegex = rule.licenseUrlPattern != null ? Pattern.compile(rule.licenseUrlPattern, Pattern.MULTILINE | Pattern.DOTALL) : null
+            licenseFileContentRegex = rule.licenseFileContentPattern != null ? Pattern.compile(rule.licenseFileContentPattern, Pattern.MULTILINE | Pattern.DOTALL) : null
             moduleRegex = rule.modulePattern != null ? Pattern.compile(rule.modulePattern) : null
         }
 
