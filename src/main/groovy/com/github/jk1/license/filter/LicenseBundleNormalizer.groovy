@@ -192,7 +192,11 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         if (rules.isEmpty()) return [license]
 
-        rules.collect { normalizeSinglePomLicense(it, license) }
+        List<License> normalized = new ArrayList<>()
+        for (NormalizerTransformationRule rule : rules) {
+            normalized.add(normalizeSinglePomLicense(rule, license))
+        }
+        return normalized
     }
 
     @CompileStatic
@@ -208,7 +212,11 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         if (rules.isEmpty()) return [manifest]
 
-        rules.collect { normalizeSingleManifestLicense(it, manifest) }
+        List<ManifestData> normalized = new ArrayList<>()
+        for (NormalizerTransformationRule rule : rules) {
+            normalized.add(normalizeSingleManifestLicense(rule, manifest))
+        }
+        return normalized
     }
 
     @CompileStatic
@@ -237,7 +245,11 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         if (rules.isEmpty()) return [licenseFileDetails]
 
-        rules.collect { normalizeSingleLicenseFileDetailsLicense(it, licenseFileDetails) }
+        List<LicenseFileDetails> normalized = new ArrayList<>()
+        for (NormalizerTransformationRule rule : rules) {
+            normalized.add(normalizeSingleLicenseFileDetailsLicense(rule, licenseFileDetails))
+        }
+        return normalized
     }
 
     @CompileStatic
@@ -254,7 +266,11 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         if (rules.isEmpty()) return [importedModuleData]
 
-        rules.collect { normalizeSingleModuleDataLicense(it, importedModuleData) }
+        List<ImportedModuleData> normalized = new ArrayList<>()
+        for (NormalizerTransformationRule rule : rules) {
+            normalized.add(normalizeSingleModuleDataLicense(rule, importedModuleData))
+        }
+        return normalized
     }
 
     @CompileStatic
