@@ -422,4 +422,98 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
     }
 ]"""
     }
+
+    def "check modulePattern matching"() {
+        def rules = [
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "empty", modulePattern: ""), // must never match
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "matchOrgGroup", modulePattern: "org[.]group:.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "matchModule", modulePattern: ".*:module:.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "matchOrgGroupModule", modulePattern: "org[.]group:module:.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "matchOtherName", modulePattern: "other:name:.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "catchAll", modulePattern: ".*")
+        ]
+
+        when:
+        def matchers = LicenseBundleNormalizer.makeNormalizerTransformationRuleMatchers(rules)
+
+        def orgGroup_Name_Matches = LicenseBundleNormalizer.transformationRulesFor(matchers, "org.group:name:1.0", null, null, {null})
+        def orgGroup_Module_Matches = LicenseBundleNormalizer.transformationRulesFor(matchers, "org.group:module:1.0", null, null, {null})
+        def orgFoo_Name_Matches = LicenseBundleNormalizer.transformationRulesFor(matchers, "org.foo:name:1.0", null, null, {null})
+        def other_Name_Matches = LicenseBundleNormalizer.transformationRulesFor(matchers, "other:name:1.0", null, null, {null})
+
+        then:
+        orgGroup_Name_Matches.collect{it.bundleName} == ["matchOrgGroup", "catchAll"]
+        orgGroup_Module_Matches.collect{it.bundleName} == ["matchOrgGroup", "matchModule", "matchOrgGroupModule", "catchAll"]
+        orgFoo_Name_Matches.collect{it.bundleName} == ["catchAll"]
+        other_Name_Matches.collect{it.bundleName} == ["matchOtherName", "catchAll"]
+    }
+
+    def "check licenseNamePattern matching"() {
+        def rules = [
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "empty", licenseNamePattern: ""), // must never match
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "cddl", licenseNamePattern: ".*CDDL.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "dog", licenseNamePattern: ".*DOG.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "bear", licenseNamePattern: ".*BEAR.*")
+        ]
+
+        when:
+        def matchers = LicenseBundleNormalizer.makeNormalizerTransformationRuleMatchers(rules)
+
+        def just_cddl_1 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, "CDDL", null, {null})
+        def just_cddl_2 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, "   \n    CDDL   \t\n", null, {null})
+        def dog_and_bear = LicenseBundleNormalizer.transformationRulesFor(matchers, null, "   \n    DOG   \t\n   BEAR", null, {null})
+
+        then:
+        just_cddl_1.collect{it.bundleName} == ["cddl"]
+        just_cddl_2.collect{it.bundleName} == ["cddl"]
+        dog_and_bear.collect{it.bundleName} == ["dog", "bear"]
+    }
+
+    def "check licenseContentPattern matching"() {
+        def rules = [
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "empty", licenseFileContentPattern: {""}), // must never match
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "cddl", licenseFileContentPattern: ".*CDDL.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "dog", licenseFileContentPattern: ".*DOG.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "bear", licenseFileContentPattern: ".*BEAR.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "sneaky", licenseFileContentPattern: "SNEAKY[LICENSE]")  // wouldn't match with Pattern, but substring works
+        ]
+
+        when:
+        def matchers = LicenseBundleNormalizer.makeNormalizerTransformationRuleMatchers(rules)
+
+        def just_cddl_1 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, null, {"CDDL"})
+        def just_cddl_2 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, null, {"   \n    CDDL   \t\n"})
+        def dog_and_bear = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, null, {"   \n    DOG   \t\n   BEAR"})
+
+        then:
+        just_cddl_1.collect{it.bundleName} == ["cddl"]
+        just_cddl_2.collect{it.bundleName} == ["cddl"]
+        dog_and_bear.collect{it.bundleName} == ["dog", "bear"]
+    }
+
+    def "check licenseUrlPattern matching"() {
+        def rules = [
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "empty", licenseUrlPattern: ""), // must never match
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "cddl", licenseUrlPattern: ".*opensource\\.org/CDDL.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "dog", licenseUrlPattern: ".*opensource\\.org/DOG.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "bear", licenseUrlPattern: ".*http://opensource\\.org/BEAR.txt.*"),
+                new LicenseBundleNormalizer.NormalizerTransformationRule(bundleName: "non_greedy", licenseUrlPattern: "http://opensource\\.org/BEAR.txt")
+        ]
+
+        when:
+        def matchers = LicenseBundleNormalizer.makeNormalizerTransformationRuleMatchers(rules)
+
+        def just_cddl_1 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, "https://www.opensource.org/CDDL-1.0.txt", {null})
+        def just_cddl_2 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, "https://www.opensource.org/CDDL", {null})
+        def just_cddl_3 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, "opensource.org/CDDL", {null})
+        def just_cddl_4 = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, "   \n    opensource.org/CDDL   \t\n", {null})
+        def dog_and_bear = LicenseBundleNormalizer.transformationRulesFor(matchers, null, null, "   \n    opensource.org/DOG   \t\n   http://opensource.org/BEAR.txt iwoefjoie fpokqwdofp kwpod kwpoqdkpowq dpoiwqjoipdjwqoi", {null})
+
+        then:
+        just_cddl_1.collect{it.bundleName} == ["cddl"]
+        just_cddl_2.collect{it.bundleName} == ["cddl"]
+        just_cddl_3.collect{it.bundleName} == ["cddl"]
+        just_cddl_4.collect{it.bundleName} == ["cddl"]
+        dog_and_bear.collect{it.bundleName} == ["dog", "bear"]
+    }
 }
