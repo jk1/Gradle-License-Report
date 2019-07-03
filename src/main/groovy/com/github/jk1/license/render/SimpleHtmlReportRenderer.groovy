@@ -201,7 +201,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
             output << data.licenseFiles.first().fileDetails.collect({ "" +
                 "\n            <a href=\"$it.file\">" +
                 "\n                $it.file" +
-                "\n            </a> " }).join('')
+                "\n            </a> " }).join('<br/>')
             output << '' +
                 '\n        </p>'
         }
