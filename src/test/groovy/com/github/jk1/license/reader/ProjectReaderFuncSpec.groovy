@@ -307,6 +307,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "aopalliance",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": null,
@@ -342,6 +343,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "commons-logging",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": "Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "1.1.1",
@@ -393,10 +395,11 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.apache.commons",
                 "manifests": [
                     {
+                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                         "vendor": "The Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "3.7.0",
-                        "license": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "license": null,
                         "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
                         "url": "http://commons.apache.org/proper/commons-lang/",
                         "name": "Apache Commons Lang"
@@ -444,6 +447,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.ehcache",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc.",
                         "hasPackagedLicense": true,
                         "version": "3.3.1",
@@ -495,6 +499,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.slf4j",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": "SLF4J.ORG",
                         "hasPackagedLicense": false,
                         "version": "1.7.7",
@@ -533,6 +538,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.springframework",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": "3.2.3.RELEASE",
@@ -584,6 +590,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.springframework",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": "3.2.3.RELEASE",
@@ -635,6 +642,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.springframework",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": "3.2.3.RELEASE",

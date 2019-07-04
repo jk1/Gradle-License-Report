@@ -50,7 +50,7 @@ class ModuleData {
 @Sortable
 @Canonical
 class ManifestData {
-    String name, version, description, vendor, license, url
+    String name, version, description, vendor, url, license, licenseUrl
     boolean hasPackagedLicense
 }
 

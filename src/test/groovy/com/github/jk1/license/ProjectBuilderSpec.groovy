@@ -186,7 +186,7 @@ class ProjectBuilderSpec extends Specification {
 
         data.configurations*.dependencies.flatten().manifests.flatten().find { it.name == "mani1" }*.license == [APACHE2_LICENSE().name]
         data.configurations*.dependencies.flatten().manifests.flatten().find { it.name == "mani2" }*.license == [MIT_LICENSE().name]
-        data.configurations*.dependencies.flatten().manifests.flatten().find { it.name == "mani3" }*.license == [LGPL_LICENSE().url]
+        data.configurations*.dependencies.flatten().manifests.flatten().find { it.name == "mani3" }*.licenseUrl == [LGPL_LICENSE().url]
 
         data.importedModules.isEmpty()
     }

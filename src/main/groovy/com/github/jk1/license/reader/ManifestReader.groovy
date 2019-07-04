@@ -89,9 +89,15 @@ class ManifestReader {
         data.name = attr.getValue('Bundle-Name') ?: attr.getValue('Implementation-Title') ?: attr.getValue('Bundle-SymbolicName')
         data.version = attr.getValue('Bundle-Version') ?: attr.getValue('Implementation-Version') ?: attr.getValue('Specification-Version')
         data.description = attr.getValue('Bundle-Description')
-        data.license = attr.getValue('Bundle-License')
+        String bundleLicense = attr.getValue('Bundle-License')
         data.vendor = attr.getValue('Bundle-Vendor') ?: attr.getValue('Implementation-Vendor')
         data.url = attr.getValue('Bundle-DocURL')
+        if (Files.maybeLicenseUrl(bundleLicense)) {
+            data.licenseUrl = bundleLicense
+        }
+        else {
+            data.license = bundleLicense
+        }
         LOGGER.info("Returning manifest data: " + data.dump())
         return data
     }

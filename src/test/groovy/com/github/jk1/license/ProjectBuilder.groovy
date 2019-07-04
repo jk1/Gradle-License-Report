@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license
 
+import com.github.jk1.license.util.Files
 import groovy.json.JsonBuilder
 
 import static com.github.jk1.license.ProjectDataFixture.GRADLE_PROJECT
@@ -180,7 +181,14 @@ class ProjectBuilder extends BuilderSupport {
         if (current instanceof PomData) {
             addPomLicense(license, map)
         } else if (current instanceof ManifestData) {
-            addManifestLicense(license)
+            if (license != null)
+                addManifestLicense(license)
+            else {
+                if (map['name'])
+                    current.license = map['name']
+                if (map['url'])
+                    current.licenseUrl = map['url']
+            }
         } else {
             throw new IllegalAccessException("current must be PomData or ManifestData not $current")
         }
@@ -218,8 +226,13 @@ class ProjectBuilder extends BuilderSupport {
         } else {
             throw new IllegalArgumentException("license must be a License or a String but is $license")
         }
-
-        manifest.license = licenseText
+        if (Files.maybeLicenseUrl(licenseText)) {
+            manifest.license = null // initialized to "Apache 2.0" above
+            manifest.licenseUrl = licenseText
+        }
+        else {
+            manifest.license = licenseText
+        }
     }
 
     private static def enhanceLicenseAboutValues(License license, Map map) {

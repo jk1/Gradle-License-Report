@@ -23,6 +23,7 @@ import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.util.Files
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 
@@ -117,7 +118,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         left: 0;
         top: 0;
         height: 100%;
-        width: 300px;
+        width: 20em;
         overflow: auto;
     }
 
@@ -164,7 +165,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         position: absolute;
         top: 0;
         bottom: 0;
-        left: 300px;
+        left: 20em;
     }
 
     .dependency {
@@ -199,16 +200,23 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
     private Map<String, List<ModuleData>> buildLicenseInventory(ProjectData data) {
         Map<String, List<ModuleData>> inventory = [:]
         data.allDependencies.each { ModuleData module ->
-            if (!module.poms.isEmpty()) {
-                PomData pom = module.poms.first()
-                if (pom.licenses.isEmpty()) {
-                    addModule(inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module)
-                } else {
-                    pom.licenses.each { License license ->
-                        addModule(inventory, license.name, module)
-                    }
+            boolean anyLicense = false
+
+            for (ManifestData manifestData : module.manifests) {
+                if (manifestData.license && Files.maybeLicenseUrl(manifestData.licenseUrl)) {
+                    anyLicense = true
+                    addModule(inventory, manifestData.license, module)
                 }
-            } else {
+            }
+
+            for (PomData pom : module.poms) {
+                for (License license : pom.licenses) {
+                    addModule(inventory, license.name, module)
+                    anyLicense = true
+                }
+            }
+
+            if (!anyLicense) {
                 addModule(inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module)
             }
         }
@@ -321,8 +329,8 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
                     output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
                 }
                 if (manifest.license) {
-                    if (manifest.license.startsWith("http")) {
-                        output << sectionLink("Manifest license URL", manifest.license, manifest.license)
+                    if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
+                        output << section("Manifest License", "${manifest.license} - ${Files.maybeLicenseUrl(manifest.licenseUrl) ? link(manifest.licenseUrl, manifest.licenseUrl) : section("License", manifest.licenseUrl)}")
                     } else if (manifest.hasPackagedLicense) {
                         output << sectionLink("Packaged License File", manifest.license, manifest.url)
                     } else {
@@ -339,7 +347,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
                 if (pomData.licenses) {
                     pomData.licenses.each { License license ->
                         if (license.url) {
-                            output << section("POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}")
+                            output << section("POM License", "${license.name} - ${Files.maybeLicenseUrl(license.url) ? link(license.url, license.url) : section("License", license.url)}")
                         } else {
                             output << section("POM License", license.name)
                         }
@@ -351,7 +359,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
             output << section("Embedded license files", data.licenseFiles.first().fileDetails.collect {
                 link(it.file, it.file)
-            }.join(''))
+            }.join('<br>'))
         }
         output << "</div>\n"
     }
