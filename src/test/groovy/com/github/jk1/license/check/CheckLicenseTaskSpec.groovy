@@ -22,7 +22,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-class CheckLicenseTaskSpec extends Specification{
+class CheckLicenseTaskSpec extends Specification {
     @Rule
     final TemporaryFolder testProjectDir = new TemporaryFolder()
 
@@ -30,14 +30,15 @@ class CheckLicenseTaskSpec extends Specification{
     File localBuildCacheDirectory
     File allowed
 
-    BuildResult result(String[] arguments){
+    BuildResult result(String[] arguments) {
         return GradleRunner.create()
             .withPluginClasspath()
             .withProjectDir(testProjectDir.getRoot())
             .withArguments(arguments)
             .build()
     }
-    BuildResult failResult(String[] arguments){
+
+    BuildResult failResult(String[] arguments) {
         return GradleRunner.create()
             .withPluginClasspath()
             .withProjectDir(testProjectDir.getRoot())
@@ -146,13 +147,13 @@ class CheckLicenseTaskSpec extends Specification{
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
 
         when:
-        buildResult = result( "--build-cache", "clean", "checkLicense")
+        buildResult = result("--build-cache", "clean", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.FROM_CACHE
 
         when:
-        buildResult = result( "--build-cache", "checkLicense")
+        buildResult = result("--build-cache", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
@@ -209,7 +210,7 @@ class CheckLicenseTaskSpec extends Specification{
         """
 
         when:
-        BuildResult buildResult = failResult( "--build-cache", "checkLicense")
+        BuildResult buildResult = failResult("--build-cache", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.FAILED
@@ -265,13 +266,13 @@ class CheckLicenseTaskSpec extends Specification{
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
 
         when:
-        buildResult = result( "--build-cache", "clean", "checkLicense")
+        buildResult = result("--build-cache", "clean", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.FROM_CACHE
 
         when:
-        buildResult = result( "--build-cache", "checkLicense")
+        buildResult = result("--build-cache", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
@@ -352,7 +353,7 @@ class CheckLicenseTaskSpec extends Specification{
         }"""
 
         when:
-        BuildResult buildResult = failResult( "checkLicense")
+        BuildResult buildResult = failResult("checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.FAILED
@@ -402,17 +403,18 @@ class CheckLicenseTaskSpec extends Specification{
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
 
         when:
-        buildResult = result( "--build-cache", "clean", "checkLicense")
+        buildResult = result("--build-cache", "clean", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.FROM_CACHE
 
         when:
-        buildResult = result( "--build-cache", "checkLicense")
+        buildResult = result("--build-cache", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
     }
+
     def "it should fail when no allowedLicensesFile specified and pass when adding allowedLicensesFile"() {
         given:
         buildFile << """
@@ -484,7 +486,7 @@ class CheckLicenseTaskSpec extends Specification{
         }"""
 
         when:
-        BuildResult buildResult = result( "checkLicense")
+        BuildResult buildResult = result("checkLicense")
 
         then:
         thrown Exception
@@ -533,13 +535,13 @@ class CheckLicenseTaskSpec extends Specification{
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
 
         when:
-        buildResult = result( "--build-cache", "clean", "checkLicense")
+        buildResult = result("--build-cache", "clean", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.FROM_CACHE
 
         when:
-        buildResult = result( "--build-cache", "checkLicense")
+        buildResult = result("--build-cache", "checkLicense")
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
