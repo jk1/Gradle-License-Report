@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.check
 
+import groovy.json.StringEscapeUtils
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -130,7 +131,7 @@ class CheckLicenseTaskSpec extends Specification {
             }
             licenseReport {
                 filters = new LicenseBundleNormalizer()
-                allowedLicensesFile = new File("${allowed.path}")
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
             }
         """
 
@@ -205,7 +206,7 @@ class CheckLicenseTaskSpec extends Specification {
             }
             licenseReport {
                 filters = new LicenseBundleNormalizer()
-                allowedLicensesFile = new File("${allowed.path}")
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
             }
         """
 
@@ -388,7 +389,7 @@ class CheckLicenseTaskSpec extends Specification {
                 kotlinOptions.jvmTarget = "1.8"
             }
             licenseReport {
-                allowedLicensesFile = new File("${allowed.path}")
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
             }
         """
         buildResult = result("--build-cache", "checkLicense")
@@ -520,7 +521,7 @@ class CheckLicenseTaskSpec extends Specification {
                 kotlinOptions.jvmTarget = "1.8"
             }
             licenseReport {
-                allowedLicensesFile = new File("${allowed.path}")
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
             }
         """
         buildResult = result("--build-cache", "checkLicense")
