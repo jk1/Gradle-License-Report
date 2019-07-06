@@ -80,10 +80,11 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.apache.commons",
                 "manifests": [
                     {
+                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                         "vendor": "The Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "3.7.0",
-                        "license": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "license": null,
                         "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
                         "url": "http://commons.apache.org/proper/commons-lang/",
                         "name": "Apache Commons Lang"
@@ -131,6 +132,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.jetbrains",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": null,
@@ -199,10 +201,11 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.apache.commons",
                 "manifests": [
                     {
+                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                         "vendor": "The Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "3.7.0",
-                        "license": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "license": null,
                         "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
                         "url": "http://commons.apache.org/proper/commons-lang/",
                         "name": "Apache Commons Lang"
@@ -255,10 +258,11 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.apache.commons",
                 "manifests": [
                     {
+                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                         "vendor": "The Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "3.7.0",
-                        "license": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "license": null,
                         "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
                         "url": "http://commons.apache.org/proper/commons-lang/",
                         "name": "Apache Commons Lang"
@@ -362,10 +366,11 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.apache.commons",
                 "manifests": [
                     {
+                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
                         "vendor": "The Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "3.7.0",
-                        "license": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "license": null,
                         "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
                         "url": "http://commons.apache.org/proper/commons-lang/",
                         "name": "Apache Commons Lang"
@@ -459,6 +464,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                 "group": "org.jetbrains",
                 "manifests": [
                     {
+                        "licenseUrl": null,
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": null,

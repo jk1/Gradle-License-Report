@@ -22,6 +22,7 @@ import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.util.Files
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 
@@ -132,11 +133,11 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
                     "\n        </p>"
             }
             if (manifest.license) {
-                if (manifest.license.startsWith("http")) {
+                if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
                     output << "" +
                         "\n        <p>" +
                         "\n            <strong>Manifest license URL:</strong>" +
-                        "\n            <a href=\"$manifest.license\">" +
+                        "\n            <a href=\"$manifest.licenseUrl\">" +
                         "\n                $manifest.license" +
                         "\n            </a>" +
                         "\n        </p>"
@@ -176,7 +177,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
                         "\n        <p>" +
                         "\n            <strong>POM License: $license.name</strong>"
                     if (license.url) {
-                        if (license.url.startsWith("http")) {
+                        if (Files.maybeLicenseUrl(license.url)) {
                             output << "" +
                                 "\n            - " +
                                 "\n            <a href=\"$license.url\">" +
@@ -219,7 +220,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         output << "" +
             "\n        </p>"
 
-        if (module.projectUrl?.startsWith("http")) {
+        if (Files.maybeLicenseUrl(module.projectUrl)) {
             output << "" +
                 "\n        <p>" +
                 "\n            <strong>Project URL:</strong>" +
@@ -231,7 +232,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
                 "\n        </p>"
         }
 
-        if (module.licenseUrl?.startsWith("http")) {
+        if (Files.maybeLicenseUrl(module.licenseUrl)) {
             output << "" +
                 "\n        <p>" +
                 "\n            <strong>License:</strong> $module.license - " +

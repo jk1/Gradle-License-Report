@@ -47,14 +47,17 @@ class LicenseDataCollector {
             if (manifest.url) {
                 info.moduleUrls << manifest.url
             }
-            if (manifest.license) {
-                if (isValidUrl(manifest.license)) {
-                    if (!info.licenses.find { it.url == manifest.license })
-                        info.licenses << new License(url: manifest.license)
-                } else {
-                    if (!info.licenses.find { it.name == manifest.license })
-                        info.licenses << new License(name: manifest.license)
+            if (manifest.license || manifest.licenseUrl) {
+                // merge manifest.license into info.licenses
+                License existing = info.licenses.find { it.name == manifest.license || it.url == manifest.licenseUrl }
+                if (existing &&
+                        (existing.name && (!manifest.license || existing.name == manifest.license)) &&
+                        (existing.url && (!manifest.licenseUrl || existing.url == manifest.licenseUrl))) {
+                    info.licenses.remove(existing)
                 }
+                info.licenses.add(
+                        new License(name: manifest.license ? manifest.license : (existing ? existing.name : null),
+                                url: manifest.licenseUrl ? manifest.licenseUrl : (existing ? existing.url : null)))
             }
         }
 
@@ -72,7 +75,7 @@ class LicenseDataCollector {
         try {
             new URI(url)
             return true
-        } catch (URISyntaxException e) {
+        } catch (NullPointerException | URISyntaxException e) {
             return false
         }
     }

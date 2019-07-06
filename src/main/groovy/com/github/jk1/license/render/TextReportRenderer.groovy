@@ -21,6 +21,7 @@ import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.util.Files
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 
@@ -87,8 +88,8 @@ This report was generated at ${new Date()}.
                 output << "Manifest Project URL: $manifest.url\n\n"
             }
             if (manifest.license) {
-                if (manifest.license.startsWith("http")) {
-                    output << "Manifest license URL: $manifest.license\n\n"
+                if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
+                    output << "Manifest license URL: $manifest.licenseUrl\n\n"
                 } else if (manifest.hasPackagedLicense) {
                     output << "Packaged License File: $manifest.license\n\n"
                 } else {
@@ -106,7 +107,7 @@ This report was generated at ${new Date()}.
                 pomData.licenses.each { License license ->
                     output << "POM License: $license.name"
                     if (license.url) {
-                        if (license.url.startsWith("http")) {
+                        if (Files.maybeLicenseUrl(license.url)) {
                             output << " - $license.url\n\n"
                         } else {
                             output << "License: $license.url\n\n"

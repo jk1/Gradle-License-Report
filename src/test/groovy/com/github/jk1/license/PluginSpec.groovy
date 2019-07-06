@@ -28,7 +28,7 @@ import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathF
 
 class PluginSpec extends Specification {
 
-    private final static def supportedGradleVersions = [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7", "4.8", "4.9", "4.10", "5.0", "5.1", "5.2" ]
+    private final static def supportedGradleVersions = [ "3.3", "3.5.1", "4.0.1", "4.6", "4.7", "4.8", "4.9", "4.10", "5.0", "5.1", "5.2", "5.5" ]
     private final static def unsupportedGradleVersions = [ "3.2" ]
 
     @Rule
@@ -99,12 +99,12 @@ class PluginSpec extends Specification {
             ],
             "moduleLicenses": [
                 {
-                    "moduleLicense": null,
-                    "moduleLicenseUrl": "LICENSE"
-                },
-                {
                     "moduleLicense": "Apache License, Version 2.0",
                     "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                },
+                {
+                    "moduleLicense": "LICENSE",
+                    "moduleLicenseUrl": null
                 }
             ]
         },

@@ -23,4 +23,8 @@ class Files {
         int dotIndex = fileName.lastIndexOf('.')
         return (dotIndex == -1) ? "" : fileName.substring(dotIndex + 1)
     }
+
+    static boolean maybeLicenseUrl(String url) {
+        return url != null && (url.startsWith("http:") || url.startsWith("https:"))
+    }
 }

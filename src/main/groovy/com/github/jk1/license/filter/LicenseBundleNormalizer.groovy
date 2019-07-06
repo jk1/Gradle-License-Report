@@ -196,11 +196,11 @@ class LicenseBundleNormalizer implements DependencyFilter {
                                                               ManifestData manifest,
                                                               String module) {
         List<NormalizerTransformationRule> rules = transformationRulesFor(transformationRuleMatchers,
-                module, manifest.license, manifest.license, {null})
+                module, manifest.license, manifest.licenseUrl, {null})
 
         LOGGER.debug("License {} ({}) (via manifest data, module {}) matches the following rules: [{}]",
-                module,
                 manifest.name, manifest.url,
+                module,
                 rules.join(","))
 
         if (rules.isEmpty()) return [manifest]
@@ -218,8 +218,8 @@ class LicenseBundleNormalizer implements DependencyFilter {
                 { new File("$config.outputDir/$licenseFileDetails.file").text }.memoize())
 
         LOGGER.debug("License {} ({}) (via license file details, module {}) matches the following rules: [{}]",
-                module,
                 licenseFileDetails.license, licenseFileDetails.licenseUrl,
+                module,
                 rules.join(","))
 
         if (rules.isEmpty()) return [licenseFileDetails]
@@ -271,12 +271,16 @@ class LicenseBundleNormalizer implements DependencyFilter {
             description: manifest.description,
             vendor: manifest.vendor,
             license: manifest.license,
+            licenseUrl: manifest.licenseUrl,
             url: manifest.url,
             hasPackagedLicense: manifest.hasPackagedLicense
         )
 
         normalizeWithBundle(rule) { NormalizerLicenseBundle bundle ->
-            if (rule.transformName) normalized.license = bundle.licenseName
+            if (rule.transformName)
+                normalized.license = bundle.licenseName
+            if (rule.transformUrl)
+                normalized.licenseUrl = bundle.licenseUrl
         }
         normalized
     }
