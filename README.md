@@ -15,7 +15,7 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '1.7'
+  id 'com.github.jk1.dependency-license-report' version '1.9'
 }
 ```
 
@@ -31,7 +31,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jk1:gradle-license-report:1.7'
+        classpath 'com.github.jk1:gradle-license-report:1.9'
     }
 }
 apply plugin: 'com.github.jk1.dependency-license-report'
@@ -80,7 +80,7 @@ licenseReport {
     // Set importers to import any external dependency information, i.e. from npm.
     // Custom importer should implement DependencyDataImporter interface.
     importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
-    
+
     // This is for the allowed-licenses-file in checkLicense Task
     allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
 }
@@ -98,7 +98,7 @@ import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "1.7"
+    id("com.github.jk1.dependency-license-report") version "1.9"
 }
 
 licenseReport {
@@ -223,6 +223,18 @@ If there is only one chapter, the outer `topic` and `chunk` tags may be omitted.
 Dependency filters transform discovered dependency data before rendering.
 This may include sorting, reordering, data substitution.
 
+### Excluding transitive dependencies
+
+The following filter will leave only first-level dependencies in the report:
+
+```groovy
+import com.github.jk1.license.filter.*
+...
+licenseReport {
+    filters = [new ExcludeTransitiveDependenciesFilter()]
+}
+```
+
 ### License data grouping
 
 This feature was contributed by [Günther Grill](https://github.com/guenhter)
@@ -270,7 +282,7 @@ The normalizer can be enabled via a filter.
 import com.github.jk1.license.filter.*
 ...
 licenseReport {
-    filters = new LicenseBundleNormalizer(bundlePath: "$projectDir/config/license-normalizer-bundle.json")
+    filters = [new LicenseBundleNormalizer(bundlePath: "$projectDir/config/license-normalizer-bundle.json")]
 }
 ```
 
@@ -314,7 +326,7 @@ repositories {
 }
 
 dependencies {
-    compile 'gradle.plugin.com.github.jk1:gradle-license-report:1.7'
+    compile 'gradle.plugin.com.github.jk1:gradle-license-report:1.9'
 }
 
 ```
@@ -336,7 +348,7 @@ The same technique can be used to create a filter or a renderer to support custo
 
 ## Check Dependency Licenses
 
-This task is for checking dependencies/imported modules if their licenses are allowed to be used.  
+This task is for checking dependencies/imported modules if their licenses are allowed to be used.
 
 ```batch
 ./gradlew checkLicense
