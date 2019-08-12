@@ -28,7 +28,7 @@ class LicenseCheckerFileReader {
     static List<Dependency> importDependencies(File projectDependenciesFile) {
         def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(projectDependenciesFile)
         def allDependencies = slurpResult.dependencies.collect { new Dependency(it.moduleName, it.moduleVersion, it.moduleLicenses) }
-        allDependencies += slurpResult.importedModules.collect { new Dependency(it.dependencies) }
+        allDependencies += slurpResult.importedModules.collect { it.dependencies.collect { new Dependency(it) } }.flatten()
         return allDependencies
     }
 }
