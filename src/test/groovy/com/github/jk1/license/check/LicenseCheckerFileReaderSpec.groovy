@@ -222,23 +222,27 @@ class LicenseCheckerFileReaderSpec extends Specification {
             "importedModules": [
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name1",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicense": "License1",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name1",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicense": "License1",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 },
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name2",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicense": "License2",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name2",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicense": "License2",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 }
             ]
         }"""
@@ -258,21 +262,25 @@ class LicenseCheckerFileReaderSpec extends Specification {
             "importedModules": [
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name1",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name1",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 },
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name2",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name2",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 }
             ]
         }"""
@@ -292,21 +300,25 @@ class LicenseCheckerFileReaderSpec extends Specification {
             "importedModules": [
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicense": "License1",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicense": "License1",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 },
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicense": "License2",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicense": "License2",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 }
             ]
         }"""
@@ -354,23 +366,27 @@ class LicenseCheckerFileReaderSpec extends Specification {
             "importedModules": [
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name3",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicense": "License3",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name3",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicense": "License3",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 },
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name4",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicense": "License4",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name4",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicense": "License4",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 }
             ]
         }"""
@@ -426,23 +442,27 @@ class LicenseCheckerFileReaderSpec extends Specification {
             "importedModules": [
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name3",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleLicense": "License3",
-                        "moduleVersion": "some-version",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name3",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleLicense": "License3",
+                            "moduleVersion": "some-version",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 },
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name4",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleLicense": "License4",
-                        "moduleVersion": "some-version",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name4",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleLicense": "License4",
+                            "moduleVersion": "some-version",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 }
             ]
         }"""
@@ -495,21 +515,25 @@ class LicenseCheckerFileReaderSpec extends Specification {
             "importedModules": [
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleUrl": "some-projectUrl",
-                        "moduleLicense": "License3",
-                        "moduleVersion": "some-version",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleUrl": "some-projectUrl",
+                            "moduleLicense": "License3",
+                            "moduleVersion": "some-version",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 },
                 {
                     "moduleName": "bundle1",
-                    "dependencies": {
-                        "moduleName": "Name5",
-                        "moduleUrl": "some-projectUrl",
-                        "moduleVersion": "some-version",
-                        "moduleLicenseUrl": "apache-url"
-                    }
+                    "dependencies": [
+                        {
+                            "moduleName": "Name5",
+                            "moduleUrl": "some-projectUrl",
+                            "moduleVersion": "some-version",
+                            "moduleLicenseUrl": "apache-url"
+                        }
+                    ]
                 }
             ]
         }"""
