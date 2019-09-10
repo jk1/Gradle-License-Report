@@ -17,14 +17,14 @@ package com.github.jk1.license.util
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ResolvedArtifact
 
 import java.util.concurrent.atomic.AtomicInteger
 
 class CachingArtifactResolver {
-    private static final String configName = "dependencyLicenseReport"
-    private Map<Map<String, String>, Collection<ResolvedArtifact>> cache =
-            new HashMap<Map<String, String>, Collection<ResolvedArtifact>>()
+
+    private Map<Map<String, String>, Collection<ResolvedArtifact>> cache = new HashMap<>()
     private Project project
 
     CachingArtifactResolver(Project project) {
@@ -41,9 +41,8 @@ class CachingArtifactResolver {
     }
 
     private Collection<ResolvedArtifact> doResolveArtifact(Object spec) {
-        project.configurations.create("$configName")
-        project.dependencies."$configName"(spec)
-        Configuration config = project.configurations.getByName(configName)
+        Dependency dependency = project.dependencies.create(spec)
+        Configuration config = project.configurations.detachedConfiguration(dependency).setTransitive(false)
         try {
             Collection<ResolvedArtifact> artifacts = config.resolvedConfiguration.resolvedArtifacts
             if (artifacts != null) {
