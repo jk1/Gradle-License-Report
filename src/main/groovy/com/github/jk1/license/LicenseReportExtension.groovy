@@ -93,11 +93,13 @@ class LicenseReportExtension {
         return null
     }
 
-    // todo: migrate me to a filter and cover me with tests
+    // todo: migrate me to a filter
     boolean isExcluded(ResolvedDependency module) {
         return (projects.any { module.moduleGroup == it.group } && excludeOwnGroup) ||
             excludeGroups.contains(module.moduleGroup) ||
-            excludes.contains("$module.moduleGroup:$module.moduleName")
+            excludeGroups.any { module.moduleGroup.matches(it) } ||
+            excludes.contains("$module.moduleGroup:$module.moduleName") ||
+            excludes.any { "$module.moduleGroup:$module.moduleName".matches(it) }
     }
 
 }
