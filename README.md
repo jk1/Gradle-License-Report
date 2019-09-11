@@ -62,11 +62,11 @@ licenseReport {
     // configurations = ALL
 
 
-    // List the groups ids to exclude from dependency report.
+    // List the groups ids to exclude from dependency report. Supports regular expressions.
     // For finer granularity, see: excludes.
     excludeGroups = ['do.not.want']
 
-    // List the ids (in module:name format) to exclude from dependency report.
+    // List the ids (in module:name format) to exclude from dependency report. Supports regular expressions.
     // By default excludes is empty.
     excludes = ['moduleGroup:moduleName']
 
