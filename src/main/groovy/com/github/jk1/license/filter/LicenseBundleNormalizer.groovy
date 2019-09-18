@@ -23,7 +23,7 @@ import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
-import com.github.jk1.license.ReportTask
+import com.github.jk1.license.task.ReportTask
 import groovy.json.JsonSlurper
 import groovy.json.JsonParserType
 import groovy.transform.CompileStatic

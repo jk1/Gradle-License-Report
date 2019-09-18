@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jk1.license
+package com.github.jk1.license.task
 
+import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.ProjectData
 import com.github.jk1.license.reader.ProjectReader
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.FileCollection
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.*
 
-@CacheableTask
 class ReportTask extends DefaultTask {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
@@ -30,13 +30,6 @@ class ReportTask extends DefaultTask {
     ReportTask() {
         group = 'Reporting'
         description = 'Generates license report for all dependencies of this project and its subprojects'
-    }
-
-    @InputFiles
-    FileCollection getClasspath() {
-        getConfig().projects
-            .collectMany { ProjectReader.findConfiguredConfigurations(it, getConfig()) }
-            .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
     }
 
     @Nested

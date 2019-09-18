@@ -20,7 +20,7 @@ import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.PomData
 import com.github.jk1.license.PomDeveloper
 import com.github.jk1.license.PomOrganization
-import com.github.jk1.license.ReportTask
+import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.CachingArtifactResolver
 import com.github.jk1.license.util.Files
 import groovy.util.slurpersupport.GPathResult

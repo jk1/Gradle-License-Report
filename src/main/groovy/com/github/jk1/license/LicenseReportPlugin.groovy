@@ -15,6 +15,10 @@
  */
 package com.github.jk1.license
 
+import com.github.jk1.license.task.CacheableReportTask
+import com.github.jk1.license.task.CheckLicensePreparationTask
+import com.github.jk1.license.task.CheckLicenseTask
+import com.github.jk1.license.task.ReportTask
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,7 +34,8 @@ class LicenseReportPlugin implements Plugin<Project> {
 
         project.extensions.create('licenseReport', LicenseReportExtension, project)
         def preparationTask = project.tasks.create("checkLicensePreparation", CheckLicensePreparationTask)
-        def generateLicenseReportTask = project.tasks.create('generateLicenseReport', ReportTask) {
+        def taskClass = project.getPlugins().hasPlugin('com.android.application') ? ReportTask : CacheableReportTask
+        def generateLicenseReportTask = project.tasks.create('generateLicenseReport', taskClass) {
             it.shouldRunAfter(preparationTask)
         }
         project.tasks.create('checkLicense', CheckLicenseTask) {

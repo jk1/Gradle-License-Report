@@ -43,7 +43,8 @@ class LicenseReportExtension {
         outputDir = "${project.buildDir}/reports/dependency-license"
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
-        configurations = ['runtimeClasspath']
+        configurations =
+            project.getPlugins().hasPlugin('com.android.application') ? ['releaseRuntimeClasspath'] : ['runtimeClasspath']
         excludeOwnGroup = true
         excludeGroups = []
         excludes = []

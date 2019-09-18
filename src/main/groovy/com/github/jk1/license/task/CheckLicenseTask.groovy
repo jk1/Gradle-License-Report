@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jk1.license
+package com.github.jk1.license.task
 
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.check.LicenseChecker
 import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger

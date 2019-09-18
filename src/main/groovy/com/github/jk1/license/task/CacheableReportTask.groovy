@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jk1.license
+package com.github.jk1.license.task
 
-import com.github.jk1.license.render.JsonReportRenderer
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
+import com.github.jk1.license.reader.ProjectReader
+import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.InputFiles
 
-import static com.github.jk1.license.CheckLicenseTask.PROJECT_JSON_FOR_LICENSE_CHECKING_FILE
+@CacheableTask
+class CacheableReportTask extends ReportTask {
 
-class CheckLicensePreparationTask extends DefaultTask {
-
-    CheckLicensePreparationTask() {
-        group = "CheckingPreparation"
-        description = "Prepare for checkLicense"
-    }
-
-    @TaskAction
-    void checkPreparation() {
-        getProject().licenseReport.renderers +=
-            [ new JsonReportRenderer(PROJECT_JSON_FOR_LICENSE_CHECKING_FILE,false) ]
+    @InputFiles
+    FileCollection getClasspath() {
+        getConfig().projects
+            .collectMany { ProjectReader.findConfiguredConfigurations(it, getConfig()) }
+            .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
     }
 }
