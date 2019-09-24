@@ -17,6 +17,7 @@
   "bundles" : [
     { "bundleName" : "Apache-1.0", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-1.1" },
     { "bundleName" : "Apache-2.0", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "https://www.apache.org/licenses/LICENSE-2.0" },
+    { "bundleName" : "0BSD", "licenseName" : "BSD Zero Clause License", "licenseUrl" : "https://opensource.org/licenses/0BSD" },
     { "bundleName" : "BSD-2-Clause", "licenseName" : "The 2-Clause BSD License", "licenseUrl" : "https://opensource.org/licenses/BSD-2-Clause" },
     { "bundleName" : "BSD-3-Clause", "licenseName" : "The 3-Clause BSD License", "licenseUrl" : "https://opensource.org/licenses/BSD-3-Clause" },
     { "bundleName" : "CC0-1.0", "licenseName" : "Creative Commons Legal Code", "licenseUrl" : "https://repository.jboss.org/licenses/cc0-1.0.txt" },
@@ -38,6 +39,10 @@
     { "bundleName" : "Public-Domain", "licenseName" : "PUBLIC DOMAIN", "licenseUrl" : "" }
 ],
   "transformationRules" : [
+    { "bundleName" : "0BSD", "licenseNamePattern" : "BSD Zero Clause License" },
+    { "bundleName" : "0BSD", "licenseNamePattern" : "BSD$" },
+    { "bundleName" : "0BSD", "licenseNamePattern" : "BSD[ |-][c|C]lause.*" },
+    { "bundleName" : "0BSD", "licenseNamePattern" : "BSD[ |-][l|L]icense.*" },
     { "bundleName" : "Apache-2.0", "licenseNamePattern" : ".*The Apache Software License, Version 2\\.0.*" },
     { "bundleName" : "Apache-2.0", "licenseNamePattern" : "Apache 2.*" },
     { "bundleName" : "Apache-2.0", "licenseNamePattern" : "ASL 2\\.0" },
