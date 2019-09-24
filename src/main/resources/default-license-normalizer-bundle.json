@@ -51,6 +51,8 @@
     { "bundleName" : "LGPL-2.1-only", "licenseUrlPattern" : ".*www\\.gnu\\.org/licenses/old-licenses/lgpl-2\\.1\\.html" },
     { "bundleName" : "Apache-2.0", "licenseFileContentPattern" : ".*Apache License,?( Version)? 2.*" },
     { "bundleName" : "Apache-1.0", "licenseFileContentPattern" : ".*Apache Software License, Version 1\\.1.*" },
+    { "bundleName" : "CC0-1.0", "licenseNamePattern" : "CC0([ |-]1(\\.0)?)?" },
+    { "bundleName" : "CC0-1.0", "licenseUrlPattern" : ".*(www\\.)?creativecommons\\.org/publicdomain/zero/1\\.0/" },
     { "bundleName" : "CDDL-1.0", "licenseFileContentPattern" : ".*CDDL.*1\\.0" },
     { "bundleName" : "BSD-3-Clause", "licenseNamePattern" : "BSD[ |-]3-[c|C]lause.*" },
     { "bundleName" : "BSD-3-Clause", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/BSD-3-Clause" },
