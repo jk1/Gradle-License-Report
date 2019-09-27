@@ -30,8 +30,11 @@ class LicenseReportExtension {
 
     public String outputDir
     public Project[] projects
+    @Nested
     public ReportRenderer[] renderers
+    @Nested
     public DependencyDataImporter[] importers
+    @Nested
     public DependencyFilter[] filters
     public String[] configurations
     public boolean excludeOwnGroup
@@ -74,13 +77,10 @@ class LicenseReportExtension {
         snapshot.join("!")
     }
 
-    @Nested
     private List<ReportRenderer> getRenderersCache() { return this.renderers }
 
-    @Nested
     private List<DependencyDataImporter> getImportersCache() { return this.importers }
 
-    @Nested
     private List<DependencyFilter> getFiltersCache() { return this.filters }
 
     void setRenderer(ReportRenderer renderer) {
