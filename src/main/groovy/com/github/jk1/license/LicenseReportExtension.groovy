@@ -75,13 +75,7 @@ class LicenseReportExtension {
     }
 
     @Nested
-    private List<ReportRenderer> getRenderersCache() { return this.renderers }
-
-    @Nested
-    private List<DependencyDataImporter> getImportersCache() { return this.importers }
-
-    @Nested
-    private List<DependencyFilter> getFiltersCache() { return this.filters }
+    public List<Object> getCache() { return this.renderers + this.importers + this.filters }
 
     void setRenderer(ReportRenderer renderer) {
         renderers = renderer
