@@ -60,38 +60,38 @@ class CheckLicenseTaskSpec extends Specification {
         allowed = testProjectDir.newFile('allowed-licenses.json') << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*", 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*",
                 },
-                { 
-                    "moduleLicense": "Apache Software License, 
-                    Version 1.1", "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License,
+                    Version 1.1", "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1"
                 },
-                { 
-                    "moduleLicense": "Apache License, Version 2.0" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0"
                 },
-                { 
-                    "moduleLicense": "The 2-Clause BSD License" 
+                {
+                    "moduleLicense": "The 2-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "The 3-Clause BSD License" 
+                {
+                    "moduleLicense": "The 3-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0" 
+                {
+                    "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0"
                 },
-                { 
-                    "moduleLicense": "MIT License" 
+                {
+                    "moduleLicense": "MIT License"
                 },
-                { 
-                    "moduleLicense": ".*", "moduleName": "org.jetbrains" 
+                {
+                    "moduleLicense": ".*", "moduleName": "org.jetbrains"
                 }
             ]
         }"""
@@ -101,9 +101,9 @@ class CheckLicenseTaskSpec extends Specification {
         given:
         buildFile << """
             import com.github.jk1.license.filter.*
-      
+
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
                 id 'com.github.jk1.dependency-license-report' version '1.2'
             }
 
@@ -166,19 +166,19 @@ class CheckLicenseTaskSpec extends Specification {
         allowed.text = """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "The 2-Clause BSD License" 
+                {
+                    "moduleLicense": "The 2-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "The 3-Clause BSD License" 
+                {
+                    "moduleLicense": "The 3-Clause BSD License"
                 }
             ]
         }"""
         buildFile << """
             import com.github.jk1.license.filter.*
-            
+
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
                 id 'com.github.jk1.dependency-license-report' version '1.2'
             }
 
@@ -220,38 +220,38 @@ class CheckLicenseTaskSpec extends Specification {
         allowed.text = """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*", 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*",
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1"
                 },
-                { 
-                    "moduleLicense": "Apache License, Version 2.0" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0"
                 },
-                { 
-                    "moduleLicense": "The 2-Clause BSD License" 
+                {
+                    "moduleLicense": "The 2-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "The 3-Clause BSD License" 
+                {
+                    "moduleLicense": "The 3-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "cOMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0" 
+                {
+                    "moduleLicense": "cOMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0"
                 },
-                { 
-                    "moduleLicense": "MIT License" 
+                {
+                    "moduleLicense": "MIT License"
                 },
-                { 
-                    "moduleLicense": ".*", "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": ".*", "moduleName": "org.jetbrains.*"
                 }
             ]
         }"""
@@ -284,7 +284,7 @@ class CheckLicenseTaskSpec extends Specification {
         buildFile << """
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
                 id 'com.github.jk1.dependency-license-report' version '1.2'
             }
 
@@ -317,38 +317,38 @@ class CheckLicenseTaskSpec extends Specification {
         allowed.text = """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*", 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*",
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1"
                 },
-                { 
-                    "moduleLicense": "Apache License, Version 2.0" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0"
                 },
-                { 
-                    "moduleLicense": "The 2-Clause BSD License" 
+                {
+                    "moduleLicense": "The 2-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "The 3-Clause BSD License" 
+                {
+                    "moduleLicense": "The 3-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "cOMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0" 
+                {
+                    "moduleLicense": "cOMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0"
                 },
-                { 
-                    "moduleLicense": "MIT License" 
+                {
+                    "moduleLicense": "MIT License"
                 },
-                { 
-                    "moduleLicense": ".*", "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": ".*", "moduleName": "org.jetbrains.*"
                 }
             ]
         }"""
@@ -361,9 +361,9 @@ class CheckLicenseTaskSpec extends Specification {
 
         when:
         buildFile.text = """
-            
+
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
                 id 'com.github.jk1.dependency-license-report' version '1.2'
             }
 
@@ -419,9 +419,9 @@ class CheckLicenseTaskSpec extends Specification {
     def "it should fail when no allowedLicensesFile specified and pass when adding allowedLicensesFile"() {
         given:
         buildFile << """
-            
+
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
                 id 'com.github.jk1.dependency-license-report' version '1.2'
             }
 
@@ -450,38 +450,38 @@ class CheckLicenseTaskSpec extends Specification {
         allowed.text = """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*", 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*",
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1"
                 },
-                { 
-                    "moduleLicense": "Apache License, Version 2.0" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0"
                 },
-                { 
-                    "moduleLicense": "The 2-Clause BSD License" 
+                {
+                    "moduleLicense": "The 2-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "The 3-Clause BSD License" 
+                {
+                    "moduleLicense": "The 3-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "cOMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0" 
+                {
+                    "moduleLicense": "cOMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0"
                 },
-                { 
-                    "moduleLicense": "MIT License" 
+                {
+                    "moduleLicense": "MIT License"
                 },
-                { 
-                    "moduleLicense": ".*", "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": ".*", "moduleName": "org.jetbrains.*"
                 }
             ]
         }"""
@@ -494,9 +494,9 @@ class CheckLicenseTaskSpec extends Specification {
 
         when:
         buildFile.text = """
-            
+
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
                 id 'com.github.jk1.dependency-license-report' version '1.2'
             }
 
