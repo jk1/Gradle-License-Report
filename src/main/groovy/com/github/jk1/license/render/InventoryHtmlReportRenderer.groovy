@@ -15,27 +15,12 @@
  */
 package com.github.jk1.license.render
 
-import com.github.jk1.license.ImportedModuleBundle
-import com.github.jk1.license.ImportedModuleData
-import com.github.jk1.license.License
-import com.github.jk1.license.LicenseReportExtension
-import com.github.jk1.license.ManifestData
-import com.github.jk1.license.ModuleData
-import com.github.jk1.license.PomData
-import com.github.jk1.license.ProjectData
+import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
-import org.gradle.api.Project
-import org.gradle.api.tasks.Input
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
-class InventoryHtmlReportRenderer implements ReportRenderer {
-
-    private String name
-    private String fileName
-    private Project project
-    private LicenseReportExtension config
-    private File output
-    private int counter
-    private Map<String, Map<String, String>> overrides = [:]
+class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
     InventoryHtmlReportRenderer(String fileName = 'index.html', String name = null, File overridesFilename = null) {
         this.name = name
@@ -43,22 +28,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         if (overridesFilename) overrides = parseOverrides(overridesFilename)
     }
 
-    @Input
-    private String getFileNameCache() { return this.fileName }
-
-    private Map<String, Map<String, String>> parseOverrides(File file) {
-        overrides = [:]
-        file.withReader { Reader reader ->
-            String line
-            while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(/\|/)
-                String groupNameVersion = columns[0]
-                overrides[groupNameVersion] = [projectUrl: safeGet(columns, 1), license: safeGet(columns, 2), licenseUrl: safeGet(columns, 3)]
-            }
-        }
-        return overrides
-    }
-
+    @Override
     void render(ProjectData data) {
         project = data.project
         if( name == null ) name = project.name
@@ -197,56 +167,6 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
 """
     }
 
-    private Map<String, List<ModuleData>> buildLicenseInventory(ProjectData data) {
-        Map<String, List<ModuleData>> inventory = [:]
-        data.allDependencies.each { ModuleData module ->
-            boolean anyLicense = false
-
-            for (ManifestData manifestData : module.manifests) {
-                if (manifestData.license && Files.maybeLicenseUrl(manifestData.licenseUrl)) {
-                    anyLicense = true
-                    addModule(inventory, manifestData.license, module)
-                }
-            }
-
-            for (PomData pom : module.poms) {
-                for (License license : pom.licenses) {
-                    addModule(inventory, license.name, module)
-                    anyLicense = true
-                }
-            }
-
-            if (!anyLicense) {
-                addModule(inventory, module.licenseFiles.isEmpty() ? "Unknown" : "Embedded", module)
-            }
-        }
-        return inventory
-    }
-
-    private Map<String, Map<String, List<ImportedModuleData>>> buildExternalInventories(ProjectData data) {
-        Map<String, Map<String, List<ImportedModuleData>>> results = [:]
-        data.importedModules.each { ImportedModuleBundle module ->
-            Map<String, List<ImportedModuleData>> bundle = [:]
-            module.modules.each { ImportedModuleData moduleData ->
-                if (!bundle.containsKey(moduleData.license)) bundle[moduleData.license] = []
-                bundle[moduleData.license] << moduleData
-            }
-            results[module.name] = bundle
-        }
-        return results
-    }
-
-    private void addModule(Map<String, List<ModuleData>> inventory, String key, ModuleData module) {
-        String gnv = "${module.group}:${module.name}:${module.version}"
-        if (key == "Unknown" && overrides.containsKey(gnv)) {
-            if (!inventory.containsKey(overrides[gnv].license)) inventory[overrides[gnv].license] = []
-            inventory[overrides[gnv].license] << module
-        } else {
-            if (!inventory.containsKey(key)) inventory[key] = []
-            inventory[key] << module
-        }
-    }
-
     private void printInventory(String title, Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
         output << "<div class='inventory'>\n"
         output << "<div class='header'>\n"
@@ -359,7 +279,7 @@ class InventoryHtmlReportRenderer implements ReportRenderer {
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
             output << section("Embedded license files", data.licenseFiles.first().fileDetails.collect {
                 link(it.file, it.file)
-            }.join('<br>'))
+            }.unique().join('<br>'))
         }
         output << "</div>\n"
     }
