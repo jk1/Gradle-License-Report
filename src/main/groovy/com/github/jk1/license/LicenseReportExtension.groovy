@@ -30,7 +30,8 @@ class LicenseReportExtension {
 
     public String outputDir
     public Project[] projects
-    public ReportRenderer[] renderers
+    @Nested
+    ReportRenderer[] renderers
     public DependencyDataImporter[] importers
     public DependencyFilter[] filters
     public String[] configurations
@@ -53,7 +54,7 @@ class LicenseReportExtension {
     }
 
     @Input
-    private String getLicenseReportExtensionSnapshot() {
+    String getLicenseReportExtensionSnapshot() {
         def snapshot = []
         snapshot << 'projects'
         snapshot += projects.collect { it.path }
@@ -81,6 +82,7 @@ class LicenseReportExtension {
         renderers = renderer
     }
 
+    @Nested
     ReportRenderer getRenderer() {
         if (renderers != null && renderers.size() > 0) {
             return renderers[0]
