@@ -22,6 +22,7 @@ import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 
 class LicenseReportExtension {
@@ -53,7 +54,7 @@ class LicenseReportExtension {
     }
 
     @Input
-    private String getLicenseReportExtensionSnapshot() {
+    String getLicenseReportExtensionSnapshot() {
         def snapshot = []
         snapshot << 'projects'
         snapshot += projects.collect { it.path }
@@ -81,6 +82,7 @@ class LicenseReportExtension {
         renderers = renderer
     }
 
+    @Internal
     ReportRenderer getRenderer() {
         if (renderers != null && renderers.size() > 0) {
             return renderers[0]

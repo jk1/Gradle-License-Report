@@ -23,15 +23,18 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.PathSensitivity
 
 @CacheableTask
 class CheckLicenseTask extends DefaultTask {
+
     final static String PROJECT_JSON_FOR_LICENSE_CHECKING_FILE = "project-licenses-for-check-license-task.json"
     final static String NOT_PASSED_DEPENDENCIES_FILE = "dependencies-without-allowed-license.json"
 
-    private Logger LOGGER = Logging.getLogger(CheckLicenseTask.class)
-    LicenseReportExtension config = getProject().licenseReport
+    private static Logger LOGGER = Logging.getLogger(CheckLicenseTask.class)
+    private LicenseReportExtension config = getProject().licenseReport
 
     CheckLicenseTask() {
         group = 'Checking'
@@ -39,11 +42,13 @@ class CheckLicenseTask extends DefaultTask {
     }
 
     @InputFile
+    @PathSensitive(PathSensitivity.NAME_ONLY)
     File getAllowedLicenseFile() {
         return config.allowedLicensesFile
     }
 
     @InputFile
+    @PathSensitive(PathSensitivity.NAME_ONLY)
     File getProjectDependenciesData() {
         return new File("${config.outputDir}/${PROJECT_JSON_FOR_LICENSE_CHECKING_FILE}")
     }

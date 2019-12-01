@@ -18,12 +18,12 @@ package com.github.jk1.license.task
 import com.github.jk1.license.reader.ProjectReader
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Classpath
 
 @CacheableTask
 class CacheableReportTask extends ReportTask {
 
-    @InputFiles
+    @Classpath
     FileCollection getClasspath() {
         getConfig().projects
             .collectMany { ProjectReader.findConfiguredConfigurations(it, getConfig()) }
