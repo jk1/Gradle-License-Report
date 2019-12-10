@@ -326,7 +326,7 @@ repositories {
 }
 
 dependencies {
-    compile 'gradle.plugin.com.github.jk1:gradle-license-report:1.12'
+    compile 'com.github.jk1:gradle-license-report:1.12'
 }
 
 ```
