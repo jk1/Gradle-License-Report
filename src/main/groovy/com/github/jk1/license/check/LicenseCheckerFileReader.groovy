@@ -25,6 +25,11 @@ class LicenseCheckerFileReader {
         return slurpResult.allowedLicenses.collect { new AllowedLicense(it.moduleName, it.moduleVersion, it.moduleLicense) }
     }
 
+    static List<AllowedLicense> importAllowedLicenses(URL allowedLicensesUrl) {
+        def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesUrl)
+        return slurpResult.allowedLicenses.collect { new AllowedLicense(it.moduleName, it.moduleVersion, it.moduleLicense) }
+    }
+
     static List<Dependency> importDependencies(File projectDependenciesFile) {
         def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(projectDependenciesFile)
         def allDependencies = slurpResult.dependencies.collect { new Dependency(it.moduleName, it.moduleVersion, it.moduleLicenses) }

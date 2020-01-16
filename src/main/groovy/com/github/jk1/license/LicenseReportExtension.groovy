@@ -39,6 +39,7 @@ class LicenseReportExtension {
     public String[] excludeGroups
     public String[] excludes
     public File allowedLicensesFile
+    public URL allowedLicensesUrl
 
     LicenseReportExtension(Project project) {
         outputDir = "${project.buildDir}/reports/dependency-license"
