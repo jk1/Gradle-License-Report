@@ -27,7 +27,6 @@ class LicenseCheckerSpec extends Specification {
     TemporaryFolder testProjectDir = new TemporaryFolder()
 
     File allowedLicenseFile
-    URL allowedLicenseUrl
     File projectDataFile
     File notPassedDependenciesFile
 
@@ -129,7 +128,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -165,7 +164,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
 
@@ -202,7 +201,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -234,7 +233,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -311,7 +310,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -345,7 +344,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -383,7 +382,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -418,7 +417,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -457,7 +456,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -486,7 +485,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
 
         then:
@@ -517,7 +516,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
 
         then:
@@ -553,7 +552,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -590,7 +589,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -624,7 +623,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -661,7 +660,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -699,7 +698,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -734,7 +733,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -772,7 +771,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -806,7 +805,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
@@ -850,7 +849,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         noExceptionThrown()
@@ -885,7 +884,7 @@ class LicenseCheckerSpec extends Specification {
         when:
         def licenseChecker = new LicenseChecker()
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            allowedLicenseFile, allowedLicenseUrl, projectDataFile, notPassedDependenciesFile)
+            allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)

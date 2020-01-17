@@ -21,12 +21,9 @@ import org.gradle.api.GradleException
 class LicenseChecker {
 
     void checkAllDependencyLicensesAreAllowed(
-        File allowedLicensesFile, URL allowedLicensesUrl, File projectLicensesDataFile, File notPassedDependenciesOutputFile) {
+        Object allowedLicensesFile, File projectLicensesDataFile, File notPassedDependenciesOutputFile) {
         List<Dependency> allDependencies = LicenseCheckerFileReader.importDependencies(projectLicensesDataFile)
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicensesFile.toURI().toURL())
-        if(allowedLicensesUrl != null) {
-            allowedLicenses.addAll(LicenseCheckerFileReader.importAllowedLicenses(allowedLicensesUrl))
-        }
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicensesFile)
         List<Dependency> notPassedDependencies = searchForNotAllowedDependencies(allDependencies, allowedLicenses)
         generateNotPassedDependenciesFile(notPassedDependencies, notPassedDependenciesOutputFile)
 

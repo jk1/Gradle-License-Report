@@ -17,11 +17,27 @@ package com.github.jk1.license.check
 
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper
+import org.gradle.api.InvalidUserDataException
 
 class LicenseCheckerFileReader {
 
-    static List<AllowedLicense> importAllowedLicenses(URL allowedLicensesUrl) {
-        def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesUrl)
+    static List<AllowedLicense> importAllowedLicenses(Object allowedLicensesFile) {
+        def slurpResult
+        if(allowedLicensesFile instanceof File ) {
+            slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
+        } else if(allowedLicensesFile instanceof URL) {
+            slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
+        } else if(allowedLicensesFile instanceof String) {
+            def source
+            try {
+                source = new URL(allowedLicensesFile)
+            } catch (MalformedURLException ignored) {
+                source = new File(allowedLicensesFile)
+            }
+            return importAllowedLicenses(source)
+        } else {
+            throw new InvalidUserDataException("Unknown type for allowedLicensesFile: " + allowedLicensesFile.getClass())
+        }
         return slurpResult.allowedLicenses.collect { new AllowedLicense(it.moduleName, it.moduleVersion, it.moduleLicense) }
     }
 

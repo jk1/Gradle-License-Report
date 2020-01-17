@@ -23,7 +23,6 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.TaskAction
@@ -43,16 +42,9 @@ class CheckLicenseTask extends DefaultTask {
         description = 'Check if License could be used'
     }
 
-    @InputFile
-    @PathSensitive(PathSensitivity.NAME_ONLY)
-    File getAllowedLicenseFile() {
-        return config.allowedLicensesFile
-    }
-
     @Input
-    @Optional
-    URL getAllowedLicenseUrl() {
-        return config.allowedLicensesUrl
+    Object getAllowedLicenseFile() {
+        return config.allowedLicensesFile
     }
 
     @InputFile
@@ -72,6 +64,6 @@ class CheckLicenseTask extends DefaultTask {
         LicenseChecker licenseChecker = new LicenseChecker()
         LOGGER.info("Check licenses if they are allowed to use.")
         licenseChecker.checkAllDependencyLicensesAreAllowed(
-            getAllowedLicenseFile(), getAllowedLicenseUrl(), getProjectDependenciesData(), notPassedDependenciesFile)
+            getAllowedLicenseFile(), getProjectDependenciesData(), notPassedDependenciesFile)
     }
 }

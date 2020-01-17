@@ -573,4 +573,13 @@ class LicenseCheckerFileReaderSpec extends Specification {
         allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
         allowedLicenses.collect { it.moduleName } == [null,  null, null]
     }
+
+    def "it reads out all the allowed licenses from a file reference by string"() {
+        when:
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile.path)
+
+        then:
+        allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
+        allowedLicenses.collect { it.moduleName } == [null,  null, null]
+    }
 }
