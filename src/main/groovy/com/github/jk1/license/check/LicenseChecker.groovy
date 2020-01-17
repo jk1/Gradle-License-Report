@@ -23,7 +23,7 @@ class LicenseChecker {
     void checkAllDependencyLicensesAreAllowed(
         File allowedLicensesFile, URL allowedLicensesUrl, File projectLicensesDataFile, File notPassedDependenciesOutputFile) {
         List<Dependency> allDependencies = LicenseCheckerFileReader.importDependencies(projectLicensesDataFile)
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicensesFile)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicensesFile.toURI().toURL())
         if(allowedLicensesUrl != null) {
             allowedLicenses.addAll(LicenseCheckerFileReader.importAllowedLicenses(allowedLicensesUrl))
         }

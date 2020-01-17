@@ -20,11 +20,6 @@ import groovy.json.JsonSlurper
 
 class LicenseCheckerFileReader {
 
-    static List<AllowedLicense> importAllowedLicenses(File allowedLicensesFile) {
-        def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
-        return slurpResult.allowedLicenses.collect { new AllowedLicense(it.moduleName, it.moduleVersion, it.moduleLicense) }
-    }
-
     static List<AllowedLicense> importAllowedLicenses(URL allowedLicensesUrl) {
         def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesUrl)
         return slurpResult.allowedLicenses.collect { new AllowedLicense(it.moduleName, it.moduleVersion, it.moduleLicense) }

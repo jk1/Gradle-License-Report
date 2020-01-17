@@ -51,7 +51,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
 
     def "it reads out all the allowed licenses"() {
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
 
         then:
         allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
@@ -63,7 +63,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
         allowedLicenseFile.text = """{"allowedLicenses":[]}"""
 
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
 
         then:
         allowedLicenses == []
@@ -87,7 +87,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
         }"""
 
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
 
         then:
         allowedLicenses.moduleLicense == [null, null, null]
