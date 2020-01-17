@@ -547,4 +547,74 @@ class CheckLicenseTaskSpec extends Specification {
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
     }
+
+    def "it should pass when only containing included licenses which are referenced by url"() {
+        given:
+        File emptyAllowed = testProjectDir.newFile('empty-allowed-licenses.json') << """
+        {
+            "allowedLicenses":[
+            ]
+        }"""
+
+        buildFile << """
+            import com.github.jk1.license.filter.*
+
+            plugins {
+                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+                id 'com.github.jk1.dependency-license-report' version '1.2'
+            }
+
+            apply plugin: 'java'
+
+            group 'greeting'
+            version '0.0.1'
+
+            repositories {
+                mavenCentral()
+            }
+
+            dependencies {
+                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                compile "org.jetbrains.kotlin:kotlin-reflect"
+                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+            }
+
+            compileKotlin {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+            compileTestKotlin {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+            licenseReport {
+                filters = new LicenseBundleNormalizer()
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(emptyAllowed.path)}")
+                allowedLicensesUrl = new File("${StringEscapeUtils.escapeJava(allowed.path)}").toURI().toURL()
+            }
+        """
+
+        when:
+        BuildResult buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
+
+        when:
+        buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
+
+        when:
+        buildResult = result("--build-cache", "clean", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.FROM_CACHE
+
+        when:
+        buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
+    }
 }
