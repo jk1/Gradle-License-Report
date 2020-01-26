@@ -15,7 +15,7 @@ Add this to your `build.gradle` file:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '1.12'
+  id 'com.github.jk1.dependency-license-report' version '1.13'
 }
 ```
 
@@ -31,7 +31,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.jk1:gradle-license-report:1.12'
+        classpath 'com.github.jk1:gradle-license-report:1.13'
     }
 }
 apply plugin: 'com.github.jk1.dependency-license-report'
@@ -82,6 +82,7 @@ licenseReport {
     importers = [new XmlReportImporter('Frontend dependencies', file(frontend_libs.xml))]
 
     // This is for the allowed-licenses-file in checkLicense Task
+    // Accepts File, URL or String path to local or remote file
     allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
 }
 ```
@@ -98,7 +99,7 @@ import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "1.12"
+    id("com.github.jk1.dependency-license-report") version "1.13"
 }
 
 licenseReport {
@@ -326,7 +327,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.jk1:gradle-license-report:1.12'
+    compile 'com.github.jk1:gradle-license-report:1.13'
 }
 
 ```
@@ -412,6 +413,14 @@ Also specify the allowed license file in the configuration:
 ```groovy
 licenseReport {
     allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
+}
+```
+
+or
+
+```groovy
+licenseReport {
+    allowedLicensesFile = new URL("http://company.com/licenses/allowed-licenses.json")
 }
 ```
 
