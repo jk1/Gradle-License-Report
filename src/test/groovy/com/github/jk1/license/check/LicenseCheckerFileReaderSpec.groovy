@@ -24,6 +24,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
     TemporaryFolder testProjectDir = new TemporaryFolder()
 
     File allowedLicenseFile
+    URL allowedLicenseUrl
     File projectDataFile
 
     def setup() {
@@ -45,11 +46,12 @@ class LicenseCheckerFileReaderSpec extends Specification {
                 }
             ]
         }"""
+        allowedLicenseUrl =  allowedLicenseFile.toURI().toURL()
     }
 
     def "it reads out all the allowed licenses"() {
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
 
         then:
         allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
@@ -61,7 +63,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
         allowedLicenseFile.text = """{"allowedLicenses":[]}"""
 
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
 
         then:
         allowedLicenses == []
@@ -85,7 +87,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
         }"""
 
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
 
         then:
         allowedLicenses.moduleLicense == [null, null, null]
@@ -561,5 +563,23 @@ class LicenseCheckerFileReaderSpec extends Specification {
 
         then:
         dependencies == []
+    }
+
+    def "it reads out all the allowed licenses from an url"() {
+        when:
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
+
+        then:
+        allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
+        allowedLicenses.collect { it.moduleName } == [null,  null, null]
+    }
+
+    def "it reads out all the allowed licenses from a file reference by string"() {
+        when:
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile.path)
+
+        then:
+        allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
+        allowedLicenses.collect { it.moduleName } == [null,  null, null]
     }
 }

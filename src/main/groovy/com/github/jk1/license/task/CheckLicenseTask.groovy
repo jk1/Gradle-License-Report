@@ -21,6 +21,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
@@ -41,9 +42,8 @@ class CheckLicenseTask extends DefaultTask {
         description = 'Check if License could be used'
     }
 
-    @InputFile
-    @PathSensitive(PathSensitivity.NAME_ONLY)
-    File getAllowedLicenseFile() {
+    @Input
+    Object getAllowedLicenseFile() {
         return config.allowedLicensesFile
     }
 

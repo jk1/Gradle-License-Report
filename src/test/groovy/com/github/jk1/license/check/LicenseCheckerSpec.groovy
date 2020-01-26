@@ -47,38 +47,38 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains", 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains",
                 },
-                { 
-                    "moduleLicense": "Apache Software License, 
-                    Version 1.1", "moduleName": "org.jetbrains.*" 
+                {
+                    "moduleLicense": "Apache Software License,
+                    Version 1.1", "moduleName": "org.jetbrains.*"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", 
-                    "moduleName": "org.jetbrains" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1",
+                    "moduleName": "org.jetbrains"
                 },
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1"
                 },
-                { 
-                    "moduleLicense": "Apache License, Version 2.0" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0"
                 },
-                { 
-                    "moduleLicense": "The 2-Clause BSD License" 
+                {
+                    "moduleLicense": "The 2-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "The 3-Clause BSD License" 
+                {
+                    "moduleLicense": "The 3-Clause BSD License"
                 },
-                { 
-                    "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0" 
+                {
+                    "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL), Version 1.0"
                 },
-                { 
-                    "moduleLicense": "MIT License" 
+                {
+                    "moduleLicense": "MIT License"
                 },
-                { 
-                    "moduleLicense": ".*", "moduleName": "org.jetbrains" 
+                {
+                    "moduleLicense": ".*", "moduleName": "org.jetbrains"
                 }
             ]
         }"""
@@ -95,31 +95,31 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1"
                 },
-                { 
-                    "moduleLicense": "MIT License" 
+                {
+                    "moduleLicense": "MIT License"
                 }
             ]
         }"""
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "MIT License"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2"
                 },
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache Software License, Version 1.1"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -139,23 +139,23 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1"
                 },
-                { 
-                    "moduleLicense": "MIT License" 
+                {
+                    "moduleLicense": "MIT License"
                 }
             ]
         }"""
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "some-other-license"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -179,8 +179,8 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleName": ".*mod1" 
+                {
+                    "moduleName": ".*mod1"
                 }
             ]
         }"""
@@ -188,7 +188,7 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "some-other-license"
@@ -219,12 +219,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2"
                 }
             ]
@@ -247,8 +247,8 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleName": "dummy-group:.*" 
+                {
+                    "moduleName": "dummy-group:.*"
                 }
             ]
         }"""
@@ -256,52 +256,52 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 },
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2"
                 },
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod3"
                 },
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod4"
                 },
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                         "moduleName": "dummy-group:mod5"
                 },
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "MIT License"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod6"
                 }
             ]
@@ -321,8 +321,8 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache Software License, Version 1.1", "moduleName": "mod1" 
+                {
+                    "moduleLicense": "Apache Software License, Version 1.1", "moduleName": "mod1"
                 }
             ]
         }"""
@@ -330,12 +330,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "MIT License"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2"
                 }
             ]
@@ -358,8 +358,8 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "MIT License", "moduleName": ".*mod2", "moduleVersion": "1.0" 
+                {
+                    "moduleLicense": "MIT License", "moduleName": ".*mod2", "moduleVersion": "1.0"
                 }
             ]
         }"""
@@ -367,12 +367,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "MIT License"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2",
                     "moduleVersion": "1.0"
                 }
@@ -393,8 +393,8 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "MIT License", "moduleName": ".*mod2", "moduleVersion": "2.0" 
+                {
+                    "moduleLicense": "MIT License", "moduleName": ".*mod2", "moduleVersion": "2.0"
                 }
             ]
         }"""
@@ -402,12 +402,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "MIT License"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2",
                     "moduleVersion": "1.0"
                 }
@@ -432,7 +432,7 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
+                {
                     "moduleLicense": "MIT License", "moduleName": ".*mod2"
                 }
             ]
@@ -441,12 +441,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "MIT License"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2",
                     "moduleVersion": "1.0"
                 }
@@ -467,8 +467,8 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleName": "dummy-group:mod1" 
+                {
+                    "moduleName": "dummy-group:mod1"
                 }
             ]
         }"""
@@ -476,7 +476,7 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -497,9 +497,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": ".*", 
-                    "moduleName": "dummy-group:mod1" 
+                {
+                    "moduleLicense": ".*",
+                    "moduleName": "dummy-group:mod1"
                 }
             ]
         }"""
@@ -507,7 +507,7 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -528,9 +528,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache License, Version 2.0", 
-                    "moduleName": "mod1" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleName": "mod1"
                 }
             ]
         }"""
@@ -538,12 +538,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2"
                 }
             ]
@@ -565,9 +565,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3", 
-                    "moduleName": ".*mod1" 
+                {
+                    "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3",
+                    "moduleName": ".*mod1"
                 }
             ]
         }"""
@@ -575,12 +575,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -600,21 +600,21 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3", 
-                    "moduleName": "some-other-groups" 
+                {
+                    "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3",
+                    "moduleName": "some-other-groups"
                 }
             ]
         }"""
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -637,8 +637,8 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleName": "some-other-groups:mod1" 
+                {
+                    "moduleName": "some-other-groups:mod1"
                 }
             ]
         }"""
@@ -646,12 +646,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "GNU LESSER GENERAL PUBLIC LICENSE, Version 3"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -674,9 +674,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache License, Version 2.0", 
-                    "moduleName": "dummy-group:mod1" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleName": "dummy-group:mod1"
                 }
             ]
         }"""
@@ -684,12 +684,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -709,9 +709,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache License, Version 2.0", 
-                    "moduleName": "dummy-group:mod1" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleName": "dummy-group:mod1"
                 }
             ]
         }"""
@@ -719,12 +719,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "some-other-license"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -747,9 +747,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache License, Version 2.0", 
-                    "moduleName": "dummy-group:mod1" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleName": "dummy-group:mod1"
                 }
             ]
         }"""
@@ -757,12 +757,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod2"
                 }
             ]
@@ -791,12 +791,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -819,9 +819,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache License, Version 2.0", 
-                    "moduleName": "dummy-group:mod1" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleName": "dummy-group:mod1"
                 }
             ]
         }"""
@@ -829,7 +829,7 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {
                             "moduleLicense": "License1"
@@ -840,7 +840,7 @@ class LicenseCheckerSpec extends Specification {
                         {
                             "moduleLicense": "Apache License, Version 2.0"
                         }
-                    ], 
+                    ],
                     "moduleName": "dummy-group:mod1"
                 }
             ]
@@ -860,9 +860,9 @@ class LicenseCheckerSpec extends Specification {
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "Apache License, Version 2.0", 
-                    "moduleName": "dummy-group:mod1" 
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleName": "dummy-group:mod1"
                 }
             ]
         }"""
@@ -870,12 +870,12 @@ class LicenseCheckerSpec extends Specification {
         projectDataFile << """
         {
             "dependencies":[
-                { 
+                {
                     "moduleLicenses": [
                         {"moduleLicense": "License1"},
                         {"moduleLicense": "License2"},
                         {"moduleLicense": "License3"}
-                    ], 
+                    ],
                 "moduleName": "dummy-group:mod1"
                 }
             ]
