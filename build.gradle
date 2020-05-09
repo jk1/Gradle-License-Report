@@ -3,13 +3,13 @@ plugins {
     id 'groovy'
     id 'maven-publish'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.10.1'
+    id 'com.gradle.plugin-publish' version '0.11.0'
     id "com.palantir.idea-test-fix" version "0.1.0"
     id "com.github.hierynomus.license" version "0.15.0"
 }
 
 group = "com.github.jk1"
-version = "1.13"
+version = "1.14"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
