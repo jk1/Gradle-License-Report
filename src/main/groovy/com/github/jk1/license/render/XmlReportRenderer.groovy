@@ -26,8 +26,8 @@ import org.gradle.api.tasks.Input
  * Renders dependency report in the following XML notation:
  *
  * <?xml version="1.0" encoding="UTF-8"?>
- * <!DOCTYPE topic SYSTEM "http://helpserver.labs.intellij.net/help/html-entities.dtd">
- * <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://helpserver.labs.intellij.net/help/topic.v2.xsd"  id="third-party-libs" title="Third Party Libraries">
+ * <!DOCTYPE topic SYSTEM "html-entities.dtd">
+ * <topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="topic.v2.xsd"  id="third-party-libs" title="Third Party Libraries">
  *   <chapter title="Libraries" id="Libs">
  *     <table>
  *       <tr>
@@ -51,8 +51,10 @@ class XmlReportRenderer implements ReportRenderer {
     private Project project
     private LicenseReportExtension config
     private File output
+    private String schemaBaseUrl
 
-    XmlReportRenderer(String fileName = 'index.xml', String chapterName = 'Third-party libraries') {
+    XmlReportRenderer(String fileName = 'index.xml', String chapterName = 'Third-party libraries', String schemaBaseUrl="") {
+        this.schemaBaseUrl = schemaBaseUrl
         this.fileName = fileName
         this.chapterName = chapterName
     }
@@ -68,8 +70,8 @@ class XmlReportRenderer implements ReportRenderer {
         config = project.licenseReport
         output = new File(config.outputDir, fileName)
         output.text = '<?xml version="1.0" encoding="UTF-8"?>\n'
-        output << '<!DOCTYPE topic SYSTEM "http://helpserver.labs.intellij.net/help/html-entities.dtd">\n'
-        output << '<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://helpserver.labs.intellij.net/help/topic.v2.xsd"  id="third-party-libs" title="Third Party Libraries">\n'
+        output << '<!DOCTYPE topic SYSTEM "' + schemaBaseUrl + 'html-entities.dtd">\n'
+        output << '<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="' + schemaBaseUrl + 'topic.v2.xsd"  id="third-party-libs" title="Third Party Libraries">\n'
         output << '<chunk include-id="third-party-libs-tables">\n'
         output << "<chapter title=\"$chapterName\" id=\"${chapterName.replaceAll(' ', '_')}\">\n"
         output << '<table>\n'
