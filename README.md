@@ -92,7 +92,7 @@ To put it (overly) simple, a configuration is a set of dependencies used for a p
 The plugin lets you configure which configurations you'd like to report dependencies from. Although it assumes reasonable defaults, for complex builds they may not always suffice.
 Custom configurations may come from the other plugins, build flavors and dimensions. One can even define their own configurations right in the build script.
 
-In unsure, check out `gradlew dependencies` task output to see what configurations you project has.
+If unsure, check out `gradlew dependencies` task output to see what configurations you project has.
 
 ## Kotlin script support
 
