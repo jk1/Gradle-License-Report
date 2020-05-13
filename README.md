@@ -61,7 +61,6 @@ licenseReport {
     // Use 'ALL' to dynamically resolve all configurations:
     // configurations = ALL
 
-
     // List the groups ids to exclude from dependency report. Supports regular expressions.
     // For finer granularity, see: excludes.
     excludeGroups = ['do.not.want']
@@ -86,6 +85,14 @@ licenseReport {
     allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
 }
 ```
+## My report is empty or contains wrong dependencies. Is it a plugin bug?
+
+The plugin discovers project dependencies from certain [https://docs.gradle.org/current/userguide/declaring_dependencies.html](Gradle configurations).
+To put it (overly) simple, a configuration is a set of dependencies used for a particular purpose: compilation, testing, runtime, you name it.
+The plugin lets you configure which configurations you'd like to report dependencies from. Although it assumes reasonable defaults, for complex builds they may not always suffice.
+Custom configurations may come from the other plugins, build flavors and dimensions. One can even define their own configurations right in the build script.
+
+In unsure, check out `gradlew dependencies` task output to see what configurations you project has.
 
 ## Kotlin script support
 
