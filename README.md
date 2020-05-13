@@ -87,7 +87,7 @@ licenseReport {
 ```
 ## My report is empty or contains wrong dependencies. Is it a plugin bug?
 
-The plugin discovers project dependencies from certain [https://docs.gradle.org/current/userguide/declaring_dependencies.html](Gradle configurations).
+The plugin discovers project dependencies from certain [Gradle configurations](https://docs.gradle.org/current/userguide/declaring_dependencies.html).
 To put it (overly) simple, a configuration is a set of dependencies used for a particular purpose: compilation, testing, runtime, you name it.
 The plugin lets you configure which configurations you'd like to report dependencies from. Although it assumes reasonable defaults, for complex builds they may not always suffice.
 Custom configurations may come from the other plugins, build flavors and dimensions. One can even define their own configurations right in the build script.
