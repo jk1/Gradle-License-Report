@@ -66,7 +66,8 @@ class LicenseFilesReader {
                 "readme",
                 "notice",
                 "copying",
-                "copying.lesser"
+                "copying.lesser",
+                "about"
         ]
         Set<ZipEntry> entryNames = zipFile.entries().toList().findAll { ZipEntry entry ->
             String name = entry.getName()
@@ -104,6 +105,10 @@ class LicenseFilesReader {
         String moduleLicenseUrl = null
 
         def text = new File(config.outputDir, file).text
+        if (text.contains('Eclipse\n\t\tPublic License Version 2.0')) {
+            moduleLicense = 'Eclipse Public License Version 2.0'
+            moduleLicenseUrl = 'http://www.eclipse.org/legal/epl-2.0'
+        }
         if (text.contains('Apache License, Version 2.0')) {
             moduleLicense = 'Apache License, Version 2.0'
             moduleLicenseUrl = 'https://www.apache.org/licenses/LICENSE-2.0'
