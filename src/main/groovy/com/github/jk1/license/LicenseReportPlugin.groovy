@@ -33,12 +33,19 @@ class LicenseReportPlugin implements Plugin<Project> {
         assertCompatibleGradleVersion()
 
         project.extensions.create('licenseReport', LicenseReportExtension, project)
-        def preparationTask = project.tasks.create("checkLicensePreparation", CheckLicensePreparationTask)
+
+        // backwards compatibility with gradle versions that don't have tasks.register
+        def registerOrCreate = 'register'
+        if (GradleVersion.current() < GradleVersion.version('5.0')) {
+          registerOrCreate = 'create'
+        }
+
+        def preparationTask = project.tasks."$registerOrCreate"("checkLicensePreparation", CheckLicensePreparationTask)
         def taskClass = project.getPlugins().hasPlugin('com.android.application') ? ReportTask : CacheableReportTask
-        def generateLicenseReportTask = project.tasks.create('generateLicenseReport', taskClass) {
+        def generateLicenseReportTask = project.tasks."$registerOrCreate"('generateLicenseReport', taskClass) {
             it.shouldRunAfter(preparationTask)
         }
-        project.tasks.create('checkLicense', CheckLicenseTask) {
+        project.tasks."$registerOrCreate"('checkLicense', CheckLicenseTask) {
             it.dependsOn(preparationTask, generateLicenseReportTask)
         }
     }
