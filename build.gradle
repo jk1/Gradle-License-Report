@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.github.jk1"
-version = "1.14"
+version = "1.15"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
