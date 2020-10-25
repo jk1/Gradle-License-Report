@@ -62,7 +62,7 @@ class CsvReportRenderer implements ReportRenderer {
     }
 
     @Input
-    private String getFileNameCache() { return this.filename }
+    String getFileNameCache() { return this.filename }
 
     @Override
     void render(ProjectData data) {

@@ -60,10 +60,10 @@ class XmlReportRenderer implements ReportRenderer {
     }
 
     @Input
-    private String getFileNameCache() { return this.fileName }
+    String getFileNameCache() { return this.fileName }
 
     @Input
-    private String getChapterNameCache() { return this.chapterName }
+    String getChapterNameCache() { return this.chapterName }
 
     void render(ProjectData data) {
         project = data.project

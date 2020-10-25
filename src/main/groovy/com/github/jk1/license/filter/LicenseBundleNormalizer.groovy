@@ -34,16 +34,17 @@ import org.gradle.api.tasks.Input
 import java.util.regex.Pattern
 
 class LicenseBundleNormalizer implements DependencyFilter {
+
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     private String filterConfig = ""
-    ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
-    LicenseReportExtension config
-    LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
+    private ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
+    private LicenseReportExtension config
+    private  LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
         bundles: new ArrayList<NormalizerLicenseBundle>(),
         transformationRules: new ArrayList<NormalizerTransformationRule>()
     )
-    Map<String, NormalizerLicenseBundle> bundleMap
+    private  Map<String, NormalizerLicenseBundle> bundleMap
 
     LicenseBundleNormalizer(Map params = ["bundlePath": null, "createDefaultTransformationRules": true]) {
         this(params.bundlePath as String, params.get("createDefaultTransformationRules", true))
@@ -75,7 +76,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     @Input
-    private String getFilterConfigForCache() { return this.filterConfig }
+    String getFilterConfigForCache() { return this.filterConfig }
 
     @Override
     ProjectData filter(ProjectData data) {

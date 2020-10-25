@@ -36,7 +36,7 @@ class InventoryReportRenderer implements ReportRenderer {
         }
 
     @Input
-    private String getFileNameCache() { return this.fileName }
+    String getFileNameCache() { return this.fileName }
 
 
     @Override

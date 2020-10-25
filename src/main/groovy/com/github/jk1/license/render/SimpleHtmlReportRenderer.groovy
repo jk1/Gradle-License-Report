@@ -39,7 +39,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     }
 
     @Input
-    private String getFileNameCache() { return this.fileName }
+    String getFileNameCache() { return this.fileName }
 
     void render(ProjectData data) {
         project = data.project
@@ -61,7 +61,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         output << """
     <hr />
         <p id="timestamp">
-            This report was generated at 
+            This report was generated at
             <em>
                 ${new Date()}
             </em>.

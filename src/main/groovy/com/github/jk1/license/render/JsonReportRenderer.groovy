@@ -104,10 +104,10 @@ class JsonReportRenderer implements ReportRenderer {
     }
 
     @Input
-    private Boolean getOnlyOneLicensePerModuleCahce() { return this.onlyOneLicensePerModule }
+    Boolean getOnlyOneLicensePerModuleCache() { return this.onlyOneLicensePerModule }
 
     @Input
-    private String getFileNameCache() { return this.fileName }
+    String getFileNameCache() { return this.fileName }
 
     void render(ProjectData data) {
         project = data.project
