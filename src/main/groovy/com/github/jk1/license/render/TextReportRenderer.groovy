@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.render
 
+import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
@@ -58,6 +59,9 @@ This report was generated at ${new Date()}.
     private void printDependencies(ProjectData data) {
         data.allDependencies.sort().each {
             printDependency(it)
+        }
+        data.importedModules.modules.flatten().sort().each {
+            printImportedModuleDependency(it)
         }
     }
 
@@ -121,6 +125,25 @@ This report was generated at ${new Date()}.
             output << "\n\n"
             output << data.licenseFiles.first().fileDetails.collect({ "                    ****************************************                    \n\n" + new File("$config.outputDir/$it.file").text + "\n"}).join('')
         }
+        output << "--------------------------------------------------------------------------------\n\n"
+    }
+
+    private void printImportedModuleDependency(ImportedModuleData module) {
+
+        output << "${++counter}."
+        output << " Name: $module.name "
+        output << " Version: $module.version\n\n"
+
+        if (Files.maybeLicenseUrl(module.projectUrl)) {
+            output << "Project URL: $module.projectUrl\n\n"
+        }
+
+        if (Files.maybeLicenseUrl(module.licenseUrl)) {
+            output << "License: $module.license - $module.licenseUrl\n\n"
+        } else {
+            output << "License: $module.license\n\n"
+        }
+
         output << "--------------------------------------------------------------------------------\n\n"
     }
 }
