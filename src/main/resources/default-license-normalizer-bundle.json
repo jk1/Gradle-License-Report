@@ -61,6 +61,8 @@
     { "bundleName" : "CDDL-1.1", "licenseNamePattern" : "Common Development and Distribution License( \\(CDDL\\),?)? (version )?(.?\\s?)?1\\.1" },
     { "bundleName" : "BSD-3-Clause", "licenseNamePattern" : ".*BSD[ |-]3-clause.*" },
     { "bundleName" : "BSD-3-Clause", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/BSD-3-Clause" },
+    { "bundleName" : "BSD-3-Clause", "licenseNamePattern" : ".*?(The )New BSD License.*" },
+    { "bundleName" : "BSD-3-Clause", "licenseNamePattern" : ".*?Modified BSD License.*" },
     { "bundleName" : "BSD-2-Clause", "licenseNamePattern" : "BSD[ |-]2-clause.*" },
     { "bundleName" : "BSD-2-Clause", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/BSD-2-Clause" },
     { "bundleName" : "BSD-2-Clause", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/bsd-license(\\.php)?" },
