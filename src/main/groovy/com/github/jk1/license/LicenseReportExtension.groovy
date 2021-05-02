@@ -27,7 +27,6 @@ import org.gradle.api.tasks.Nested
 
 class LicenseReportExtension {
 
-    // todo: delete unused
     public static final String[] ALL = []
 
     public String outputDir
