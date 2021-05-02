@@ -72,6 +72,10 @@ licenseReport {
     // Don't include artifacts of project's own group into the report
     excludeOwnGroup = true
 
+    // Don't exclude bom dependencies.
+    // If set to true, then all boms will be excluded from the report
+    excludeBoms = false
+
     // Set custom report renderer, implementing ReportRenderer.
     // Yes, you can write your own to support any format necessary.
     renderers = [new XmlReportRenderer('third-party-libs.xml', 'Back-End Libraries')]
@@ -309,7 +313,7 @@ import com.github.jk1.license.ImportedModuleBundle;
 import com.github.jk1.license.importer.DependencyDataImporter;
 import java.util.Collection;
 
-public class CustomImporter implements DependencyDataImporter{
+public class CustomImporter implements DependencyDataImporter {
 
     public String getImporterName() {
         return "Custom importer";
@@ -358,7 +362,7 @@ The same technique can be used to create a filter or a renderer to support custo
 
 This task is for checking dependencies/imported modules if their licenses are allowed to be used.
 
-```batch
+```shell
 ./gradlew checkLicense
 ```
 
@@ -430,4 +434,3 @@ licenseReport {
     allowedLicensesFile = new URL("http://company.com/licenses/allowed-licenses.json")
 }
 ```
-
