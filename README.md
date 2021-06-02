@@ -206,7 +206,7 @@ The expected input format for `XmlReportImporter` is as follows:
     <chapter title="Some of my favorite libraries">
       <table>
         <tr>
-          <!-- every non-empty chapter must have a title row, which is stripped>
+          <!-- every non-empty chapter must have a title row, which is stripped -->
           <th>Name</th>
           <th>Version</th>
           <th>License</th>
@@ -216,12 +216,12 @@ The expected input format for `XmlReportImporter` is as follows:
           <td>1.2.3</td>
           <td><a href="http://url.of.project/license">Name of license</a></td>
         </tr>
-        <!-- more libraries here...>
+        <!-- more libraries here... -->
       </table>
     </chapter>
-    <!-- more chapters here...>
+    <!-- more chapters here...-->
   </chunk>
-  <!-- more chunks here...>
+  <!-- more chunks here... -->
 </topic>
 ```
 
