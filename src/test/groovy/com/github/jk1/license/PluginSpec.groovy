@@ -28,8 +28,8 @@ import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathF
 
 class PluginSpec extends Specification {
 
-    private final static def supportedGradleVersions = [ "3.3", "4.10", "5.6" ]
-    private final static def unsupportedGradleVersions = [ "3.2" ]
+    private final static def supportedGradleVersions = ["5.6", "6.8.2"]
+    private final static def unsupportedGradleVersions = [ "4.10" ]
 
     @Rule
     TemporaryFolder testProjectDir = new TemporaryFolder()
