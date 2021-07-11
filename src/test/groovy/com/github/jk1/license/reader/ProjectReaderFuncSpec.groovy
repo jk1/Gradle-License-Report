@@ -31,7 +31,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
             }
             repositories {
                 mavenCentral()
-                maven { url "https://dl.bintray.com/realm/maven" }
+                maven { url "https://oss.jfrog.org/artifactory/oss-snapshot-local" }
                 maven { url "https://maven.repository.redhat.com/ga" }
             }
 
@@ -96,7 +96,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
     }
 
 
-    static final def DEPENDENCY_REALM_ANDROID = "io.realm:realm-android:0.82.2"
+    static final def DEPENDENCY_REALM_ANDROID = "io.realm:realm-android:0.82.2-SNAPSHOT"
     static final def EXPECTED_ARTIFACT_MISMATCH_REALM_ANDROID = "Artifact: io.realm:realm-android / Pom: com.squareup:javawriter)"
     static final def EXPECTED_CONTENT_REALM_ANDROID = """[
     {
@@ -152,7 +152,8 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 ]"""
 
     @Unroll
-    def "it reads the correct project url for #dependency"(String dependency, String expectedContent,
+    def "it reads the correct project url for #dependency"(String dependency,
+                                                           String expectedContent,
                                                            String expectedMismatchMessage) {
         buildFile << """
             dependencies {

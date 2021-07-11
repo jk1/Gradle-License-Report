@@ -31,16 +31,18 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
             repositories {
                 mavenCentral()
             }
-            dependencies {
-                runtime "org.apache.commons:commons-lang3:3.7"
-                runtime "javax.activation:activation:1.1.1"
-            }
         """
     }
 
     def "report task respects module excludes"() {
         setup:
-        buildFile << generateBuildWith("""excludes = ["org.apache.commons:commons-lang3"]""")
+        buildFile << generateBuildWith(
+            """
+                runtime "javax.activation:activation:1.1.1"
+                runtime "org.apache.commons:commons-lang3:3.7"
+            """.trim(),
+            """excludes = ["org.apache.commons:commons-lang3"]"""
+        )
 
         when:
         def runResult = runGradleBuild()
@@ -51,9 +53,52 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         configurationsString == javaxActivationOutput
     }
 
+    def "report task respects bom excludes"() {
+        setup:
+        buildFile << generateBuildWith(
+            """
+                runtime platform("com.fasterxml.jackson:jackson-bom:2.12.3")
+                runtime "javax.activation:activation:1.1.1"
+            """.trim(),
+            """excludeBoms = true"""
+        )
+
+        when:
+        def runResult = runGradleBuild()
+        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+        configurationsString == javaxActivationOutput
+    }
+
+    def "report task respects transitive bom excludes"() {
+        setup:
+        buildFile << generateBuildWith(
+            """
+                runtime "com.fasterxml.jackson.core:jackson-core:2.12.3" // adds com.fasterxml.jackson:jackson-bom:2.12.3
+            """.trim(),
+            """excludeBoms = true"""
+        )
+
+        when:
+        def runResult = runGradleBuild()
+        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+        configurationsString == jacksonCoreOutput
+    }
+
     def "report task respects group excludes"() {
         setup:
-        buildFile << generateBuildWith("""excludeGroups = ["org.apache.commons"]""")
+        buildFile << generateBuildWith(
+            """
+                runtime "javax.activation:activation:1.1.1"
+                runtime "org.apache.commons:commons-lang3:3.7"
+            """.trim(),
+            """excludeGroups = ["org.apache.commons"]"""
+        )
 
         when:
         def runResult = runGradleBuild()
@@ -66,7 +111,13 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     def "module excludes support regular expressions"() {
         setup:
-        buildFile << generateBuildWith("""excludes = ["org.apache.commons:commons-.*"]""")
+        buildFile << generateBuildWith(
+            """
+                runtime "javax.activation:activation:1.1.1"
+                runtime "org.apache.commons:commons-lang3:3.7"
+            """.trim(),
+            """excludes = ["org.apache.commons:commons-.*"]"""
+        )
 
         when:
         def runResult = runGradleBuild()
@@ -79,7 +130,13 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     def "group excludes support regular expressions"() {
         setup:
-        buildFile << generateBuildWith("""excludeGroups = ["org.apache.*"]""")
+        buildFile << generateBuildWith(
+            """
+                runtime "javax.activation:activation:1.1.1"
+                runtime "org.apache.commons:commons-lang3:3.7"
+            """.trim(),
+            """excludeGroups = ["org.apache.*"]"""
+        )
 
         when:
         def runResult = runGradleBuild()
@@ -91,9 +148,14 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
     }
 
 
-    private def generateBuildWith(String exclude) {
+    private def generateBuildWith(String dependencies, String exclude) {
         """
             import com.github.jk1.license.render.*
+
+            dependencies {
+                $dependencies              
+            }
+
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
@@ -158,6 +220,79 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 ],
                 "empty": false,
                 "name": "activation"
+            }
+        ],
+        "name": "runtime"
+    }
+]"""
+
+    private String jacksonCoreOutput = """[
+    {
+        "dependencies": [
+            
+        ],
+        "name": "compile"
+    },
+    {
+        "dependencies": [
+            {
+                "group": "com.fasterxml.jackson.core",
+                "manifests": [
+                    {
+                        "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "vendor": "FasterXML",
+                        "hasPackagedLicense": false,
+                        "version": "2.12.3",
+                        "license": null,
+                        "description": "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
+                        "url": "https://github.com/FasterXML/jackson-core",
+                        "name": "Jackson-core"
+                    }
+                ],
+                "version": "2.12.3",
+                "poms": [
+                    {
+                        "developers": [
+                            
+                        ],
+                        "inceptionYear": "2008",
+                        "projectUrl": "https://github.com/FasterXML/jackson-core",
+                        "description": "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
+                        "name": "Jackson-core",
+                        "organization": {
+                            "url": "http://fasterxml.com/",
+                            "name": "FasterXML"
+                        },
+                        "licenses": [
+                            {
+                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "Apache License, Version 2.0"
+                            },
+                            {
+                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    {
+                        "fileDetails": [
+                            {
+                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
+                                "file": "jackson-core-2.12.3.jar/META-INF/LICENSE",
+                                "license": "Apache License, Version 2.0"
+                            },
+                            {
+                                "licenseUrl": null,
+                                "file": "jackson-core-2.12.3.jar/META-INF/NOTICE",
+                                "license": null
+                            }
+                        ]
+                    }
+                ],
+                "empty": false,
+                "name": "jackson-core"
             }
         ],
         "name": "runtime"
