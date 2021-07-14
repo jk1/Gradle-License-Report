@@ -21,7 +21,7 @@ import org.gradle.testkit.runner.TaskOutcome
 class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     def setup() {
-        settingsGradle = testProjectDir.newFile("settings.gradle")
+        settingsGradle = new File(testProjectDir, "settings.gradle")
 
         buildFile << """
             plugins {
@@ -153,7 +153,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
 
             dependencies {
-                $dependencies              
+                $dependencies
             }
 
             licenseReport {
@@ -168,7 +168,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
     private String javaxActivationOutput = """[
     {
         "dependencies": [
-            
+
         ],
         "name": "compile"
     },
@@ -192,7 +192,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "poms": [
                     {
                         "developers": [
-                            
+
                         ],
                         "inceptionYear": "",
                         "projectUrl": "http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp",
@@ -229,7 +229,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
     private String jacksonCoreOutput = """[
     {
         "dependencies": [
-            
+
         ],
         "name": "compile"
     },
@@ -253,7 +253,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "poms": [
                     {
                         "developers": [
-                            
+
                         ],
                         "inceptionYear": "2008",
                         "projectUrl": "https://github.com/FasterXML/jackson-core",

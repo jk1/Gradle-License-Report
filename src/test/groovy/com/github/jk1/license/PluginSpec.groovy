@@ -19,9 +19,8 @@ import org.gradle.api.Project
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.testkit.runner.UnexpectedBuildFailure
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 import spock.lang.Unroll
 
 import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathForBuildFile
@@ -31,18 +30,18 @@ class PluginSpec extends Specification {
     private final static def supportedGradleVersions = ["5.6", "6.8.2"]
     private final static def unsupportedGradleVersions = [ "4.10" ]
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    File testProjectDir
+
     File buildFile
     File outputDir
     File licenseResultJsonFile
 
     def setup() {
-        testProjectDir.create()
-        outputDir = new File(testProjectDir.root, "/build/licenses")
+        outputDir = new File(testProjectDir, "/build/licenses")
         licenseResultJsonFile = new File(outputDir, "index.json")
 
-        buildFile = testProjectDir.newFile('build.gradle')
+        buildFile = new File(testProjectDir, 'build.gradle')
 
         buildFile << """
             plugins {
@@ -144,7 +143,7 @@ class PluginSpec extends Specification {
     private def runGradle(String gradleVersion) {
         GradleRunner.create()
             .withGradleVersion(gradleVersion)
-            .withProjectDir(testProjectDir.root)
+            .withProjectDir(testProjectDir)
             .withArguments("generateLicenseReport", "--info", "--stacktrace")
             .withPluginClasspath()
             .forwardOutput()

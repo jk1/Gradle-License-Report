@@ -19,28 +19,27 @@ import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static com.github.jk1.license.ProjectBuilder.json
 import static com.github.jk1.license.ProjectDataFixture.*
 
 class LicenseBundleNormalizerSpec extends Specification {
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    File testProjectDir
+
     File normalizerFile
     File pluginOutputDir
 
     ProjectBuilder builder = new ProjectBuilder()
 
     def setup() {
-        testProjectDir.create()
         pluginOutputDir = new File(GRADLE_PROJECT().licenseReport.outputDir)
         pluginOutputDir.mkdirs()
 
-        normalizerFile = testProjectDir.newFile('test-normalizer-config.json')
+        normalizerFile = new File(testProjectDir, 'test-normalizer-config.json')
         normalizerFile << """
             {
               "bundles" : [

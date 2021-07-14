@@ -23,7 +23,7 @@ import static com.github.jk1.license.reader.ProjectReaderFuncSpec.removeDevelope
 class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
 
     def setup() {
-        settingsGradle = testProjectDir.newFile("settings.gradle")
+        settingsGradle = new File(testProjectDir, "settings.gradle")
 
         buildFile << """
             plugins {
@@ -159,7 +159,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                     }
                 ],
                 "licenseFiles": [
-                    
+
                 ],
                 "empty": false,
                 "name": "annotations"
@@ -491,7 +491,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                     }
                 ],
                 "licenseFiles": [
-                    
+
                 ],
                 "empty": false,
                 "name": "annotations"

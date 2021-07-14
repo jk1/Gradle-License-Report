@@ -18,28 +18,28 @@ package com.github.jk1.license
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class MultiProjectReportCachingSpec extends Specification {
 
-    @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    File testProjectDir
 
     File buildFile
     File localBuildCacheDirectory
 
     def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
-        localBuildCacheDirectory = testProjectDir.newFolder('.local-cache')
+        buildFile = new File(testProjectDir, 'build.gradle')
+        localBuildCacheDirectory = new File(testProjectDir, '.local-cache')
+        localBuildCacheDirectory.mkdir()
         testProjectDir.newFile('settings.gradle') << """
         buildCache {
             local {
                 directory '${localBuildCacheDirectory.toURI()}'
             }
         }
-        
+
         include 'sub'
     """
     }
@@ -57,7 +57,7 @@ class MultiProjectReportCachingSpec extends Specification {
             }
         """
 
-        File subFolder = new File(testProjectDir.root, "sub")
+        File subFolder = new File(testProjectDir, "sub")
         subFolder.mkdirs()
         File subFile = new File(subFolder, "build.gradle")
         subFile.createNewFile()
@@ -69,7 +69,7 @@ class MultiProjectReportCachingSpec extends Specification {
             repositories {
                 mavenCentral()
             }
-            
+
             dependencies {
                 compile "javax.annotation:javax.annotation-api:1.3.2"
             }
@@ -78,7 +78,7 @@ class MultiProjectReportCachingSpec extends Specification {
 
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport")
             .build()
 
@@ -94,7 +94,7 @@ class MultiProjectReportCachingSpec extends Specification {
 
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport")
             .build()
 

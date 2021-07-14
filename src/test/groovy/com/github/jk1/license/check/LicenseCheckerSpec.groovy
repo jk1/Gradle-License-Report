@@ -18,13 +18,13 @@ package com.github.jk1.license.check
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper
 import org.gradle.api.GradleException
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class LicenseCheckerSpec extends Specification {
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+
+    @TempDir
+    File testProjectDir
 
     File allowedLicenseFile
     File projectDataFile
@@ -36,10 +36,9 @@ class LicenseCheckerSpec extends Specification {
     }
 
     def setup() {
-        testProjectDir.create()
-        allowedLicenseFile = testProjectDir.newFile('test-allowed-licenses.json')
-        projectDataFile = testProjectDir.newFile('test-projectData.json')
-        notPassedDependenciesFile = testProjectDir.newFile('test-not-passed-dependencies.json')
+        allowedLicenseFile = new File(testProjectDir, 'test-allowed-licenses.json')
+        projectDataFile = new File(testProjectDir, 'test-projectData.json')
+        notPassedDependenciesFile = new File(testProjectDir, 'test-not-passed-dependencies.json')
     }
 
     def "check if constructor working with json file."() {

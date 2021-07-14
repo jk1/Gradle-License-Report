@@ -19,22 +19,22 @@ package com.github.jk1.license
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class ReportTaskCachingSpec extends Specification {
 
-    @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    File testProjectDir
 
     File buildFile
     File localBuildCacheDirectory
 
     def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
-        localBuildCacheDirectory = testProjectDir.newFolder('.local-cache')
-        testProjectDir.newFile('settings.gradle') << """
+        buildFile = new File(testProjectDir, 'build.gradle')
+        localBuildCacheDirectory = new File(testProjectDir, '.local-cache')
+        localBuildCacheDirectory.mkdir()
+        new File(testProjectDir, 'settings.gradle') << """
         buildCache {
             local {
                 directory '${localBuildCacheDirectory.toURI()}'
@@ -46,11 +46,11 @@ class ReportTaskCachingSpec extends Specification {
                 id 'com.github.jk1.dependency-license-report'
                 id 'java'
             }
-            
+
             repositories {
                 mavenCentral()
             }
-            
+
             dependencies {
                 compile "junit:junit:\${project.ext.junitVersion}"
             }
@@ -61,7 +61,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -71,7 +71,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -84,7 +84,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -94,7 +94,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "clean", "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -106,7 +106,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -116,7 +116,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.11")
             .build()
 
@@ -129,7 +129,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -139,7 +139,7 @@ class ReportTaskCachingSpec extends Specification {
         when:
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.11")
             .build()
 
@@ -153,7 +153,7 @@ class ReportTaskCachingSpec extends Specification {
         addFilterToBuildFile("foo")
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -164,7 +164,7 @@ class ReportTaskCachingSpec extends Specification {
         addFilterToBuildFile("foo")
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -175,7 +175,7 @@ class ReportTaskCachingSpec extends Specification {
         addFilterToBuildFile("bar")
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -186,7 +186,7 @@ class ReportTaskCachingSpec extends Specification {
         addFilterToBuildFile("bar")
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -200,7 +200,7 @@ class ReportTaskCachingSpec extends Specification {
         addRendererToBuildFile("foo")
         BuildResult result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -211,7 +211,7 @@ class ReportTaskCachingSpec extends Specification {
         addRendererToBuildFile("foo")
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -222,7 +222,7 @@ class ReportTaskCachingSpec extends Specification {
         addRendererToBuildFile("bar")
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -233,7 +233,7 @@ class ReportTaskCachingSpec extends Specification {
         addRendererToBuildFile("bar")
         result = GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
             .build()
 
@@ -246,13 +246,13 @@ class ReportTaskCachingSpec extends Specification {
             plugins {
                 id 'com.github.jk1.dependency-license-report'
             }
-            
+
             repositories {
                 mavenCentral()
             }
-            
+
             apply plugin: 'java'
-            
+
             import com.github.jk1.license.filter.*
             import com.github.jk1.license.ProjectData
             import org.gradle.api.tasks.Input
@@ -263,20 +263,20 @@ class ReportTaskCachingSpec extends Specification {
                 MyFilter(String string) {
                     this.input = string
                 }
-    
+
                 @Input
                 private String getInputCache() { return this.input }
-    
+
                 @Override
                 ProjectData filter(ProjectData source) {
                     return source
                 }
             }
-            
+
             dependencies {
                 compile "junit:junit:\${project.ext.junitVersion}"
             }
-            
+
             licenseReport {
                 filters = [new MyFilter("${string}")]
             }
@@ -288,13 +288,13 @@ class ReportTaskCachingSpec extends Specification {
             plugins {
                 id 'com.github.jk1.dependency-license-report'
             }
-            
+
             repositories {
                 mavenCentral()
             }
-            
+
             apply plugin: 'java'
-            
+
             import com.github.jk1.license.render.*
             import com.github.jk1.license.ProjectData
             import org.gradle.api.tasks.Input
@@ -305,19 +305,19 @@ class ReportTaskCachingSpec extends Specification {
                 MyRenderer(String string) {
                     this.input = string
                 }
-    
+
                 @Input
                 private String getInputCache() { return this.input }
-    
+
                 @Override
                 void render(ProjectData data) {
                 }
             }
-            
+
             dependencies {
                 compile "junit:junit:\${project.ext.junitVersion}"
             }
-            
+
             licenseReport {
                 renderers = [new MyRenderer("${string}")]
             }

@@ -23,7 +23,6 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Nested
 
 class LicenseReportExtension {
 
@@ -79,8 +78,6 @@ class LicenseReportExtension {
         snapshot.join("!")
     }
 
-    @Nested
-    public List<Object> getCache() { return this.renderers + this.importers + this.filters }
 
     void setRenderer(ReportRenderer renderer) {
         renderers = renderer

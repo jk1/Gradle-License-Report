@@ -23,7 +23,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     def "plugin is executed in each module independently if configured for submodules"() {
         setup:
-        settingsGradle = testProjectDir.newFile("settings.gradle")
+        settingsGradle = new File(testProjectDir, "settings.gradle")
 
         newSubBuildFile("sub1") << """
             plugins {

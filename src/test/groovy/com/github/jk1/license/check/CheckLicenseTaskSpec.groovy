@@ -19,13 +19,13 @@ import groovy.json.StringEscapeUtils
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class CheckLicenseTaskSpec extends Specification {
-    @Rule
-    final TemporaryFolder testProjectDir = new TemporaryFolder()
+
+    @TempDir
+    File testProjectDir
 
     File buildFile
     File localBuildCacheDirectory
@@ -34,7 +34,7 @@ class CheckLicenseTaskSpec extends Specification {
     BuildResult result(String[] arguments) {
         return GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments(arguments)
             .build()
     }
@@ -42,22 +42,23 @@ class CheckLicenseTaskSpec extends Specification {
     BuildResult failResult(String[] arguments) {
         return GradleRunner.create()
             .withPluginClasspath()
-            .withProjectDir(testProjectDir.getRoot())
+            .withProjectDir(testProjectDir)
             .withArguments(arguments)
             .buildAndFail()
     }
 
     def setup() {
-        buildFile = testProjectDir.newFile('build.gradle')
-        localBuildCacheDirectory = testProjectDir.newFolder('.local-cache')
-        testProjectDir.newFile('settings.gradle') << """
+        buildFile = new File(testProjectDir, 'build.gradle')
+        localBuildCacheDirectory = new File(testProjectDir, '.local-cache')
+        localBuildCacheDirectory.mkdir()
+        new File(testProjectDir, 'settings.gradle') << """
         buildCache {
             local {
                 directory '${localBuildCacheDirectory.toURI()}'
             }
         }
     """
-        allowed = testProjectDir.newFile('allowed-licenses.json') << """
+        allowed = new File(testProjectDir, 'allowed-licenses.json') << """
         {
             "allowedLicenses":[
                 {
@@ -487,7 +488,7 @@ class CheckLicenseTaskSpec extends Specification {
         }"""
 
         when:
-        BuildResult buildResult = result("checkLicense")
+        result("checkLicense")
 
         then:
         thrown Exception
