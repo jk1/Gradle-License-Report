@@ -488,7 +488,7 @@ class CheckLicenseTaskSpec extends Specification {
         }"""
 
         when:
-        result("checkLicense")
+        BuildResult buildResult = result("checkLicense")
 
         then:
         thrown Exception

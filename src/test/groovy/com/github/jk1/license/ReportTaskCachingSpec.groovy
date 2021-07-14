@@ -52,7 +52,7 @@ class ReportTaskCachingSpec extends Specification {
             }
 
             dependencies {
-                compile "junit:junit:\${project.ext.junitVersion}"
+                implementation "junit:junit:\${project.ext.junitVersion}"
             }
         """
     }
@@ -274,7 +274,7 @@ class ReportTaskCachingSpec extends Specification {
             }
 
             dependencies {
-                compile "junit:junit:\${project.ext.junitVersion}"
+                implementation "junit:junit:\${project.ext.junitVersion}"
             }
 
             licenseReport {
@@ -315,7 +315,7 @@ class ReportTaskCachingSpec extends Specification {
             }
 
             dependencies {
-                compile "junit:junit:\${project.ext.junitVersion}"
+                implementation "junit:junit:\${project.ext.junitVersion}"
             }
 
             licenseReport {

@@ -27,8 +27,8 @@ import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathF
 
 class PluginSpec extends Specification {
 
-    private final static def supportedGradleVersions = ["5.6", "6.8.2"]
-    private final static def unsupportedGradleVersions = [ "4.10" ]
+    private final static def supportedGradleVersions = ["7.0"]
+    private final static def unsupportedGradleVersions = [ "5.6", "6.8.2" ]
 
     @TempDir
     File testProjectDir
@@ -54,7 +54,7 @@ class PluginSpec extends Specification {
             }
 
             dependencies {
-                compile 'org.ehcache:ehcache:3.3.1'
+                implementation 'org.ehcache:ehcache:3.3.1'
             }
 
             import com.github.jk1.license.filter.*

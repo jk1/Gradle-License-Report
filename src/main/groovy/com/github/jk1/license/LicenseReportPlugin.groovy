@@ -26,7 +26,7 @@ import org.gradle.util.GradleVersion
 
 class LicenseReportPlugin implements Plugin<Project> {
 
-    final def MINIMUM_REQUIRED_GRADLE_VERSION = "5.0"
+    final def MINIMUM_REQUIRED_GRADLE_VERSION = "7.0"
 
     @Override
     void apply(Project project) {

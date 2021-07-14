@@ -33,7 +33,7 @@ class MultiProjectReportCachingSpec extends Specification {
         buildFile = new File(testProjectDir, 'build.gradle')
         localBuildCacheDirectory = new File(testProjectDir, '.local-cache')
         localBuildCacheDirectory.mkdir()
-        testProjectDir.newFile('settings.gradle') << """
+        new File(testProjectDir, 'settings.gradle') << """
         buildCache {
             local {
                 directory '${localBuildCacheDirectory.toURI()}'
@@ -60,7 +60,6 @@ class MultiProjectReportCachingSpec extends Specification {
         File subFolder = new File(testProjectDir, "sub")
         subFolder.mkdirs()
         File subFile = new File(subFolder, "build.gradle")
-        subFile.createNewFile()
         subFile << """
             plugins {
                 id 'java'
@@ -71,7 +70,7 @@ class MultiProjectReportCachingSpec extends Specification {
             }
 
             dependencies {
-                compile "javax.annotation:javax.annotation-api:1.3.2"
+                implementation "javax.annotation:javax.annotation-api:1.3.2"
             }
         """
 

@@ -38,8 +38,8 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         setup:
         buildFile << generateBuildWith(
             """
-                runtime "javax.activation:activation:1.1.1"
-                runtime "org.apache.commons:commons-lang3:3.7"
+                implementation "javax.activation:activation:1.1.1"
+                implementation "org.apache.commons:commons-lang3:3.7"
             """.trim(),
             """excludes = ["org.apache.commons:commons-lang3"]"""
         )
@@ -57,8 +57,8 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         setup:
         buildFile << generateBuildWith(
             """
-                runtime platform("com.fasterxml.jackson:jackson-bom:2.12.3")
-                runtime "javax.activation:activation:1.1.1"
+                implementation platform("com.fasterxml.jackson:jackson-bom:2.12.3")
+                implementation "javax.activation:activation:1.1.1"
             """.trim(),
             """excludeBoms = true"""
         )
@@ -76,7 +76,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         setup:
         buildFile << generateBuildWith(
             """
-                runtime "com.fasterxml.jackson.core:jackson-core:2.12.3" // adds com.fasterxml.jackson:jackson-bom:2.12.3
+                implementation "com.fasterxml.jackson.core:jackson-core:2.12.3" // adds com.fasterxml.jackson:jackson-bom:2.12.3
             """.trim(),
             """excludeBoms = true"""
         )
@@ -94,8 +94,8 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         setup:
         buildFile << generateBuildWith(
             """
-                runtime "javax.activation:activation:1.1.1"
-                runtime "org.apache.commons:commons-lang3:3.7"
+                implementation "javax.activation:activation:1.1.1"
+                implementation "org.apache.commons:commons-lang3:3.7"
             """.trim(),
             """excludeGroups = ["org.apache.commons"]"""
         )
@@ -113,8 +113,8 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         setup:
         buildFile << generateBuildWith(
             """
-                runtime "javax.activation:activation:1.1.1"
-                runtime "org.apache.commons:commons-lang3:3.7"
+                implementation "javax.activation:activation:1.1.1"
+                implementation "org.apache.commons:commons-lang3:3.7"
             """.trim(),
             """excludes = ["org.apache.commons:commons-.*"]"""
         )
@@ -132,8 +132,8 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         setup:
         buildFile << generateBuildWith(
             """
-                runtime "javax.activation:activation:1.1.1"
-                runtime "org.apache.commons:commons-lang3:3.7"
+                implementation "javax.activation:activation:1.1.1"
+                implementation "org.apache.commons:commons-lang3:3.7"
             """.trim(),
             """excludeGroups = ["org.apache.*"]"""
         )
@@ -160,7 +160,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
                 $exclude
-                configurations = ["runtime"]
+                configurations = ["implementation"]
             }
         """
     }
@@ -222,7 +222,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "activation"
             }
         ],
-        "name": "runtime"
+        "name": "implementation"
     }
 ]"""
 
@@ -295,7 +295,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "jackson-core"
             }
         ],
-        "name": "runtime"
+        "name": "implementation"
     }
 ]"""
 }
