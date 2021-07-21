@@ -22,6 +22,7 @@ import org.gradle.api.Project
 @Canonical
 class ProjectData {
     Project project
+    Project[] projects
     Set<ConfigurationData> configurations = new TreeSet<ConfigurationData>()
     List<ImportedModuleBundle> importedModules = new ArrayList<ImportedModuleBundle>()
     Set<ModuleData> getAllDependencies() {

@@ -38,6 +38,7 @@ class ProjectReader {
     ProjectData read(Project project) {
         ProjectData data = new ProjectData()
         data.project = project
+        data.projects = config.projects
 
         Project[] projectsToScan = config.projects
         LOGGER.info("Configured projects: ${projectsToScan.join(',')}")

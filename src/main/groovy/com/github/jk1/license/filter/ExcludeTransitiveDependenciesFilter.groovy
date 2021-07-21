@@ -17,10 +17,17 @@ package com.github.jk1.license.filter
 
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.task.ReportTask
+import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedDependency
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
+
 import java.util.stream.Collectors
 
 class ExcludeTransitiveDependenciesFilter implements DependencyFilter {
+    private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     @Override
     public ProjectData filter(ProjectData source) {
@@ -28,9 +35,12 @@ class ExcludeTransitiveDependenciesFilter implements DependencyFilter {
         Set<ResolvedDependency> firstLevelDependencies = source.getConfigurations()
             .stream()
             .flatMap({ c ->
-                source.getProject().getConfigurations().getByName(c.getName())
-                    .getResolvedConfiguration().getFirstLevelModuleDependencies()
-                    .stream()
+                Optional<Configuration> conf = getConfig(source, c.getName());
+                if (conf.isPresent()) {
+                    conf.get().getResolvedConfiguration()
+                        .getFirstLevelModuleDependencies()
+                        .stream()
+                }
             })
             .collect(Collectors.toSet());
 
@@ -47,11 +57,19 @@ class ExcludeTransitiveDependenciesFilter implements DependencyFilter {
             })
             .collect(Collectors.toSet())
 
-        return new ProjectData(source.getProject(), source.getConfigurations(), source.getImportedModules()) {
+        return new ProjectData(source.getProject(), source.getProjects(), source.getConfigurations(), source.getImportedModules()) {
             @Override
             Set<ModuleData> getAllDependencies() {
                 return moduleDataSet
             }
         };
+    }
+
+    private Optional<Configuration> getConfig(ProjectData source, String name) {
+        LOGGER.info('Find config for ' + name);
+        source.projects.toList().stream()
+            .map({p -> p.getConfigurations().findByName(name)})
+            .filter({c -> c != null})
+            .findFirst()    // TODO: Merge configurations with same name - see ProjectData.groovy
     }
 }
