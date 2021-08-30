@@ -46,7 +46,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
@@ -65,7 +69,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
@@ -83,7 +91,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
@@ -102,7 +114,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
@@ -121,7 +137,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
@@ -140,7 +160,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def configurationsString = prettyPrintJson(jsonSlurper.parse(rawJsonFile).configurations)
+
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
@@ -160,18 +184,12 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
                 renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
                 $exclude
-                configurations = ["implementation"]
+                configurations = ["runtimeClasspath"]
             }
         """
     }
 
     private String javaxActivationOutput = """[
-    {
-        "dependencies": [
-
-        ],
-        "name": "compile"
-    },
     {
         "dependencies": [
             {
@@ -191,9 +209,6 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "1.1.1",
                 "poms": [
                     {
-                        "developers": [
-
-                        ],
                         "inceptionYear": "",
                         "projectUrl": "http://java.sun.com/javase/technologies/desktop/javabeans/jaf/index.jsp",
                         "description": "The JavaBeans(TM) Activation Framework is used by the JavaMail(TM) API to manage MIME data",
@@ -222,17 +237,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "activation"
             }
         ],
-        "name": "implementation"
+        "name": "runtimeClasspath"
     }
 ]"""
 
     private String jacksonCoreOutput = """[
-    {
-        "dependencies": [
-
-        ],
-        "name": "compile"
-    },
     {
         "dependencies": [
             {
@@ -252,9 +261,6 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "version": "2.12.3",
                 "poms": [
                     {
-                        "developers": [
-
-                        ],
                         "inceptionYear": "2008",
                         "projectUrl": "https://github.com/FasterXML/jackson-core",
                         "description": "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
@@ -295,7 +301,11 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "jackson-core"
             }
         ],
-        "name": "implementation"
+        "name": "runtimeClasspath"
     }
 ]"""
+
+    static void removeDevelopers(Map rawFile) {
+        rawFile.configurations*.dependencies.flatten().poms.flatten().each { it.remove("developers") }
+    }
 }
