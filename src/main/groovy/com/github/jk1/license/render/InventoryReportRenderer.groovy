@@ -38,6 +38,8 @@ class InventoryReportRenderer implements ReportRenderer {
     @Input
     String getFileNameCache() { return this.fileName }
 
+    @Input
+    Map getOverrides() { return this.overrides }
 
     @Override
     void render(ProjectData data) {
