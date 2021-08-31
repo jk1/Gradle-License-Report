@@ -11,30 +11,20 @@ to automatically generate a report that you can hand to corporate IP lawyers in 
 
 ## Usage
 
-Add this to your `build.gradle` file:
+Add this to your `build.gradle` file for Gradle 7+:
+
+```groovy
+plugins {
+  id 'com.github.jk1.dependency-license-report' version '2.0'
+}
+```
+
+For Gradle 6.X stick to 1.X plugin versions:
 
 ```groovy
 plugins {
   id 'com.github.jk1.dependency-license-report' version '1.17'
 }
-```
-
-or via a `buildscript` block
-
-
-```groovy
-buildscript {
-    repositories {
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-
-    dependencies {
-        classpath 'com.github.jk1:gradle-license-report:1.17'
-    }
-}
-apply plugin: 'com.github.jk1.dependency-license-report'
 ```
 
 Then run `gradle generateLicenseReport` to generate your report in `build/reports/dependency-license`.
@@ -57,7 +47,7 @@ licenseReport {
     projects = [project] + project.subprojects
 
     // Adjust the configurations to fetch dependencies, e.g. for Android projects. Default is 'runtimeClasspath'
-    configurations = ['compile']
+    configurations = ['runtimeClasspath']
     // Use 'ALL' to dynamically resolve all configurations:
     // configurations = ALL
 
@@ -110,7 +100,7 @@ import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "1.17"
+    id("com.github.jk1.dependency-license-report") version "2.0"
 }
 
 licenseReport {
@@ -338,7 +328,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.jk1:gradle-license-report:1.17'
+    compile 'com.github.jk1:gradle-license-report:2.0'
 }
 
 ```
