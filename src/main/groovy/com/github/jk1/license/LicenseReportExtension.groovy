@@ -22,7 +22,6 @@ import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
 
 class LicenseReportExtension {
 
@@ -76,19 +75,6 @@ class LicenseReportExtension {
         snapshot << 'excludes'
         snapshot += excludes
         snapshot.join("!")
-    }
-
-
-    void setRenderer(ReportRenderer renderer) {
-        renderers = renderer
-    }
-
-    @Internal
-    ReportRenderer getRenderer() {
-        if (renderers != null && renderers.size() > 0) {
-            return renderers[0]
-        }
-        return null
     }
 
     // todo: migrate me to a filter

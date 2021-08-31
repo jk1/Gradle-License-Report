@@ -59,21 +59,13 @@ class ReportTaskCachingSpec extends Specification {
 
     def "should calculate up-to-date correctly"() {
         when:
-        BuildResult result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        BuildResult result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.UP_TO_DATE
@@ -82,21 +74,13 @@ class ReportTaskCachingSpec extends Specification {
 
     def "should cache task outputs"() {
         when:
-        BuildResult result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        BuildResult result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "clean", "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "clean", "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.FROM_CACHE
@@ -104,21 +88,13 @@ class ReportTaskCachingSpec extends Specification {
 
     def "should rebuild report on dependency change"() {
         when:
-        BuildResult result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        BuildResult result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.11")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.11")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
@@ -127,118 +103,89 @@ class ReportTaskCachingSpec extends Specification {
 
     def "should rebuild report on configured projects change"() {
         when:
-        BuildResult result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        BuildResult result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.11")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.11")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
     }
 
+    // Fails with test kit only. Todo: find a way to make it green with Gradle 7+
     def "should cache task outputs for filter"() {
         when:
         addFilterToBuildFile("foo")
-        BuildResult result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        BuildResult result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
         addFilterToBuildFile("foo")
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.UP_TO_DATE
 
         when:
         addFilterToBuildFile("bar")
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
         addFilterToBuildFile("bar")
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.UP_TO_DATE
 
     }
 
+    // Fails with test kit only. Todo: find a way to make it green with Gradle 7+
     def "should cache task outputs for renderer"() {
         when:
         addRendererToBuildFile("foo")
-        BuildResult result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        BuildResult result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
         addRendererToBuildFile("foo")
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.UP_TO_DATE
 
         when:
         addRendererToBuildFile("bar")
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
 
         when:
         addRendererToBuildFile("bar")
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
-            .build()
+        result = runBuildWith('--build-cache', "generateLicenseReport", "-PjunitVersion=4.12")
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.UP_TO_DATE
+    }
+
+    private BuildResult runBuildWith(String... params) {
+        return GradleRunner.create()
+            .withPluginClasspath()
+            .forwardOutput()
+            .withProjectDir(testProjectDir)
+            .withArguments(params)
+            .build()
     }
 
     private def addFilterToBuildFile(String string) {
@@ -265,7 +212,7 @@ class ReportTaskCachingSpec extends Specification {
                 }
 
                 @Input
-                private String getInputCache() { return this.input }
+                String getInputCache() { return this.input }
 
                 @Override
                 ProjectData filter(ProjectData source) {
@@ -307,7 +254,7 @@ class ReportTaskCachingSpec extends Specification {
                 }
 
                 @Input
-                private String getInputCache() { return this.input }
+                String getInputCache() { return this.input }
 
                 @Override
                 void render(ProjectData data) {
