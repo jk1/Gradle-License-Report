@@ -50,19 +50,20 @@ import org.gradle.api.tasks.Input
  */
 class CsvReportRenderer implements ReportRenderer {
 
+    @Input
     String filename
+    @Input
     boolean includeHeaderLine = true
-
+    @Input
     String quote = '\"'
+    @Input
     String separator = ','
+    @Input
     String nl = '\r\n'
 
     CsvReportRenderer(String filename = 'licenses.csv') {
         this.filename = filename
     }
-
-    @Input
-    String getFileNameCache() { return this.filename }
 
     @Override
     void render(ProjectData data) {
