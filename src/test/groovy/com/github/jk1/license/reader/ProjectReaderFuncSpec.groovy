@@ -38,7 +38,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = ['forTesting']
             }
         """

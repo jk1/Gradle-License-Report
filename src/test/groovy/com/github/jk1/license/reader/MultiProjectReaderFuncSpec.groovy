@@ -39,7 +39,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = []
             }
             dependencies {
@@ -311,7 +311,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
                 projects = [project]
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = []
             }
             dependencies {
@@ -412,7 +412,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = []
             }
         """
@@ -510,7 +510,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = ['mainConfig']
             }
             dependencies {

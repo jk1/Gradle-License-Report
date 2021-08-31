@@ -170,7 +170,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             licenseReport {
                 outputDir = "${fixPathForBuildFile(licenseResultJsonFile.parentFile.absolutePath)}"
                 filters = new LicenseBundleNormalizer()
-                renderer = new JsonReportRenderer(onlyOneLicensePerModule: false)
+                renderers = [new JsonReportRenderer(onlyOneLicensePerModule: false)]
                 configurations = ['forTesting']
             }
             dependencies {

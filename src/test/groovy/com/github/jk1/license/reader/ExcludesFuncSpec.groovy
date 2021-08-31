@@ -182,7 +182,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 $exclude
                 configurations = ["runtimeClasspath"]
             }
