@@ -9,10 +9,10 @@ plugins {
 }
 
 group = "com.github.jk1"
-version = "2.0"
+version = "2.0.1"
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
