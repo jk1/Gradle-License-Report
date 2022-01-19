@@ -116,7 +116,10 @@ class LicenseFilesReader {
             moduleLicense = 'COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0'
             moduleLicenseUrl = 'https://opensource.org/licenses/CDDL-1.0'
         }
-
+        if (text.contains('Eclipse Public License - v 2.0')) {
+            moduleLicense = 'Eclipse Public License - v 2.0'
+            moduleLicenseUrl = 'https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt'
+        }
         new LicenseFileDetails(file: file, license: moduleLicense, licenseUrl: moduleLicenseUrl)
     }
 }
