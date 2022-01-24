@@ -212,12 +212,15 @@ class PomReader {
         LOGGER.debug("POM license : ${rootPom.licenses.children()*.name() as Set}")
 
         allPoms.each { pom ->
-            pom.licenses?.license?.each { GPathResult license ->
-                LOGGER.debug("Processing license: ${license.name.text()}")
-                pomData.licenses << new License(
-                    name: license.name?.text(),
-                    url: license.url?.text()
-                )
+            // If we encounter too many licenses here they are hardly relevant
+            if (pom.licenses.children().size() <= 3) {
+                pom.licenses?.license?.each { GPathResult license ->
+                    LOGGER.debug("Processing license: ${license.name.text()}")
+                    pomData.licenses << new License(
+                        name: license.name?.text(),
+                        url: license.url?.text()
+                    )
+                }
             }
         }
 
