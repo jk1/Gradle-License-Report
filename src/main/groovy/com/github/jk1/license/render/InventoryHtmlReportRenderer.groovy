@@ -286,7 +286,7 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
     private printImportedDependency(ImportedModuleData data) {
         output << "<div class='dependency'>\n"
-        output << "<p>${++counter}. <strong>${data.name} v${data.version}</strong></p>"
+        output << "<p><strong>${++counter}. ${data.name} v${data.version}</strong></p>"
         output << sectionLink("Project URL", data.projectUrl, data.projectUrl)
         output << sectionLink("License URL", data.license, data.licenseUrl)
         output << "</div>\n"
