@@ -13,6 +13,18 @@
  */
 package com.github.jk1.license.importer
 
+import groovy.json.JsonSlurper;
+
+import com.github.jk1.license.ImportedModuleBundle;
+import com.github.jk1.license.ImportedModuleData;
+import com.github.jk1.license.importer.DependencyDataImporter;
+
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+
+import org.gradle.api.GradleException;
+
 /**
  * Use this importer to add Javascript-Dependencies to your Gradle license report.
  * For example, if you have a Java web application with Javascript frontend
