@@ -1,4 +1,5 @@
 Gradle License Report
+
 =====================
 
 [![Build Status](https://travis-ci.org/jk1/Gradle-License-Report.svg?branch=master)](https://travis-ci.org/jk1/Gradle-License-Report)
