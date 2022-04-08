@@ -23,11 +23,11 @@ class LicenseCheckerFileReader {
 
     static List<AllowedLicense> importAllowedLicenses(Object allowedLicensesFile) {
         def slurpResult
-        if (allowedLicensesFile instanceof File) {
+        if(allowedLicensesFile instanceof File ) {
             slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
-        } else if (allowedLicensesFile instanceof URL) {
+        } else if(allowedLicensesFile instanceof URL) {
             slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
-        } else if (allowedLicensesFile instanceof String) {
+        } else if(allowedLicensesFile instanceof String) {
             def source
             try {
                 source = new URL(allowedLicensesFile)
