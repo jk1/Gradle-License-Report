@@ -23,11 +23,11 @@ class LicenseCheckerFileReader {
 
     static List<AllowedLicense> importAllowedLicenses(Object allowedLicensesFile) {
         def slurpResult
-        if(allowedLicensesFile instanceof File ) {
+        if (allowedLicensesFile instanceof File) {
             slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
-        } else if(allowedLicensesFile instanceof URL) {
+        } else if (allowedLicensesFile instanceof URL) {
             slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
-        } else if(allowedLicensesFile instanceof String) {
+        } else if (allowedLicensesFile instanceof String) {
             def source
             try {
                 source = new URL(allowedLicensesFile)
@@ -44,7 +44,17 @@ class LicenseCheckerFileReader {
     static List<Dependency> importDependencies(File projectDependenciesFile) {
         def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(projectDependenciesFile)
         def allDependencies = slurpResult.dependencies.collect { new Dependency(it.moduleName, it.moduleVersion, it.moduleLicenses) }
-        allDependencies += slurpResult.importedModules.collect { it.dependencies.collect { new Dependency(it) } }.flatten()
-        return allDependencies
+        def importedDependencies = slurpResult.importedModules.collect { it.dependencies.collect { new Dependency(it) } }.flatten()
+        allDependencies.findAll { it.moduleLicenses.isEmpty() }.collect {
+            def importedDependency = importedDependencies.find { importedDep ->
+                importedDep.moduleName == it.moduleName
+                        && importedDep.moduleVersion == it.moduleVersion
+            }
+            if (Objects.nonNull(importedDependency)) {
+                it.moduleLicenses = importedDependency.moduleLicenses
+                importedDependencies.remove(importedDependency)
+            }
+        }
+        return allDependencies + importedDependencies
     }
 }
