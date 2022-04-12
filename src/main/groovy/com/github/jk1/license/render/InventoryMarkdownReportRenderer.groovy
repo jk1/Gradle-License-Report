@@ -45,8 +45,8 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
 
     private void printDependencies(Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
         output << "\n"
-        output << "#${name}\n"
-        output << "##Dependency License Report\n"
+        output << "# ${name}\n"
+        output << "## Dependency License Report\n"
         output << "_${new Date().format('yyyy-MM-dd HH:mm:ss z')}_\n"
 
         inventory.keySet().sort().each { String license ->
