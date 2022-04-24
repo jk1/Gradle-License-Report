@@ -34,7 +34,7 @@ class TextReportRenderer implements ReportRenderer{
     private int counter
     private String fileName
 
-    public TextReportRenderer(String filename = 'THIRD-PARTY-NOTICES.txt') {
+    TextReportRenderer(String filename = 'THIRD-PARTY-NOTICES.txt') {
         this.fileName = filename
     }
 
