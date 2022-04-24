@@ -65,7 +65,7 @@ This report was generated at ${new Date()}.
         }
     }
 
-    private String printDependency(ModuleData data) {
+    private void printDependency(ModuleData data) {
         boolean projectUrlDone = false
         output << "${++counter}."
         if (data.group) output << " Group: $data.group "
