@@ -8,7 +8,7 @@ plugins {
     id "com.github.hierynomus.license" version "0.15.0"
 }
 
-group = "com.github.jk1"
+group = "io.github.thakurvijendar"
 version = "2.1"
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -49,8 +49,8 @@ test {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId 'com.github.jk1.dependency-license-report'
-            artifactId 'com.github.jk1.dependency-license-report.gradle.plugin'
+            groupId 'io.github.thakurvijendar.dependency-license-report'
+            artifactId 'io.github.thakurvijendar.dependency-license-report.gradle.plugin'
             from components.java
         }
     }
@@ -58,13 +58,13 @@ publishing {
 
 // release publishing to gradle plugin repo
 pluginBundle {
-    website = 'https://github.com/jk1/Gradle-License-Report'
-    vcsUrl = 'https://github.com/jk1/Gradle-License-Report'
+    website = 'https://github.com/thakurvijendar/Gradle-License-Report'
+    vcsUrl = 'https://github.com/thakurvijendar/Gradle-License-Report'
     description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
     tags = ['dependency-management', 'license', 'reporting']
     plugins {
         licenseReportPlugin {
-            id = 'com.github.jk1.dependency-license-report'
+            id = 'io.github.thakurvijendar.dependency-license-report'
             displayName = 'Gradle dependency license report plugin'
         }
     }

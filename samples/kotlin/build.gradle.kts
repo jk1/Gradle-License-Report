@@ -4,7 +4,7 @@ import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "1.13"
+    id("io.github.thakurvijendar.dependency-license-report") version "1.13"
     id("java")
 }
 
