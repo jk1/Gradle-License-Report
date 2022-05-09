@@ -49,10 +49,11 @@ licenseReport {
     // Defaults to current project and all its subprojects
     projects = [project] + project.subprojects
 
-    // Adjust the configurations to fetch dependencies, e.g. for Android projects. Default is 'runtimeClasspath'
-    configurations = ['runtimeClasspath']
+    // Adjust the configurations to fetch dependencies. Default is 'runtimeClasspath'
+    // For Android projects use 'releaseRuntimeClasspath' or 'yourFlavorNameReleaseRuntimeClasspath'
     // Use 'ALL' to dynamically resolve all configurations:
     // configurations = ALL
+    configurations = ['runtimeClasspath']
 
     // List the groups ids to exclude from dependency report. Supports regular expressions.
     // For finer granularity, see: excludes.
