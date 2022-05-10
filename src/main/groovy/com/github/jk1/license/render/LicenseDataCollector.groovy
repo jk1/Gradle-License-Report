@@ -84,7 +84,7 @@ class LicenseDataCollector {
         if (l) l.last() else null
     }
 
-    protected static class MultiLicenseInfo {
+    static class MultiLicenseInfo {
         Set<String> moduleUrls = new TreeSet<>()
         Set<License> licenses = new TreeSet<>({
             o1, o2 -> o1.name <=> o2.name ?: o1.url <=> o2.url
