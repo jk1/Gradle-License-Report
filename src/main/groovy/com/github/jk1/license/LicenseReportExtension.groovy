@@ -94,7 +94,9 @@ class LicenseReportExtension {
     }
 
     private boolean shouldExcludeBom(ResolvedDependency module) {
-        excludeBoms && module.getModuleName().endsWith("-bom") && module.getModuleArtifacts().isEmpty()
+        excludeBoms &&
+            (module.getModuleName().endsWith("-bom") || module.getModuleName() == "bom") &&
+            module.getModuleArtifacts().isEmpty()
     }
 
     private boolean shouldExcludeArtifact(ResolvedDependency module) {
