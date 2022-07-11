@@ -46,12 +46,14 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         config = project.licenseReport
         output = new File(config.outputDir, fileName)
         output.text = """
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>
         Dependency License Report for $project.name
     </title>
-<head>
+    <meta charset="utf-8">
+</head>
 <body>
     <h1>
         Dependency License Report for $project.name ${if (!'unspecified'.equals(project.version)) project.version else ''}
