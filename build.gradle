@@ -3,9 +3,9 @@ plugins {
     id 'groovy'
     id 'maven-publish'
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.11.0'
+    id 'com.gradle.plugin-publish' version '0.18.0'
     id "com.palantir.idea-test-fix" version "0.1.0"
-    id "com.github.hierynomus.license" version "0.15.0"
+    id "com.github.hierynomus.license" version "0.16.1"
 }
 
 group = "com.github.jk1"
@@ -23,7 +23,7 @@ dependencies {
     implementation localGroovy()
 
     testImplementation gradleTestKit()
-    testImplementation("org.spockframework:spock-core:2.0-groovy-3.0") {
+    testImplementation("org.spockframework:spock-core:2.1-groovy-3.0") {
         exclude group: 'org.codehaus.groovy'
     }
 }
