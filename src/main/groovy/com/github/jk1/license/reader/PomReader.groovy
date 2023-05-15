@@ -23,7 +23,8 @@ import com.github.jk1.license.PomOrganization
 import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.CachingArtifactResolver
 import com.github.jk1.license.util.Files
-import groovy.util.slurpersupport.GPathResult
+import groovy.xml.XmlSlurper
+import groovy.xml.slurpersupport.GPathResult
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger

@@ -24,9 +24,9 @@ dependencies {
 }
 
 licenseReport {
-    renderers = [new InventoryHtmlReportRenderer('report.html','Backend')]
-    filters = [ new LicenseBundleNormalizer()]
-    importers = [ new XmlReportImporter("Front End", new File(project.projectDir, "externalDependencies.xml") ) ]
+    renderers = [new InventoryHtmlReportRenderer('report.html', 'Backend')]
+    filters = [new LicenseBundleNormalizer()]
+    importers = [new XmlReportImporter('Front End', new File(project.projectDir, 'externalDependencies.xml'))]
     configurations = ALL
 }
 
