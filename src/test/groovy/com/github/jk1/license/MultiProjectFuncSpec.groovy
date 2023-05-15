@@ -23,7 +23,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     def "plugin is executed in each module independently if configured for submodules"() {
         setup:
-        settingsGradle = testProjectDir.newFile("settings.gradle")
+        settingsGradle = new File(testProjectDir, "settings.gradle")
 
         newSubBuildFile("sub1") << """
             plugins {
@@ -71,8 +71,8 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def sub1RawGPath = jsonSlurper.parse(new File(testProjectDir.root, "sub1/build/reports/dependency-license/raw-project-data.json"))
-        def sub2RawGPath = jsonSlurper.parse(new File(testProjectDir.root, "sub2/build/reports/dependency-license/raw-project-data.json"))
+        def sub1RawGPath = jsonSlurper.parse(new File(testProjectDir, "sub1/build/reports/dependency-license/raw-project-data.json"))
+        def sub2RawGPath = jsonSlurper.parse(new File(testProjectDir, "sub2/build/reports/dependency-license/raw-project-data.json"))
         removeDevelopers(sub1RawGPath)
         removeDevelopers(sub2RawGPath)
         def configurationsSub1String = prettyPrintJson(sub1RawGPath.configurations)
@@ -82,10 +82,10 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         runResult.task(":sub1:generateLicenseReport").outcome == TaskOutcome.SUCCESS
         runResult.task(":sub2:generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        !new File(testProjectDir.root, "build/reports/dependency-license").exists()
-        new File(testProjectDir.root, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/LICENSE.txt").exists()
-        new File(testProjectDir.root, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/NOTICE.txt").exists()
-        new File(testProjectDir.root, "sub2/build/reports/dependency-license/javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt").exists()
+        !new File(testProjectDir, "build/reports/dependency-license").exists()
+        new File(testProjectDir, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/NOTICE.txt").exists()
+        new File(testProjectDir, "sub2/build/reports/dependency-license/javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt").exists()
 
         configurationsSub1String.contains("commons-lang3")
         !configurationsSub1String.contains("javax.annotation-api")
@@ -96,7 +96,7 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
     def "plugin is executed in module independently and globally on root project when configured in allprojects"() {
         setup:
-        settingsGradle = testProjectDir.newFile("settings.gradle")
+        settingsGradle = new File(testProjectDir, "settings.gradle")
 
         buildFile << """
             plugins {
@@ -166,9 +166,9 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         when:
         def runResult = runGradleBuild()
-        def rootRawGPath = jsonSlurper.parse(new File(testProjectDir.root, "build/reports/dependency-license/raw-project-data.json"))
-        def sub1RawGPath = jsonSlurper.parse(new File(testProjectDir.root, "sub1/build/reports/dependency-license/raw-project-data.json"))
-        def sub2RawGPath = jsonSlurper.parse(new File(testProjectDir.root, "sub2/build/reports/dependency-license/raw-project-data.json"))
+        def rootRawGPath = jsonSlurper.parse(new File(testProjectDir, "build/reports/dependency-license/raw-project-data.json"))
+        def sub1RawGPath = jsonSlurper.parse(new File(testProjectDir, "sub1/build/reports/dependency-license/raw-project-data.json"))
+        def sub2RawGPath = jsonSlurper.parse(new File(testProjectDir, "sub2/build/reports/dependency-license/raw-project-data.json"))
         def configurationsRootString = prettyPrintJson(rootRawGPath.configurations)
         def configurationsSub1String = prettyPrintJson(sub1RawGPath.configurations)
         def configurationsSub2String = prettyPrintJson(sub2RawGPath.configurations)
@@ -179,22 +179,22 @@ class MultiProjectFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         runResult.task(":sub2:generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         // root project should contains all the deps
-        new File(testProjectDir.root, "build/reports/dependency-license/joda-time-2.9.9.jar/META-INF/LICENSE.txt").exists()
-        new File(testProjectDir.root, "build/reports/dependency-license/joda-time-2.9.9.jar/META-INF/NOTICE.txt").exists()
-        new File(testProjectDir.root, "build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/LICENSE.txt").exists()
-        new File(testProjectDir.root, "build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/NOTICE.txt").exists()
-        new File(testProjectDir.root, "build/reports/dependency-license/javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "build/reports/dependency-license/joda-time-2.9.9.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "build/reports/dependency-license/joda-time-2.9.9.jar/META-INF/NOTICE.txt").exists()
+        new File(testProjectDir, "build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/NOTICE.txt").exists()
+        new File(testProjectDir, "build/reports/dependency-license/javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt").exists()
 
         // sub1
-        !new File(testProjectDir.root, "sub1/build/reports/dependency-license/joda-time-2.9.9.jar").exists()
-        new File(testProjectDir.root, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/LICENSE.txt").exists()
-        new File(testProjectDir.root, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/NOTICE.txt").exists()
-        !new File(testProjectDir.root, "sub1/build/reports/dependency-license/javax.annotation-api-1.3.2.jar").exists()
+        !new File(testProjectDir, "sub1/build/reports/dependency-license/joda-time-2.9.9.jar").exists()
+        new File(testProjectDir, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "sub1/build/reports/dependency-license/commons-lang3-3.7.jar/META-INF/NOTICE.txt").exists()
+        !new File(testProjectDir, "sub1/build/reports/dependency-license/javax.annotation-api-1.3.2.jar").exists()
 
         // sub2
-        !new File(testProjectDir.root, "sub2/build/reports/dependency-license/joda-time-2.9.9.jar").exists()
-        !new File(testProjectDir.root, "sub2/build/reports/dependency-license/commons-lang3-3.7.jar").exists()
-        new File(testProjectDir.root, "sub2/build/reports/dependency-license/javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt").exists()
+        !new File(testProjectDir, "sub2/build/reports/dependency-license/joda-time-2.9.9.jar").exists()
+        !new File(testProjectDir, "sub2/build/reports/dependency-license/commons-lang3-3.7.jar").exists()
+        new File(testProjectDir, "sub2/build/reports/dependency-license/javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt").exists()
 
         configurationsRootString.contains("joda-time")
         configurationsRootString.contains("commons-lang3")

@@ -31,14 +31,14 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
             }
             repositories {
                 mavenCentral()
-                maven { url "https://dl.bintray.com/realm/maven" }
+                maven { url "https://oss.jfrog.org/artifactory/oss-snapshot-local" }
                 maven { url "https://maven.repository.redhat.com/ga" }
             }
 
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = ['forTesting']
             }
         """
@@ -96,24 +96,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
     }
 
 
-    static final def DEPENDENCY_REALM_ANDROID = "io.realm:realm-android:0.82.2"
-    static final def EXPECTED_ARTIFACT_MISMATCH_REALM_ANDROID = "Artifact: io.realm:realm-android / Pom: com.squareup:javawriter)"
-    static final def EXPECTED_CONTENT_REALM_ANDROID = """[
-    {
-        "inceptionYear": "",
-        "projectUrl": "http://realm.io",
-        "description": "Realm is a mobile database: a replacement for SQLite & ORMs.",
-        "name": "realm-android",
-        "organization": null,
-        "licenses": [
-            {
-                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
-                "name": "The Apache Software License, Version 2.0"
-            }
-        ]
-    }
-]"""
-
     static final def DEPENDENCY_EHCACHE = "org.ehcache:ehcache:3.3.1"
     static final def EXPECTED_ARTIFACT_MISMATCH_EHCACHE = "Artifact: org.ehcache:ehcache / Pom: org.ehcache:sizeof)"
     static final def EXPECTED_CONTENT_EHCACHE = """[
@@ -152,7 +134,8 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 ]"""
 
     @Unroll
-    def "it reads the correct project url for #dependency"(String dependency, String expectedContent,
+    def "it reads the correct project url for #dependency"(String dependency,
+                                                           String expectedContent,
                                                            String expectedMismatchMessage) {
         buildFile << """
             dependencies {
@@ -175,7 +158,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
 
         where:
         dependency                  | expectedContent                   | expectedMismatchMessage
-        DEPENDENCY_REALM_ANDROID    | EXPECTED_CONTENT_REALM_ANDROID    | EXPECTED_ARTIFACT_MISMATCH_REALM_ANDROID
         DEPENDENCY_EHCACHE          | EXPECTED_CONTENT_EHCACHE          | EXPECTED_ARTIFACT_MISMATCH_EHCACHE
     }
 
@@ -300,7 +282,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        configurationsString == """[
+        configurationsString == prettyPrintJson(jsonSlurper.parse("""[
     {
         "dependencies": [
             {
@@ -334,7 +316,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                     }
                 ],
                 "licenseFiles": [
-                    
+
                 ],
                 "empty": false,
                 "name": "aopalliance"
@@ -529,7 +511,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                     }
                 ],
                 "licenseFiles": [
-                    
+
                 ],
                 "empty": false,
                 "name": "slf4j-api"
@@ -693,7 +675,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         ],
         "name": "forTesting"
     }
-]"""
+]""".toCharArray()))
     }
 
 

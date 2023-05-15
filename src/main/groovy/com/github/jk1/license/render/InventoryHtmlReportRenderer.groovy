@@ -35,10 +35,12 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
         config = project.licenseReport
         output = new File(config.outputDir, fileName)
         output.text = """
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Dependency License Report for ${name}</title>
-<style>
+    <title>Dependency License Report for ${name}</title>
+    <meta charset="utf-8">
+    <style>
     @media print {
         .inventory {
             display: none;
@@ -150,9 +152,8 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
     .dependency-value {
     }
-
-</style>
-<head>
+    </style>
+</head>
 <body>
 <div class="container">
 """
@@ -286,7 +287,7 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
     private printImportedDependency(ImportedModuleData data) {
         output << "<div class='dependency'>\n"
-        output << "<p>${++counter}. <strong>${data.name} v${data.version}</strong></p>"
+        output << "<p><strong>${++counter}. ${data.name} v${data.version}</strong></p>"
         output << sectionLink("Project URL", data.projectUrl, data.projectUrl)
         output << sectionLink("License URL", data.license, data.licenseUrl)
         output << "</div>\n"

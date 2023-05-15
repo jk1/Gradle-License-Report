@@ -20,13 +20,14 @@ import groovy.json.JsonBuilder
 import groovy.json.JsonSlurper
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+
+    @TempDir
+    File testProjectDir
+
     File settingsGradle
     File buildFile
     File outputDir
@@ -36,20 +37,19 @@ abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
     JsonSlurper jsonSlurper = new JsonSlurper()
 
     def setup() {
-        testProjectDir.create()
-        outputDir = new File(testProjectDir.root, "/build/licenses")
+        outputDir = new File(testProjectDir, "/build/licenses")
         rawJsonFile = new File(outputDir, RawProjectDataJsonRenderer.RAW_PROJECT_JSON_NAME)
 
         pluginClasspath = buildPluginClasspathWithTestClasspath()
 
-        buildFile = testProjectDir.newFile('build.gradle')
+        buildFile = new File(testProjectDir, 'build.gradle')
     }
 
     protected def runGradleBuild(List<String> additionalArguments = []) {
         List<String> args = ['generateLicenseReport', '--stacktrace']
 
         GradleRunner.create()
-            .withProjectDir(testProjectDir.root)
+            .withProjectDir(testProjectDir)
             .withArguments(args + additionalArguments)
             .withPluginClasspath(pluginClasspath)
             .forwardOutput()
@@ -57,7 +57,7 @@ abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
     }
 
     protected File newSubBuildFile(String subFolderName) {
-        File subFolder = new File(testProjectDir.root, subFolderName)
+        File subFolder = new File(testProjectDir, subFolderName)
         subFolder.mkdirs()
         settingsGradle << "include '${subFolderName.replace('/', ':')}'\n"
 

@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.render
 
+import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
@@ -50,19 +51,20 @@ import org.gradle.api.tasks.Input
  */
 class CsvReportRenderer implements ReportRenderer {
 
+    @Input
     String filename
+    @Input
     boolean includeHeaderLine = true
-
+    @Input
     String quote = '\"'
+    @Input
     String separator = ','
+    @Input
     String nl = '\r\n'
 
     CsvReportRenderer(String filename = 'licenses.csv') {
         this.filename = filename
     }
-
-    @Input
-    private String getFileNameCache() { return this.filename }
 
     @Override
     void render(ProjectData data) {
@@ -77,6 +79,10 @@ class CsvReportRenderer implements ReportRenderer {
         data.allDependencies.sort().each {
             renderDependency(output, it)
         }
+
+        data.importedModules.modules.flatten().sort().each {
+            renderImportedModuleDependency(output, it)
+        }
     }
 
     void renderDependency(File output, ModuleData data) {
@@ -84,6 +90,12 @@ class CsvReportRenderer implements ReportRenderer {
 
         String artifact = "${data.group}:${data.name}:${data.version}"
         output << "${quote(artifact)}$separator${quote(moduleUrl)}$separator${quote(moduleLicense)}$separator${quote(moduleLicenseUrl)}$separator$nl"
+    }
+
+    private void renderImportedModuleDependency(File output, ImportedModuleData module) {
+
+        String artifact = "${module.name}:${module.version}"
+        output << "${quote(artifact)}$separator${quote(module.projectUrl)}$separator${quote(module.license)}${separator}${quote(module.licenseUrl)}$separator$nl"
     }
 
     private String quote(String content) {

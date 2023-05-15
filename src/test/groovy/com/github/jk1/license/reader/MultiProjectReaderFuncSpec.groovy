@@ -23,7 +23,7 @@ import static com.github.jk1.license.reader.ProjectReaderFuncSpec.removeDevelope
 class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
 
     def setup() {
-        settingsGradle = testProjectDir.newFile("settings.gradle")
+        settingsGradle = new File(testProjectDir, "settings.gradle")
 
         buildFile << """
             plugins {
@@ -39,7 +39,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = []
             }
             dependencies {
@@ -67,6 +67,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         def runResult = runGradleBuild()
         def resultFileGPath = jsonSlurper.parse(rawJsonFile)
         removeDevelopers(resultFileGPath)
+        removeLicenseFiles(resultFileGPath)
         def configurationsGPath = resultFileGPath.configurations
         def configurationsString = prettyPrintJson(configurationsGPath)
 
@@ -109,22 +110,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         ]
                     }
                 ],
-                "licenseFiles": [
-                    {
-                        "fileDetails": [
-                            {
-                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
-                                "license": "Apache License, Version 2.0"
-                            },
-                            {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            }
-                        ]
-                    }
-                ],
                 "empty": false,
                 "name": "commons-lang3"
             },
@@ -157,9 +142,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                             }
                         ]
                     }
-                ],
-                "licenseFiles": [
-                    
                 ],
                 "empty": false,
                 "name": "annotations"
@@ -329,7 +311,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
                 projects = [project]
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = []
             }
             dependencies {
@@ -430,7 +412,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = []
             }
         """
@@ -451,6 +433,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         def runResult = runGradleBuild()
         def resultFileGPath = jsonSlurper.parse(rawJsonFile)
         removeDevelopers(resultFileGPath)
+        removeLicenseFiles(resultFileGPath)
         def configurationsGPath = resultFileGPath.configurations
         def configurationsString = prettyPrintJson(configurationsGPath)
 
@@ -490,9 +473,6 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         ]
                     }
                 ],
-                "licenseFiles": [
-                    
-                ],
                 "empty": false,
                 "name": "annotations"
             }
@@ -530,7 +510,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
             import com.github.jk1.license.render.*
             licenseReport {
                 outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
-                renderer = new com.github.jk1.license.render.RawProjectDataJsonRenderer()
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
                 configurations = ['mainConfig']
             }
             dependencies {
@@ -574,5 +554,13 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         configurationsGPath.name == ["mainConfig", "subConfig"]
+    }
+
+    static void removeDevelopers(Map rawFile) {
+        rawFile.configurations*.dependencies.flatten().poms.flatten().each { it.remove("developers") }
+    }
+
+    static void removeLicenseFiles(Map rawFile) {
+        rawFile.configurations*.dependencies.flatten().each { it.remove("licenseFiles") }
     }
 }

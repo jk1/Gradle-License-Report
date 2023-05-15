@@ -15,34 +15,33 @@
  */
 package com.github.jk1.license.check
 
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class LicenseCheckerFileReaderSpec extends Specification {
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+
+    @TempDir
+    File testProjectDir
 
     File allowedLicenseFile
     URL allowedLicenseUrl
     File projectDataFile
 
     def setup() {
-        testProjectDir.create()
-        allowedLicenseFile = testProjectDir.newFile('test-allowed-licenses.json')
-        projectDataFile = testProjectDir.newFile('test-projectData.json')
+        allowedLicenseFile = new File(testProjectDir, 'test-allowed-licenses.json')
+        projectDataFile = new File(testProjectDir, 'test-projectData.json')
 
         allowedLicenseFile << """
         {
             "allowedLicenses":[
-                { 
-                    "moduleLicense": "License1" 
+                {
+                    "moduleLicense": "License1"
                 },
-                { 
-                    "moduleLicense": "License2" 
+                {
+                    "moduleLicense": "License2"
                 },
-                { 
-                    "moduleLicense": "License3" 
+                {
+                    "moduleLicense": "License3"
                 }
             ]
         }"""
@@ -74,14 +73,14 @@ class LicenseCheckerFileReaderSpec extends Specification {
         allowedLicenseFile.text = """
         {
             "allowedLicenses":[
-                { 
-                    "moduleName": "Name1" 
+                {
+                    "moduleName": "Name1"
                 },
-                { 
-                    "moduleName": "Name2" 
+                {
+                    "moduleName": "Name2"
                 },
-                { 
-                    "moduleName": "Name3" 
+                {
+                    "moduleName": "Name3"
                 }
             ]
         }"""
@@ -99,14 +98,14 @@ class LicenseCheckerFileReaderSpec extends Specification {
         projectDataFile.text = """
         {
             "dependencies":[
-                { 
-                    "moduleName": "Name1" 
+                {
+                    "moduleName": "Name1"
                 },
-                { 
-                    "moduleName": "Name2" 
+                {
+                    "moduleName": "Name2"
                 },
-                { 
-                    "moduleName": "Name3" 
+                {
+                    "moduleName": "Name3"
                 }
             ]
         }"""
@@ -261,6 +260,22 @@ class LicenseCheckerFileReaderSpec extends Specification {
 
         projectDataFile.text = """
         {
+        "dependencies": [
+            {
+                "moduleName": "Name1",
+                "moduleVersion": "some-version",
+                "moduleUrls": [
+                    "some-url"
+                ]
+            },
+            {
+                "moduleName": "Name2",
+                "moduleVersion": "some-version",
+                "moduleUrls": [
+                    "some-projectUrl"
+                ]           
+            }       
+            ],         
             "importedModules": [
                 {
                     "moduleName": "bundle1",
@@ -269,6 +284,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
                             "moduleName": "Name1",
                             "moduleUrl": "some-projectUrl",
                             "moduleVersion": "some-version",
+                            "moduleLicense": "some-license",
                             "moduleLicenseUrl": "apache-url"
                         }
                     ]
@@ -280,6 +296,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
                             "moduleName": "Name2",
                             "moduleUrl": "some-projectUrl",
                             "moduleVersion": "some-version",
+                            "moduleLicense": "some-license",
                             "moduleLicenseUrl": "apache-url"
                         }
                     ]
@@ -292,7 +309,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
 
         then:
         dependencies.moduleName == ["Name1", "Name2"]
-        dependencies.moduleLicenses.moduleLicense == [[null], [null]]
+        dependencies.moduleLicenses.moduleLicense == [["some-license"], ["some-license"]]
     }
 
     def "read projectData importedModules moduleLicense"() {
@@ -583,3 +600,4 @@ class LicenseCheckerFileReaderSpec extends Specification {
         allowedLicenses.collect { it.moduleName } == [null,  null, null]
     }
 }
+

@@ -23,7 +23,7 @@ import java.util.stream.Collectors
 class ExcludeTransitiveDependenciesFilter implements DependencyFilter {
 
     @Override
-    public ProjectData filter(ProjectData source) {
+    ProjectData filter(ProjectData source) {
 
         Set<ResolvedDependency> firstLevelDependencies = source.getConfigurations()
             .stream()
@@ -32,7 +32,7 @@ class ExcludeTransitiveDependenciesFilter implements DependencyFilter {
                     .getResolvedConfiguration().getFirstLevelModuleDependencies()
                     .stream()
             })
-            .collect(Collectors.toSet());
+            .collect(Collectors.toSet())
 
         Set<ModuleData> moduleDataSet = source.getAllDependencies()
             .stream()
@@ -52,6 +52,6 @@ class ExcludeTransitiveDependenciesFilter implements DependencyFilter {
             Set<ModuleData> getAllDependencies() {
                 return moduleDataSet
             }
-        };
+        }
     }
 }

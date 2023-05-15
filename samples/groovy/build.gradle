@@ -7,7 +7,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.github.jk1.dependency-license-report:com.github.jk1.dependency-license-report.gradle.plugin:1.+'
+        classpath 'com.github.jk1.dependency-license-report:com.github.jk1.dependency-license-report.gradle.plugin:2.+'
     }
 }
 
@@ -17,16 +17,16 @@ apply plugin: 'com.github.jk1.dependency-license-report'
 repositories { mavenCentral() }
 
 dependencies {
-    compile 'org.springframework:spring-tx:3.2.3.RELEASE'
-    compile 'com.sun.mail:javax.mail:1.5.4'
-    compile 'org.ehcache:ehcache:3.3.1'
-    compile 'org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1'
+    implementation 'org.springframework:spring-tx:3.2.3.RELEASE'
+    implementation 'com.sun.mail:javax.mail:1.5.4'
+    implementation 'org.ehcache:ehcache:3.3.1'
+    implementation 'org.apache.geronimo.specs:geronimo-jta_1.0.1B_spec:1.0.1'
 }
 
 licenseReport {
-    renderer = new InventoryHtmlReportRenderer('report.html','Backend')
-    filters = [ new LicenseBundleNormalizer()]
-    importers = [ new XmlReportImporter("Front End", new File(project.projectDir, "externalDependencies.xml") ) ]
+    renderers = [new InventoryHtmlReportRenderer('report.html', 'Backend')]
+    filters = [new LicenseBundleNormalizer()]
+    importers = [new XmlReportImporter('Front End', new File(project.projectDir, 'externalDependencies.xml'))]
     configurations = ALL
 }
 

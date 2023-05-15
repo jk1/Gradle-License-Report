@@ -36,8 +36,10 @@ class InventoryReportRenderer implements ReportRenderer {
         }
 
     @Input
-    private String getFileNameCache() { return this.fileName }
+    String getFileNameCache() { return this.fileName }
 
+    @Input
+    Map getOverrides() { return this.overrides }
 
     @Override
     void render(ProjectData data) {
@@ -108,10 +110,10 @@ class InventoryReportRenderer implements ReportRenderer {
         String gnv = "${module.group}:${module.name}:${module.version}"
         if (key == "Unknown" && overrides.containsKey(gnv)) {
             if (!inventory.containsKey(overrides[gnv].license)) inventory[overrides[gnv].license] = []
-            inventory[overrides[gnv].license] << module
+            if (!inventory[overrides[gnv].license].contains(module)) inventory[overrides[gnv].license] << module
         } else {
             if (!inventory.containsKey(key)) inventory[key] = []
-            inventory[key] << module
+            if (!inventory[key].contains(module)) inventory[key] << module
         }
     }
 

@@ -1,19 +1,15 @@
 plugins {
     id 'idea'
-	id 'eclipse'
     id 'groovy'
-    id 'maven-publish'
-    id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.11.0'
-    id "com.palantir.idea-test-fix" version "0.1.0"
-    id "com.github.hierynomus.license" version "0.15.0"
+    id 'com.gradle.plugin-publish' version '1.2.0'
+    id 'com.github.hierynomus.license' version '0.16.1'
 }
 
-group = "com.github.jk1"
-version = "1.14.1"
+group = 'com.github.jk1'
+version = '2.1'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
@@ -24,7 +20,7 @@ dependencies {
     implementation localGroovy()
 
     testImplementation gradleTestKit()
-    testImplementation("org.spockframework:spock-core:1.0-groovy-2.4") {
+    testImplementation('org.spockframework:spock-core:2.1-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
 }
@@ -38,6 +34,7 @@ idea {
 }
 
 test {
+    useJUnitPlatform()
     testLogging {
         showStandardStreams = true
         exceptionFormat = 'full'
@@ -57,15 +54,16 @@ publishing {
 }
 
 // release publishing to gradle plugin repo
-pluginBundle {
+gradlePlugin {
     website = 'https://github.com/jk1/Gradle-License-Report'
     vcsUrl = 'https://github.com/jk1/Gradle-License-Report'
-    description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
-    tags = ['dependency-management', 'license', 'reporting']
     plugins {
         licenseReportPlugin {
             id = 'com.github.jk1.dependency-license-report'
             displayName = 'Gradle dependency license report plugin'
+            description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
+            tags.set(['dependency-management', 'license', 'reporting'])
+            implementationClass = 'com.github.jk1.license.LicenseReportPlugin'
         }
     }
 }

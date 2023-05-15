@@ -28,7 +28,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
     def setup() {
         licenseResultJsonFile = new File(outputDir, "index.json")
 
-        normalizerFile = testProjectDir.newFile('test-normalizer-config.json')
+        normalizerFile = new File(testProjectDir, 'test-normalizer-config.json')
 
         buildFile << """
             plugins {
@@ -170,7 +170,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
             licenseReport {
                 outputDir = "${fixPathForBuildFile(licenseResultJsonFile.parentFile.absolutePath)}"
                 filters = new LicenseBundleNormalizer()
-                renderer = new JsonReportRenderer(onlyOneLicensePerModule: false)
+                renderers = [new JsonReportRenderer(onlyOneLicensePerModule: false)]
                 configurations = ['forTesting']
             }
             dependencies {

@@ -26,19 +26,20 @@ import org.gradle.util.GradleVersion
 
 class LicenseReportPlugin implements Plugin<Project> {
 
-    final def MINIMUM_REQUIRED_GRADLE_VERSION = "3.3"
+    final def MINIMUM_REQUIRED_GRADLE_VERSION = "7.0"
 
     @Override
     void apply(Project project) {
         assertCompatibleGradleVersion()
 
         project.extensions.create('licenseReport', LicenseReportExtension, project)
-        def preparationTask = project.tasks.create("checkLicensePreparation", CheckLicensePreparationTask)
+
+        def preparationTask = project.tasks.register("checkLicensePreparation", CheckLicensePreparationTask)
         def taskClass = project.getPlugins().hasPlugin('com.android.application') ? ReportTask : CacheableReportTask
-        def generateLicenseReportTask = project.tasks.create('generateLicenseReport', taskClass) {
+        def generateLicenseReportTask = project.tasks.register('generateLicenseReport', taskClass) {
             it.shouldRunAfter(preparationTask)
         }
-        project.tasks.create('checkLicense', CheckLicenseTask) {
+        project.tasks.register('checkLicense', CheckLicenseTask) {
             it.dependsOn(preparationTask, generateLicenseReportTask)
         }
     }

@@ -4,37 +4,27 @@ Gradle License Report
 [![Build Status](https://travis-ci.org/jk1/Gradle-License-Report.svg?branch=master)](https://travis-ci.org/jk1/Gradle-License-Report)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A plugin for generating reports about the licenses of the dependencies for your Gradle project.
+A plugin for generating reports about the licenses of the dependencies for your Gradle project. 
 
 This plugin will resolve all your dependencies, and then scour them for anything that looks like relevant licensing information. The theory is
 to automatically generate a report that you can hand to corporate IP lawyers in order to keep them busy.
 
 ## Usage
 
-Add this to your `build.gradle` file:
+Add this to your `build.gradle` file for Gradle 7+:
 
 ```groovy
 plugins {
-  id 'com.github.jk1.dependency-license-report' version '1.13'
+    id 'com.github.jk1.dependency-license-report' version '2.1'
 }
 ```
 
-or via a `buildscript` block
-
+For Gradle 6.X stick to 1.X plugin versions:
 
 ```groovy
-buildscript {
-    repositories {
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-
-    dependencies {
-        classpath 'com.github.jk1:gradle-license-report:1.13'
-    }
+plugins {
+    id 'com.github.jk1.dependency-license-report' version '1.17'
 }
-apply plugin: 'com.github.jk1.dependency-license-report'
 ```
 
 Then run `gradle generateLicenseReport` to generate your report in `build/reports/dependency-license`.
@@ -56,10 +46,11 @@ licenseReport {
     // Defaults to current project and all its subprojects
     projects = [project] + project.subprojects
 
-    // Adjust the configurations to fetch dependencies, e.g. for Android projects. Default is 'runtimeClasspath'
-    configurations = ['compile']
+    // Adjust the configurations to fetch dependencies. Default is 'runtimeClasspath'
+    // For Android projects use 'releaseRuntimeClasspath' or 'yourFlavorNameReleaseRuntimeClasspath'
     // Use 'ALL' to dynamically resolve all configurations:
     // configurations = ALL
+    configurations = ['runtimeClasspath']
 
     // List the groups ids to exclude from dependency report. Supports regular expressions.
     // For finer granularity, see: excludes.
@@ -71,6 +62,10 @@ licenseReport {
 
     // Don't include artifacts of project's own group into the report
     excludeOwnGroup = true
+
+    // Don't exclude bom dependencies.
+    // If set to true, then all boms will be excluded from the report
+    excludeBoms = false
 
     // Set custom report renderer, implementing ReportRenderer.
     // Yes, you can write your own to support any format necessary.
@@ -85,6 +80,7 @@ licenseReport {
     allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
 }
 ```
+
 ## My report is empty or contains wrong dependencies. Is it a plugin bug?
 
 The plugin discovers project dependencies from certain [Gradle configurations](https://docs.gradle.org/current/userguide/declaring_dependencies.html).
@@ -106,16 +102,15 @@ import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "1.13"
+    id("com.github.jk1.dependency-license-report") version "2.0"
 }
 
 licenseReport {
-    renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html","Backend"))
+    renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "Backend"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 }
 
 ```
-
 
 ## Renderers
 
@@ -145,7 +140,7 @@ licenseReport {
 
 ### InventoryHtmlReportRender
 
-The InventoryHtmlReportRender renders a report grouped by license type so you can more easily identify which dependencies
+The InventoryHtmlReportRender renders a report grouped by license type, so you can more easily identify which dependencies
 share the same license.  This makes it easier to know the individual licenses you need to verify with your legal department.
 To use this report you simply add it to the configuration:
 
@@ -156,6 +151,7 @@ licenseReport {
     renderers = [new InventoryHtmlReportRenderer()]
 }
 ```
+
 This defaults to using the name of the project as the title and index.html as the name of the file it creates.  You can
 change this by passing additional arguments.  The first argument is the filename to write out, and the 2nd is the title
 to use in the report.  For dependencies that don't declare their license they will be listed underneath the `Unknown`
@@ -176,12 +172,12 @@ an overrides file:
 import com.github.jk1.license.render.*
 
 licenseReport {
-    renderers = [new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir,"../unknown-license-details.txt"))]
+    renderers = [new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir, '../unknown-license-details.txt'))]
 }
 ```
 
-
 ## Importers
+
 Importer adds license information from an external source to your report. Importer may come in handy if
 - some modules within your application use their own means of library dependency resolution, e.g. npm registry
 - your application integrates third party components or services with their own library dependencies
@@ -194,7 +190,7 @@ import com.github.jk1.license.importer.*
 
 licenseReport {
     // integrate javascript frontend dependencies into our report
-    importers = [ new XmlReportImporter("Front End", new File(projectDir,"src/main/webapp/vendor/front_end.xml") ) ]
+    importers = [new XmlReportImporter('Front End', new File(projectDir, 'src/main/webapp/vendor/front_end.xml'))]
 }
 ```
 
@@ -206,7 +202,7 @@ The expected input format for `XmlReportImporter` is as follows:
     <chapter title="Some of my favorite libraries">
       <table>
         <tr>
-          <!-- every non-empty chapter must have a title row, which is stripped>
+          <!-- every non-empty chapter must have a title row, which is stripped -->
           <th>Name</th>
           <th>Version</th>
           <th>License</th>
@@ -216,18 +212,19 @@ The expected input format for `XmlReportImporter` is as follows:
           <td>1.2.3</td>
           <td><a href="http://url.of.project/license">Name of license</a></td>
         </tr>
-        <!-- more libraries here...>
+        <!-- more libraries here... -->
       </table>
     </chapter>
-    <!-- more chapters here...>
+    <!-- more chapters here...-->
   </chunk>
-  <!-- more chunks here...>
+  <!-- more chunks here... -->
 </topic>
 ```
 
 If there is only one chapter, the outer `topic` and `chunk` tags may be omitted.
 
 ## Filters
+
 Dependency filters transform discovered dependency data before rendering.
 This may include sorting, reordering, data substitution.
 
@@ -237,7 +234,7 @@ The following filter will leave only first-level dependencies in the report:
 
 ```groovy
 import com.github.jk1.license.filter.*
-...
+
 licenseReport {
     filters = [new ExcludeTransitiveDependenciesFilter()]
 }
@@ -260,7 +257,7 @@ to unify such entries. The configuration file has two sections:
 
 * license-bundles: Defines the actual licenses with their correct name and their correct url
 * transformation-rules: A rule defines a reference to one license-bundle and a pattern for
-   a malformed name or url. When a pattern matches the the license of a dependency, the
+   a malformed name or url. When a pattern matches the license of a dependency, the
    output license-information for that dependency will be updated with the referenced license-bundle.
 
 ```json
@@ -283,12 +280,11 @@ to unify such entries. The configuration file has two sections:
 So dependencies with license-name `The Apache Software License, Version 2.0` / `Apache 2` or license-url `http://www.apache.org/licenses/LICENSE-2.0.txt`
 are changed to license-name `Apache License, Version 2.0` and license-url `http://www.apache.org/licenses/LICENSE-2.0`
 
-
 The normalizer can be enabled via a filter.
 
 ```groovy
 import com.github.jk1.license.filter.*
-...
+
 licenseReport {
     filters = [new LicenseBundleNormalizer(bundlePath: "$projectDir/config/license-normalizer-bundle.json")]
 }
@@ -309,7 +305,7 @@ import com.github.jk1.license.ImportedModuleBundle;
 import com.github.jk1.license.importer.DependencyDataImporter;
 import java.util.Collection;
 
-public class CustomImporter implements DependencyDataImporter{
+public class CustomImporter implements DependencyDataImporter {
 
     public String getImporterName() {
         return "Custom importer";
@@ -334,7 +330,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.jk1:gradle-license-report:1.13'
+    compile 'com.github.jk1:gradle-license-report:2.0'
 }
 
 ```
@@ -344,10 +340,8 @@ Now you can use your custom importer in the main build:
 ```groovy
 import org.sample.CustomImporter
 
-...
-
 licenseReport {
-    importers = [ new CustomImporter() ]
+    importers = [new CustomImporter()]
 }
 
 ```
@@ -358,7 +352,7 @@ The same technique can be used to create a filter or a renderer to support custo
 
 This task is for checking dependencies/imported modules if their licenses are allowed to be used.
 
-```batch
+```shell
 ./gradlew checkLicense
 ```
 
@@ -412,7 +406,6 @@ Defines which licenses are allowed to be used:
     }
   ]
 }
-
 ```
 
 Also specify the allowed license file in the configuration:
@@ -427,7 +420,6 @@ or
 
 ```groovy
 licenseReport {
-    allowedLicensesFile = new URL("http://company.com/licenses/allowed-licenses.json")
+    allowedLicensesFile = new URL('http://company.com/licenses/allowed-licenses.json')
 }
 ```
-

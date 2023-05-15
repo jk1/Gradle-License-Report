@@ -39,19 +39,21 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     }
 
     @Input
-    private String getFileNameCache() { return this.fileName }
+    String getFileNameCache() { return this.fileName }
 
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
         output = new File(config.outputDir, fileName)
         output.text = """
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>
         Dependency License Report for $project.name
     </title>
-<head>
+    <meta charset="utf-8">
+</head>
 <body>
     <h1>
         Dependency License Report for $project.name ${if (!'unspecified'.equals(project.version)) project.version else ''}
@@ -61,7 +63,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
         output << """
     <hr />
         <p id="timestamp">
-            This report was generated at 
+            This report was generated at
             <em>
                 ${new Date()}
             </em>.

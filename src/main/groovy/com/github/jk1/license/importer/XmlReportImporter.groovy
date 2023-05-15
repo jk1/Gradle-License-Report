@@ -17,14 +17,16 @@ package com.github.jk1.license.importer
 
 import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.ImportedModuleData
-import groovy.util.slurpersupport.GPathResult
+import groovy.xml.XmlSlurper
+import groovy.xml.slurpersupport.GPathResult
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.Input
 import org.xml.sax.SAXParseException
 
 
 class XmlReportImporter implements DependencyDataImporter {
 
-    String importerName
+    private String importerName
 
     private Closure<File> externalReport
 
@@ -36,6 +38,12 @@ class XmlReportImporter implements DependencyDataImporter {
     XmlReportImporter(String name, Closure<File> externalReport) {
         this.importerName = name
         this.externalReport = externalReport
+    }
+
+    @Input
+    @Override
+    String getImporterName() {
+        return importerName
     }
 
     @Override

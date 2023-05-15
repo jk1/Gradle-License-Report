@@ -18,32 +18,30 @@ package com.github.jk1.license.render
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.TempDir
 
 import static com.github.jk1.license.ProjectDataFixture.*
 
 class JsonReportRendererSpec extends Specification {
 
-    @Rule
-    TemporaryFolder testProjectDir = new TemporaryFolder()
+    @TempDir
+    File testProjectDir
     File outputJson
 
     ProjectBuilder builder = new ProjectBuilder()
     ProjectData projectData
 
     def setup() {
-        testProjectDir.create()
-        outputJson = new File(testProjectDir.root, "index.json")
+        outputJson = new File(testProjectDir, "index.json")
         outputJson.delete()
 
         LicenseReportExtension extension = GRADLE_PROJECT().licenseReport
-        extension.outputDir = testProjectDir.root
+        extension.outputDir = testProjectDir
 
         // copy apache2 license file
         def apache2LicenseFile = new File(getClass().getResource('/apache2.license').toURI())
-        new File(testProjectDir.root, "apache2.license") << apache2LicenseFile.text
+        new File(testProjectDir, "apache2.license") << apache2LicenseFile.text
 
         projectData = builder.project {
             configurations(["runtime", "test"]) { configName ->
