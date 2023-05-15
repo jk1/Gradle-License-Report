@@ -1,10 +1,7 @@
 plugins {
     id 'idea'
     id 'groovy'
-    id 'maven-publish'
-    id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.18.0'
-    id 'com.palantir.idea-test-fix' version '0.1.0'
+    id 'com.gradle.plugin-publish' version '1.2.0'
     id 'com.github.hierynomus.license' version '0.16.1'
 }
 
@@ -57,15 +54,16 @@ publishing {
 }
 
 // release publishing to gradle plugin repo
-pluginBundle {
+gradlePlugin {
     website = 'https://github.com/jk1/Gradle-License-Report'
     vcsUrl = 'https://github.com/jk1/Gradle-License-Report'
-    description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
-    tags = ['dependency-management', 'license', 'reporting']
     plugins {
         licenseReportPlugin {
             id = 'com.github.jk1.dependency-license-report'
             displayName = 'Gradle dependency license report plugin'
+            description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
+            tags.set(['dependency-management', 'license', 'reporting'])
+            implementationClass = 'com.github.jk1.license.LicenseReportPlugin'
         }
     }
 }
