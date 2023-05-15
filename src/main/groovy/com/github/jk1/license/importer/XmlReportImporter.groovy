@@ -17,7 +17,8 @@ package com.github.jk1.license.importer
 
 import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.ImportedModuleData
-import groovy.util.slurpersupport.GPathResult
+import groovy.xml.XmlSlurper
+import groovy.xml.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.xml.sax.SAXParseException

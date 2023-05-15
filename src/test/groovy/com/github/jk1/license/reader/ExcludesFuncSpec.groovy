@@ -62,6 +62,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         buildFile << generateBuildWith(
             """
                 implementation platform("com.fasterxml.jackson:jackson-bom:2.12.3")
+                implementation platform("software.amazon.awssdk:bom:2.17.181")
                 implementation "javax.activation:activation:1.1.1"
             """.trim(),
             """excludeBoms = true"""

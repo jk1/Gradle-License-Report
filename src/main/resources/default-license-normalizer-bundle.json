@@ -44,7 +44,7 @@
     { "bundleName" : "0BSD", "licenseNamePattern" : "BSD[ |-]clause.*" },
     { "bundleName" : "0BSD", "licenseNamePattern" : "BSD[ |-]license.*" },
     { "bundleName" : "Apache-2.0", "licenseNamePattern" : ".*The Apache Software License, Version 2\\.0.*" },
-    { "bundleName" : "Apache-2.0", "licenseNamePattern" : "Apache[ |-|_]2.*" },
+    { "bundleName" : "Apache-2.0", "licenseNamePattern" : ".*?Apache[ |_-]2.*" },
     { "bundleName" : "Apache-2.0", "licenseNamePattern" : "ASL 2\\.0" },
     { "bundleName" : "Apache-2.0", "licenseNamePattern" : ".*Apache License,?( Version)? 2.*" },
     { "bundleName" : "Apache-2.0", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/Apache-2\\.0.*" },

@@ -95,7 +95,7 @@ class CsvReportRenderer implements ReportRenderer {
     private void renderImportedModuleDependency(File output, ImportedModuleData module) {
 
         String artifact = "${module.name}:${module.version}"
-        output << "${quote(artifact)}$separator${quote(module.projectUrl)}$separator${quote(module.license)}${separator}${quote(module.licenseUrl)}$separator$nl";
+        output << "${quote(artifact)}$separator${quote(module.projectUrl)}$separator${quote(module.license)}${separator}${quote(module.licenseUrl)}$separator$nl"
     }
 
     private String quote(String content) {
