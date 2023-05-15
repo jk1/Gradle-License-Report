@@ -38,6 +38,13 @@ import com.github.jk1.license.render.*
 import com.github.jk1.license.importer.*
 
 licenseReport {
+    // By default this plugin will collect the union of all licenses from 
+    // the immediate pom and the parent poms. If your legal team thinks this 
+    // is too liberal, you can restrict collected licenses to only include the
+    // those found in the immediate pom file
+    // Defaults to: true
+    unionParentPomLicenses = false
+   
     // Set output directory for the report data.
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = "$projectDir/build/licenses"

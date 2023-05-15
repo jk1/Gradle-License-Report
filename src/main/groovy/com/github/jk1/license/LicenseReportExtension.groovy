@@ -28,6 +28,7 @@ class LicenseReportExtension {
 
     public static final String[] ALL = []
 
+    public boolean unionParentPomLicenses
     public String outputDir
     public Project[] projects
     public ReportRenderer[] renderers
@@ -41,6 +42,7 @@ class LicenseReportExtension {
     public Object allowedLicensesFile
 
     LicenseReportExtension(Project project) {
+        unionParentPomLicenses = true
         outputDir = "${project.buildDir}/reports/dependency-license"
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
@@ -90,6 +92,8 @@ class LicenseReportExtension {
         snapshot += excludeGroups
         snapshot << 'excludes'
         snapshot += excludes
+        snapshot << 'unionParentPomLicenses'
+        snapshot += unionParentPomLicenses
         snapshot.join("!")
     }
 

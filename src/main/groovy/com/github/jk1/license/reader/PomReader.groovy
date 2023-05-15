@@ -212,13 +212,31 @@ class PomReader {
 
         LOGGER.debug("POM license : ${rootPom.licenses.children()*.name() as Set}")
 
-        allPoms.each { pom ->
+        // How to interpret parent poms is a question best left up to the user
+        // https://github.com/jk1/Gradle-License-Report/issues/264
+        def licensePoms = [rootPom]
+        if (config.unionParentPomLicenses) {
+            licensePoms = allPoms
+        }
+        licensePoms.each { pom ->
             pom.licenses?.license?.each { GPathResult license ->
                 LOGGER.debug("Processing license: ${license.name.text()}")
                 pomData.licenses << new License(
                     name: license.name?.text(),
                     url: license.url?.text()
                 )
+            }
+        }
+        // If we didn't find a license in the root pom, then parent pom always applies (if it has one)
+        if ( !pomData.licenses ) {
+            childPoms.each { pom ->
+                pom.licenses?.license?.each { GPathResult license ->
+                    LOGGER.debug("Processing license: ${license.name.text()}")
+                    pomData.licenses << new License(
+                            name: license.name?.text(),
+                            url: license.url?.text()
+                    )
+                }
             }
         }
 
