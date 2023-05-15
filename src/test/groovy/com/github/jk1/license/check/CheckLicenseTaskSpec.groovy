@@ -104,8 +104,8 @@ class CheckLicenseTaskSpec extends Specification {
             import com.github.jk1.license.filter.*
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
             apply plugin: 'java'
@@ -118,10 +118,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
 
             compileKotlin {
@@ -179,8 +179,8 @@ class CheckLicenseTaskSpec extends Specification {
             import com.github.jk1.license.filter.*
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
             apply plugin: 'java'
@@ -193,10 +193,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
 
             compileKotlin {
@@ -285,8 +285,8 @@ class CheckLicenseTaskSpec extends Specification {
         buildFile << """
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
 
@@ -298,10 +298,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
             apply plugin: 'java'
             compileKotlin {
@@ -364,8 +364,8 @@ class CheckLicenseTaskSpec extends Specification {
         buildFile.text = """
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
 
@@ -377,10 +377,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
             apply plugin: 'java'
             compileKotlin {
@@ -422,8 +422,8 @@ class CheckLicenseTaskSpec extends Specification {
         buildFile << """
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
             group 'greeting'
@@ -434,10 +434,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
             apply plugin: 'java'
             compileKotlin {
@@ -497,8 +497,8 @@ class CheckLicenseTaskSpec extends Specification {
         buildFile.text = """
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
             group 'greeting'
@@ -509,10 +509,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
             apply plugin: 'java'
             compileKotlin {
@@ -555,8 +555,8 @@ class CheckLicenseTaskSpec extends Specification {
             import com.github.jk1.license.filter.*
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
             apply plugin: 'java'
@@ -569,10 +569,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
 
             compileKotlin {
@@ -618,8 +618,8 @@ class CheckLicenseTaskSpec extends Specification {
             import com.github.jk1.license.filter.*
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-                id 'com.github.jk1.dependency-license-report' version '1.2'
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report' version '2.1'
             }
 
             apply plugin: 'java'
@@ -632,10 +632,10 @@ class CheckLicenseTaskSpec extends Specification {
             }
 
             dependencies {
-                compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-                compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
-                compile "org.jetbrains.kotlin:kotlin-reflect"
-                compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+                implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+                implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+                implementation "org.jetbrains.kotlin:kotlin-reflect"
+                implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
 
             compileKotlin {

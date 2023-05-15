@@ -93,7 +93,14 @@ class ManifestReader {
         data.vendor = attr.getValue('Bundle-Vendor') ?: attr.getValue('Implementation-Vendor')
         data.url = attr.getValue('Bundle-DocURL')
         if (Files.maybeLicenseUrl(bundleLicense)) {
-            data.licenseUrl = bundleLicense
+			def allLicenseParts = bundleLicense.split(';')
+            data.licenseUrl = allLicenseParts[0]
+			allLicenseParts.each { 
+				def additionalParameter = it.split('=')
+				
+				if (additionalParameter[0] == 'description')
+					data.license = additionalParameter[1]
+			}
         }
         else {
             data.license = bundleLicense

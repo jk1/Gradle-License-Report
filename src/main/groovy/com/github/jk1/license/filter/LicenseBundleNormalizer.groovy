@@ -89,7 +89,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         data.configurations*.dependencies.flatten().forEach { normalizePoms(transformationRuleMatchers, it) }
         LOGGER.debug("Normalizing JAR manifest licenses...")
         data.configurations*.dependencies.flatten().forEach { normalizeManifest(transformationRuleMatchers, it) }
-        LOGGER.debug("Normalizing embeded license files...")
+        LOGGER.debug("Normalizing embedded license files...")
         data.configurations*.dependencies.flatten().forEach { normalizeLicenseFileDetails(transformationRuleMatchers, it) }
         data.importedModules.forEach { normalizeImportedModuleBundle(transformationRuleMatchers, it) }
         LOGGER.debug("Modules normalized, removing duplicates...")

@@ -22,6 +22,7 @@ import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Nested
 
 class LicenseReportExtension {
 
@@ -53,6 +54,21 @@ class LicenseReportExtension {
         excludes = []
         importers = []
         filters = []
+    }
+
+    @Nested
+    ReportRenderer[] getRenderers() {
+        return renderers
+    }
+
+    @Nested
+    DependencyDataImporter[] getImporters() {
+        return importers
+    }
+
+    @Nested
+    DependencyFilter[] getFilters() {
+        return filters
     }
 
     @Input

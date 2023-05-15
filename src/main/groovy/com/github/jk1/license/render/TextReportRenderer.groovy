@@ -34,7 +34,7 @@ class TextReportRenderer implements ReportRenderer{
     private int counter
     private String fileName
 
-    public TextReportRenderer(String filename = 'THIRD-PARTY-NOTICES.txt') {
+    TextReportRenderer(String filename = 'THIRD-PARTY-NOTICES.txt') {
         this.fileName = filename
     }
 
@@ -65,7 +65,7 @@ This report was generated at ${new Date()}.
         }
     }
 
-    private String printDependency(ModuleData data) {
+    private void printDependency(ModuleData data) {
         boolean projectUrlDone = false
         output << "${++counter}."
         if (data.group) output << " Group: $data.group "

@@ -27,7 +27,7 @@ import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathF
 
 class PluginSpec extends Specification {
 
-    private final static def supportedGradleVersions = ["7.0"]
+    private final static def supportedGradleVersions = ["7.6.1", "8.1.1"]
     private final static def unsupportedGradleVersions = [ "5.6", "6.8.2" ]
 
     @TempDir
