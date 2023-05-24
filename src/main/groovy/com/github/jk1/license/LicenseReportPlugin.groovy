@@ -32,12 +32,13 @@ class LicenseReportPlugin implements Plugin<Project> {
     void apply(Project project) {
         assertCompatibleGradleVersion()
 
-        project.extensions.create('licenseReport', LicenseReportExtension, project)
+        def extension = project.extensions.create('licenseReport', LicenseReportExtension, project)
 
         def preparationTask = project.tasks.register("checkLicensePreparation", CheckLicensePreparationTask)
         def taskClass = project.getPlugins().hasPlugin('com.android.application') ? ReportTask : CacheableReportTask
         def generateLicenseReportTask = project.tasks.register('generateLicenseReport', taskClass) {
             it.shouldRunAfter(preparationTask)
+            it.config = extension
         }
         project.tasks.register('checkLicense', CheckLicenseTask) {
             it.dependsOn(preparationTask, generateLicenseReportTask)

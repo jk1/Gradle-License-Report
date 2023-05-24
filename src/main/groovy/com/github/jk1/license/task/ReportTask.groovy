@@ -33,13 +33,11 @@ class ReportTask extends DefaultTask {
     }
 
     @Nested
-    LicenseReportExtension getConfig() {
-        return getProject().licenseReport
-    }
+    LicenseReportExtension config
 
     @OutputDirectory
     File getOutputFolder() {
-        return new File(getConfig().outputDir)
+        return new File(config.outputDir)
     }
 
     @TaskAction
