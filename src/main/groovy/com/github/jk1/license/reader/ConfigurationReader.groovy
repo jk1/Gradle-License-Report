@@ -50,7 +50,7 @@ class ConfigurationReader {
         configuration.resolvedConfiguration // force configuration resolution
 
         Set<ResolvedDependency> dependencies = new TreeSet<ResolvedDependency>(new ResolvedDependencyComparator())
-        for (ResolvedDependency dependency : configuration.resolvedConfiguration.getFirstLevelModuleDependencies()) {
+        for (ResolvedDependency dependency : configuration.resolvedConfiguration.lenientConfiguration.getFirstLevelModuleDependencies()) {
             collectDependencies(dependencies, dependency)
         }
 
