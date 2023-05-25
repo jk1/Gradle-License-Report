@@ -30,6 +30,7 @@ class ReportTask extends DefaultTask {
     ReportTask() {
         group = 'Reporting'
         description = 'Generates license report for all dependencies of this project and its subprojects'
+        notCompatibleWithConfigurationCache("com.github.jk1:gradle-license-report is not configuration-cache compatible")
     }
 
     @Nested
