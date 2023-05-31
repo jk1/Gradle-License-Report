@@ -15,7 +15,7 @@ Add this to your `build.gradle` file for Gradle 7+:
 
 ```groovy
 plugins {
-    id 'com.github.jk1.dependency-license-report' version '2.1'
+    id 'com.github.jk1.dependency-license-report' version '2.4'
 }
 ```
 
