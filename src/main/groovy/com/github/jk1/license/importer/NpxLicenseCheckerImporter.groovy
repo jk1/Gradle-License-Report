@@ -83,7 +83,12 @@ class NpxLicenseCheckerImporter implements DependencyDataImporter {
 
     private Map scanDependencies(String path) {
         def cmd = "npx license-checker --production --start " + path + " --json --relativeLicensePath --excludePrivatePackages";
-        def proc = ["/bin/sh", "-c", cmd].execute();
+        def proc
+        if (System.properties['os.name'].toLowerCase().contains('win')) {
+            proc = ["cmd", "/c", cmd].execute()
+        } else {
+            proc = ["/bin/sh", "-c", cmd].execute()
+        }
         def pool = Executors.newFixedThreadPool(2);
         def stdoutFuture = pool.submit({ -> proc.inputStream.text} as Callable<String>);
         def stderrFuture = pool.submit({ -> proc.errorStream.text} as Callable<String>);
