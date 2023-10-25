@@ -41,8 +41,8 @@ class ConfigurationData {
 class ModuleData {
     String group, name, version
     Set<ManifestData> manifests = new TreeSet<ManifestData>()
-    Set<LicenseFileData> licenseFiles = new HashSet<LicenseFileData>()
-    Set<PomData> poms = new HashSet<PomData>()
+    Set<LicenseFileData> licenseFiles = new TreeSet<LicenseFileData>()
+    Set<PomData> poms = new TreeSet<PomData>()
 
     boolean isEmpty() { manifests.isEmpty() && poms.isEmpty() && licenseFiles.isEmpty() }
 }
@@ -55,6 +55,7 @@ class ManifestData {
 }
 
 @Canonical
+@Sortable(includes = ["name", "description", "projectUrl", "inceptionYear"])
 class PomData {
     String name, description, projectUrl, inceptionYear
     Set<License> licenses = new TreeSet<License>()
@@ -81,6 +82,7 @@ class License {
 }
 
 @Canonical
+@Sortable(excludes = "fileDetails")
 class LicenseFileData {
     Collection<LicenseFileDetails> fileDetails = new TreeSet<LicenseFileDetails>()
 }
