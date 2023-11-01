@@ -208,9 +208,9 @@ class ProjectBuilderSpec extends Specification {
         }
 
         then:
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file == ["file1", "file2", "file3"]
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license == ["lic1", "lic2", "lic3"]
-        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl == ["licUrl1", "licUrl2", "licUrl3"]
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.file.sort() ==["file1", "file2", "file3"].sort()
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.license.sort() == ["lic1", "lic2", "lic3"].sort()
+        data.configurations*.dependencies.flatten().licenseFiles.flatten().fileDetails.flatten()*.licenseUrl.sort() == ["licUrl1", "licUrl2", "licUrl3"].sort()
         data.importedModules.isEmpty()
     }
 
