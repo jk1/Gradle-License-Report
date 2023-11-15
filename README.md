@@ -15,7 +15,7 @@ Add this to your `build.gradle` file for Gradle 7+:
 
 ```groovy
 plugins {
-    id 'com.github.jk1.dependency-license-report' version '2.5'
+    id 'com.github.jk1.dependency-license-report' version '2.6'
 }
 ```
 
@@ -299,6 +299,20 @@ licenseReport {
 
 If no bundle-file is specified, a default file is used containing some commons rules. You are encouraged to create your own bundle-file
 and contribute back useful rules.
+
+### SPDX support
+
+Normalizers are also capable of mapping licenses to SPDX identifiers. The code
+
+```groovy
+import com.github.jk1.license.filter.*
+
+licenseReport {
+    filters = [new SpdxLicenseBundleNormalizer()]
+}
+```
+
+replaces string license names in the report with the corresponding [SPDX IDs](https://spdx.org/licenses/)
 
 ## Writing custom renderers, importers and filters
 

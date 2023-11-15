@@ -38,13 +38,13 @@ class ReportTask extends DefaultTask {
 
     @OutputDirectory
     File getOutputFolder() {
-        return new File(config.outputDir)
+        return new File(config.absoluteOutputDir)
     }
 
     @TaskAction
     void generateReport() {
         LOGGER.info("Processing dependencies for project ${getProject().name}")
-        new File(config.outputDir).mkdirs()
+        new File(config.absoluteOutputDir).mkdirs()
         ProjectData data = new ProjectReader(config).read(getProject())
         LOGGER.info("Importing external dependency data. A total of ${config.importers.length} configured.")
         config.importers.each {
@@ -58,6 +58,6 @@ class ReportTask extends DefaultTask {
         config.renderers.each {
             it.render(data)
         }
-        LOGGER.info("Dependency license report for project ${getProject().name} created in ${config.outputDir}")
+        LOGGER.info("Dependency license report for project ${getProject().name} created in ${config.absoluteOutputDir}")
     }
 }

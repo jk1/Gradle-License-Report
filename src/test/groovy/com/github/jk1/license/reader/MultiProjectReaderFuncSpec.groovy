@@ -18,12 +18,19 @@ package com.github.jk1.license.reader
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
 
-import static com.github.jk1.license.reader.ProjectReaderFuncSpec.removeDevelopers
-
 class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
 
     def setup() {
         settingsGradle = new File(testProjectDir, "settings.gradle")
+        settingsGradle << """
+            pluginManagement {
+                repositories {
+                    google()
+                    mavenCentral()
+                    gradlePluginPortal()
+                }
+            }
+        """
 
         buildFile << """
             plugins {
@@ -554,6 +561,110 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         configurationsGPath.name == ["mainConfig", "subConfig"]
+    }
+
+    /*
+    Test kotlin multiplatform project structure, including subproject reports and custom
+    output dirs
+     */
+    def "Test Kotlin Multiplatform"() {
+        setup:
+        def properties = new File(testProjectDir, "gradle.properties")
+        properties << "android.useAndroidX = true"
+
+        newSubBuildFile("shared") << """
+            plugins {
+                id "com.android.library" version "8.1.3"
+                id "org.jetbrains.kotlin.multiplatform" version "1.9.20"
+                id "com.github.jk1.dependency-license-report"
+            }
+            configurations {
+                mainConfig
+            }
+            repositories {
+                mavenCentral()
+                google()
+            }
+            kotlin {
+                androidTarget()
+                
+                sourceSets {
+                    commonMain.dependencies {
+                        api("io.ktor:ktor-client-core:2.3.6")
+                        implementation("com.benasher44:uuid:0.7.0")
+                    }
+            
+                    androidMain.dependencies {
+                        implementation("app.cash.sqldelight:android-driver:2.0.0")
+                        implementation("io.ktor:ktor-client-android:2.3.6")
+                    }
+                }
+            }
+            android {
+                namespace "com.example.shared"
+                compileSdk 34
+                defaultConfig {
+                    minSdk 26
+                }
+            }
+            // shared folder reports are useful for iOS license reports
+            licenseReport {
+                // test relative paths
+                outputDir = "sharedBuild/reports/license-test/"
+                renderers = [new com.github.jk1.license.render.JsonReportRenderer()]
+                configurations = [
+                        "commonMainCompileOnlyDependenciesMetadata",
+                        "iosMainCompileOnlyDependenciesMetadata"
+                ]
+                
+                println("Output shared: " + outputDir)
+            }
+        """
+
+        newSubBuildFile("android") << """
+            plugins {
+                id "com.android.application" version "8.1.3"
+                id "org.jetbrains.kotlin.android" version "1.9.20"
+                id "com.github.jk1.dependency-license-report"
+            }
+            configurations {
+                mainConfig
+            }
+            repositories {
+                mavenCentral()
+                google()
+            }
+            android {
+                namespace "com.example.android"
+                compileSdk 34
+                defaultConfig {
+                    applicationId "com.example.android"
+                    minSdk 26
+                    targetSdk 34
+                }
+                dependencies {
+                    implementation project(":shared")
+                }
+            }
+            licenseReport {
+                // test relative paths
+                outputDir = "androidBuild/reports/license-test/"
+                renderers = [new com.github.jk1.license.render.JsonReportRenderer()]
+                configurations = ["releaseRuntimeClasspath"]
+                
+                println("Output android: " + outputDir)
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+
+        then:
+        runResult.task(":android:generateLicenseReport").outcome == TaskOutcome.SUCCESS
+        runResult.task(":shared:generateLicenseReport").outcome == TaskOutcome.SUCCESS
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        println(testProjectDir.list())
     }
 
     static void removeDevelopers(Map rawFile) {

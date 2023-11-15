@@ -82,7 +82,7 @@ class LicenseFilesReader {
             String entryName = entry.name
             if (!entryName.startsWith("/")) entryName = "/$entryName"
             String path = "${artifact.file.name}${entryName}"
-            File file = new File(config.outputDir, path)
+            File file = new File(config.absoluteOutputDir, path)
             file.parentFile.mkdirs()
             file.text = zipFile.getInputStream(entry).text
             return path
@@ -104,7 +104,7 @@ class LicenseFilesReader {
         String moduleLicense = null
         String moduleLicenseUrl = null
 
-        def text = new File(config.outputDir, file).text
+        def text = new File(config.absoluteOutputDir, file).text
         if (text.contains('Eclipse\n\t\tPublic License Version 2.0')) {
             moduleLicense = 'Eclipse Public License Version 2.0'
             moduleLicenseUrl = 'http://www.eclipse.org/legal/epl-2.0'

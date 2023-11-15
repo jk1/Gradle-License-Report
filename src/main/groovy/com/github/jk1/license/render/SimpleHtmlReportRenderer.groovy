@@ -44,7 +44,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
-        output = new File(config.outputDir, fileName)
+        output = new File(config.absoluteOutputDir, fileName)
         output.text = """
 <!DOCTYPE html>
 <html lang="en">

@@ -69,7 +69,7 @@ class CsvReportRenderer implements ReportRenderer {
     @Override
     void render(ProjectData data) {
         LicenseReportExtension config = data.project.licenseReport
-        File output = new File(config.outputDir, filename)
+        File output = new File(config.absoluteOutputDir, filename)
         output.write('')
 
         if (includeHeaderLine) {

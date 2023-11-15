@@ -22,6 +22,7 @@ import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 
 class LicenseReportExtension {
@@ -69,6 +70,15 @@ class LicenseReportExtension {
     @Nested
     DependencyFilter[] getFilters() {
         return filters
+    }
+
+    @Internal
+    String getAbsoluteOutputDir(){
+        if (new File(outputDir).isAbsolute()) {
+            return outputDir
+        } else {
+            return projects.first().absoluteProjectPath(outputDir)
+        }
     }
 
     @Input

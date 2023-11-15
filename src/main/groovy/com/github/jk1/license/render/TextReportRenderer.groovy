@@ -44,7 +44,7 @@ class TextReportRenderer implements ReportRenderer{
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
-        output = new File(config.outputDir, fileName)
+        output = new File(config.absoluteOutputDir, fileName)
         output.text = """
 Dependency License Report for $project.name ${if (!'unspecified'.equals(project.version)) project.version else ''}
 
@@ -123,7 +123,7 @@ This report was generated at ${new Date()}.
         if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
             output << 'Embedded license: '
             output << "\n\n"
-            output << data.licenseFiles.first().fileDetails.collect({ "                    ****************************************                    \n\n" + new File("$config.outputDir/$it.file").text + "\n"}).join('')
+            output << data.licenseFiles.first().fileDetails.collect({ "                    ****************************************                    \n\n" + new File("$config.absoluteOutputDir/$it.file").text + "\n"}).join('')
         }
         output << "--------------------------------------------------------------------------------\n\n"
     }

@@ -17,6 +17,7 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.License
+import com.github.jk1.license.LicenseFileData
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
@@ -35,7 +36,7 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         project = data.project
         if( name == null ) name = project.name
         config = project.licenseReport
-        output = new File(config.outputDir, fileName)
+        output = new File(config.absoluteOutputDir, fileName)
         output.delete()
         def inventory = buildLicenseInventory(data)
         def externalInventories = buildExternalInventories(data)
@@ -43,11 +44,8 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
 
     }
 
-    private void printDependencies(Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
-        output << "\n"
-        output << "# ${name}\n"
-        output << "## Dependency License Report\n"
-        output << "_${new Date().format('yyyy-MM-dd HH:mm:ss z')}_\n"
+    protected void printDependencies(Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
+        printHeader()
 
         inventory.keySet().sort().each { String license ->
             output << "## ${license}\n\n"
@@ -68,13 +66,16 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         output << "\n"
     }
 
-    private void printDependency(ModuleData data) {
-        boolean projectUrlDone = false
-        output << "**${++counter}** "
-        if (data.group) output << "**Group:** `$data.group` "
-        if (data.name) output << "**Name:** `$data.name` "
-        if (data.version) output << "**Version:** `$data.version` "
+    protected void printHeader() {
         output << "\n"
+        output << "# ${name}\n"
+        output << "## Dependency License Report\n"
+        output << "_${new Date().format('yyyy-MM-dd HH:mm:ss z')}_\n"
+    }
+
+    protected void printDependency(ModuleData data) {
+        boolean projectUrlDone = false
+        printDependencyMetaInformation(data)
 
         String gnv = "${data.group}:${data.name}:${data.version}"
         if (overrides.containsKey(gnv)) {
@@ -92,46 +93,68 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
 
             if (!data.manifests.isEmpty()) {
                 ManifestData manifest = data.manifests.first()
-                if (manifest.url && !projectUrlDone) {
-                    output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
-                }
-                if (manifest.license) {
-                    if (manifest.license.startsWith("http")) {
-                        output << sectionLink("Manifest license URL", manifest.license, manifest.license)
-                    } else if (manifest.hasPackagedLicense) {
-                        output << sectionLink("Packaged License File", manifest.license, manifest.url)
-                    } else {
-                        output << section("Manifest License", "${manifest.license} (Not Packaged)")
-                    }
-                }
+                printDependencyManifest(manifest, projectUrlDone)
             }
 
             if (!data.poms.isEmpty()) {
                 PomData pomData = data.poms.first()
-                if (pomData.projectUrl && !projectUrlDone) {
-                    output << sectionLink("POM Project URL", pomData.projectUrl, pomData.projectUrl)
-                }
-                if (pomData.licenses) {
-                    pomData.licenses.each { License license ->
-                        if (license.url) {
-                            output << section("POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}")
-                        } else {
-                            output << section("POM License", license.name)
-                        }
-                    }
-                }
+                printDependencyPom(pomData, projectUrlDone)
             }
         }
 
-        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
-            output << section("Embedded license files", data.licenseFiles.first().fileDetails.collect {
-                link(it.file, it.file)
-            }.unique().join(' \n    - '))
+
+        def licenseFiles = data.licenseFiles
+        if (!licenseFiles.isEmpty() && !licenseFiles.first().fileDetails.isEmpty()) {
+            printDependencyLicenseFiles(licenseFiles)
         }
         output << "\n"
     }
 
-    private printImportedDependency(ImportedModuleData data) {
+    protected void printDependencyMetaInformation(ModuleData data) {
+        output << "**${++counter}** "
+        if (data.group) output << "**Group:** `$data.group` "
+        if (data.name) output << "**Name:** `$data.name` "
+        if (data.version) output << "**Version:** `$data.version` "
+        output << "\n"
+    }
+
+    protected void printDependencyManifest(ManifestData manifest, boolean projectUrlDone) {
+        if (manifest.url && !projectUrlDone) {
+            output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
+        }
+        if (manifest.license) {
+            if (manifest.license.startsWith("http")) {
+                output << sectionLink("Manifest license URL", manifest.license, manifest.license)
+            } else if (manifest.hasPackagedLicense) {
+                output << sectionLink("Packaged License File", manifest.license, manifest.url)
+            } else {
+                output << section("Manifest License", "${manifest.license} (Not Packaged)")
+            }
+        }
+    }
+
+    protected void printDependencyPom(PomData pomData, boolean projectUrlDone) {
+        if (pomData.projectUrl && !projectUrlDone) {
+            output << sectionLink("POM Project URL", pomData.projectUrl, pomData.projectUrl)
+        }
+        if (pomData.licenses) {
+            pomData.licenses.each { License license ->
+                if (license.url) {
+                    output << section("POM License", "${license.name} - ${license.url.startsWith("http") ? link(license.url, license.url) : section("License", license.url)}")
+                } else {
+                    output << section("POM License", license.name)
+                }
+            }
+        }
+    }
+
+    protected printDependencyLicenseFiles(TreeSet<LicenseFileData> licenseFiles) {
+        output << section("Embedded license files", licenseFiles.first().fileDetails.collect {
+            link(it.file, it.file)
+        }.unique().join(' \n    - '))
+    }
+
+    protected printImportedDependency(ImportedModuleData data) {
         output << "\n\n"
         output << "${++counter}. **${data.name} v${data.version}**\n"
         output << sectionLink("Project URL", data.projectUrl, data.projectUrl)
