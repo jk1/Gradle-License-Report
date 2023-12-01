@@ -194,6 +194,10 @@ class ProjectBuilder extends BuilderSupport {
         }
     }
 
+    private def setHasArtifactFile(boolean value) {
+        current.hasArtifactFile = value
+    }
+
     private License addPomLicense(Object license, Map map) {
         PomData pom = (PomData)current
 
