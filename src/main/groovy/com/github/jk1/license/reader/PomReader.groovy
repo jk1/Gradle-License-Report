@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.reader
 
+import com.github.jk1.license.GradleProject
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.PomData
@@ -46,7 +47,7 @@ class PomReader {
         this.config = config
     }
 
-    PomData readPomData(Project project, ResolvedArtifact artifact) {
+    PomData readPomData(GradleProject project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file)
         boolean pomRepresentsArtifact = true
@@ -74,7 +75,7 @@ class PomReader {
         }
     }
 
-    PomData readPomData(Project project, ResolvedArtifactResult artifact) {
+    PomData readPomData(GradleProject project, ResolvedArtifactResult artifact) {
         resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file)
         return readPomFile(pomContent)
