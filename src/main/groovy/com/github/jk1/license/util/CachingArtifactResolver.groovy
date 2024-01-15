@@ -15,7 +15,7 @@
  */
 package com.github.jk1.license.util
 
-import org.gradle.api.Project
+import com.github.jk1.license.GradleProject
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ResolvedArtifact
@@ -26,9 +26,9 @@ class CachingArtifactResolver {
 
     private static Logger LOGGER = Logging.getLogger(CachingArtifactResolver.class)
     private Map<String, Collection<ResolvedArtifact>> cache = new HashMap<>()
-    private Project project
+    private GradleProject project
 
-    CachingArtifactResolver(Project project) {
+    CachingArtifactResolver(GradleProject project) {
         this.project = project
     }
 

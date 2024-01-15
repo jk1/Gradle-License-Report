@@ -21,6 +21,7 @@ import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedDependency
+import org.gradle.api.initialization.dsl.ScriptHandler
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
@@ -32,6 +33,7 @@ class LicenseReportExtension {
     public boolean unionParentPomLicenses
     public String outputDir
     public Project[] projects
+    public Project[] buildScriptProjects
     public ReportRenderer[] renderers
     public DependencyDataImporter[] importers
     public DependencyFilter[] filters
@@ -46,6 +48,7 @@ class LicenseReportExtension {
         unionParentPomLicenses = true
         outputDir = project.layout.buildDirectory.dir("reports/dependency-license").get().asFile.absolutePath
         projects = [project] + project.subprojects
+        buildScriptProjects = []
         renderers = new SimpleHtmlReportRenderer()
         configurations = null
         excludeOwnGroup = true
@@ -85,6 +88,8 @@ class LicenseReportExtension {
         def snapshot = []
         snapshot << 'projects'
         snapshot += projects.collect { it.path }
+        snapshot << 'buildScriptProjects'
+        snapshot += buildScriptProjects.collect { it.path }
         snapshot << 'renderers'
         snapshot += renderers.collect { it.class.name }
         snapshot << 'importers'
