@@ -47,7 +47,8 @@ class ModuleReaderImpl implements ModuleReader {
         ModuleData moduleData = new ModuleData(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
         dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
             LOGGER.info("Processing artifact: $artifact ($artifact.file)")
-            if (artifact.file.exists()){
+            moduleData.hasArtifactFile = artifact.file.exists()
+            if (moduleData.hasArtifactFile){
                 def pom = pomReader.readPomData(project, artifact)
                 def manifest = manifestReader.readManifestData(artifact)
                 def licenseFile = filesReader.read(artifact)
