@@ -50,12 +50,12 @@ class CheckLicenseTask extends DefaultTask {
     @InputFile
     @PathSensitive(PathSensitivity.NAME_ONLY)
     File getProjectDependenciesData() {
-        return new File("${config.outputDir}/${PROJECT_JSON_FOR_LICENSE_CHECKING_FILE}")
+        return new File("${config.absoluteOutputDir}/${PROJECT_JSON_FOR_LICENSE_CHECKING_FILE}")
     }
 
     @OutputFile
     File getNotPassedDependenciesFile() {
-        new File("${config.outputDir}/$NOT_PASSED_DEPENDENCIES_FILE")
+        new File("${config.absoluteOutputDir}/$NOT_PASSED_DEPENDENCIES_FILE")
     }
 
     @TaskAction

@@ -36,7 +36,7 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         project = data.project
         if( name == null ) name = project.name
         config = project.licenseReport
-        output = new File(config.outputDir, fileName)
+        output = new File(config.absoluteOutputDir, fileName)
         output.delete()
         def inventory = buildLicenseInventory(data)
         def externalInventories = buildExternalInventories(data)

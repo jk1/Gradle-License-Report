@@ -46,7 +46,7 @@ class InventoryReportRenderer implements ReportRenderer {
         project = data.project
         if( name == null ) name = project.name
         config = project.licenseReport
-        output = new File(config.outputDir, fileName)
+        output = new File(config.absoluteOutputDir, fileName)
         output.delete() // clear old output
         def inventory = buildLicenseInventory(data)
         def externalInventories = buildExternalInventories(data)

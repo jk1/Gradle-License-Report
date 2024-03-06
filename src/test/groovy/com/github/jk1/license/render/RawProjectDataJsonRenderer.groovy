@@ -25,7 +25,7 @@ class RawProjectDataJsonRenderer implements ReportRenderer {
     @Override
     void render(ProjectData data) {
         LicenseReportExtension config = data.project?.licenseReport
-        File outputFile = new File(config.outputDir, RAW_PROJECT_JSON_NAME)
+        File outputFile = new File(config.absoluteOutputDir, RAW_PROJECT_JSON_NAME)
         outputFile.createNewFile()
 
         def project = data.project

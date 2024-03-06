@@ -59,7 +59,7 @@ class ManifestReader {
                     def path = findLicenseFile(artifact.file, data.license)
                     if (path != null){
                         data.hasPackagedLicense = true
-                        File dest = new File(config.outputDir, "${artifact.file.name}/${data.license}.html")
+                        File dest = new File(config.absoluteOutputDir, "${artifact.file.name}/${data.license}.html")
                         data.url="${artifact.file.name}/${data.license}.html"
                         writeLicenseFile(artifact.file, path, dest)
                     }
@@ -95,9 +95,9 @@ class ManifestReader {
         if (Files.maybeLicenseUrl(bundleLicense)) {
 			def allLicenseParts = bundleLicense.split(';')
             data.licenseUrl = allLicenseParts[0]
-			allLicenseParts.each { 
+			allLicenseParts.each {
 				def additionalParameter = it.split('=')
-				
+
 				if (additionalParameter[0] == 'description')
 					data.license = additionalParameter[1]
 			}

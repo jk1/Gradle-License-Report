@@ -68,7 +68,7 @@ class XmlReportRenderer implements ReportRenderer {
     void render(ProjectData data) {
         project = data.project
         config = project.licenseReport
-        output = new File(config.outputDir, fileName)
+        output = new File(config.absoluteOutputDir, fileName)
         output.text = '<?xml version="1.0" encoding="UTF-8"?>\n'
         output << '<!DOCTYPE topic SYSTEM "' + schemaBaseUrl + 'html-entities.dtd">\n'
         output << '<topic xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="' + schemaBaseUrl + 'topic.v2.xsd"  id="third-party-libs" title="Third Party Libraries">\n'

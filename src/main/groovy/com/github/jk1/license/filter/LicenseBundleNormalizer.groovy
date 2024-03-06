@@ -216,7 +216,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
         List<NormalizerTransformationRule> rules = transformationRulesFor(transformationRuleMatchers,
                 module, licenseFileDetails.license, licenseFileDetails.licenseUrl,
-                { new File("$config.outputDir/$licenseFileDetails.file").text }.memoize())
+                { new File("${config.absoluteOutputDir}/$licenseFileDetails.file").text }.memoize())
 
         LOGGER.debug("License {} ({}) (via license file details, module {}) matches the following rules: [{}]",
                 licenseFileDetails.license, licenseFileDetails.licenseUrl,
