@@ -34,7 +34,20 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
         if( name == null ) name = project.name
         config = project.licenseReport
         output = new File(config.outputDir, fileName)
-        output.text = """
+        output.text = getHtmlStart()
+        def inventory = buildLicenseInventory(data)
+        def externalInventories = buildExternalInventories(data)
+        printInventory(name, inventory, externalInventories)
+        printDependencies(inventory, externalInventories)
+        output << """
+</div>
+</body>
+</html>
+"""
+    }
+
+    protected GString getHtmlStart() {
+        """
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -157,15 +170,6 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 <body>
 <div class="container">
 """
-        def inventory = buildLicenseInventory(data)
-        def externalInventories = buildExternalInventories(data)
-        printInventory(name, inventory, externalInventories)
-        printDependencies(inventory, externalInventories)
-        output << """
-</div>
-</body>
-</html>
-"""
     }
 
     private void printInventory(String title, Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
@@ -199,7 +203,7 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
         values.findAll { it != null }.collect { it.replaceAll(/\s/, '_') }.join('_')
     }
 
-    private void printDependencies(Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
+    protected void printDependencies(Map<String, List<ModuleData>> inventory, Map<String, Map<String, List<ImportedModuleData>>> externalInventories) {
         output << "<div class='content'>\n"
         output << "<h1>${name}</h1>\n"
         inventory.keySet().sort().each { String license ->
@@ -221,14 +225,9 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
         output << "</div>\n"
     }
 
-    private void printDependency(ModuleData data) {
+    protected void printDependency(ModuleData data) {
         boolean projectUrlDone = false
-        output << "<div class='dependency'>\n"
-        output << "<p><strong> ${++counter}.</strong> "
-        if (data.group) output << "<strong>Group:</strong> $data.group "
-        if (data.name) output << "<strong>Name:</strong> $data.name "
-        if (data.version) output << "<strong>Version:</strong> $data.version "
-        output << "</p>"
+        printDependencyMetaInformation(data.group, data.name, data.version)
 
         String gnv = "${data.group}:${data.name}:${data.version}"
         if (overrides.containsKey(gnv)) {
@@ -246,46 +245,69 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
             if (!data.manifests.isEmpty()) {
                 ManifestData manifest = data.manifests.first()
-                if (manifest.url && !projectUrlDone) {
-                    output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
-                }
-                if (manifest.license) {
-                    if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
-                        output << section("Manifest License", "${manifest.license} - ${Files.maybeLicenseUrl(manifest.licenseUrl) ? link(manifest.licenseUrl, manifest.licenseUrl) : section("License", manifest.licenseUrl)}")
-                    } else if (manifest.hasPackagedLicense) {
-                        output << sectionLink("Packaged License File", manifest.license, manifest.url)
-                    } else {
-                        output << section("Manifest License", "${manifest.license} (Not Packaged)")
-                    }
-                }
+                printDependencyManifest(manifest, projectUrlDone)
             }
 
             if (!data.poms.isEmpty()) {
                 PomData pomData = data.poms.first()
-                if (pomData.projectUrl && !projectUrlDone) {
-                    output << sectionLink("POM Project URL", pomData.projectUrl, pomData.projectUrl)
-                }
-                if (pomData.licenses) {
-                    pomData.licenses.each { License license ->
-                        if (license.url) {
-                            output << section("POM License", "${license.name} - ${Files.maybeLicenseUrl(license.url) ? link(license.url, license.url) : section("License", license.url)}")
-                        } else {
-                            output << section("POM License", license.name)
-                        }
-                    }
-                }
+                printDependencyPom(pomData, projectUrlDone)
             }
         }
 
-        if (!data.licenseFiles.isEmpty() && !data.licenseFiles.first().fileDetails.isEmpty()) {
-            output << section("Embedded license files", data.licenseFiles.first().fileDetails.collect {
-                link(it.file, it.file)
-            }.unique().join('<br>'))
+
+        def licenseFiles = data.licenseFiles
+        if (!licenseFiles.isEmpty() && !licenseFiles.first().fileDetails.isEmpty()) {
+            printDependencyLicenseFiles(licenseFiles)
         }
         output << "</div>\n"
     }
 
-    private printImportedDependency(ImportedModuleData data) {
+    protected void printDependencyMetaInformation(String group, String name, String version) {
+        output << "<div class='dependency'>\n"
+        output << "<p><strong> ${++counter}.</strong> "
+        if (group) output << "<strong>Group:</strong> ${group} "
+        if (name) output << "<strong>Name:</strong> ${name} "
+        if (version) output << "<strong>Version:</strong> ${version} "
+        output << "</p>"
+    }
+
+    protected void printDependencyManifest(ManifestData manifest, boolean projectUrlDone) {
+        if (manifest.url && !projectUrlDone) {
+            output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
+        }
+        if (manifest.license) {
+            if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
+                output << section("Manifest License", "${manifest.license} - ${Files.maybeLicenseUrl(manifest.licenseUrl) ? link(manifest.licenseUrl, manifest.licenseUrl) : section("License", manifest.licenseUrl)}")
+            } else if (manifest.hasPackagedLicense) {
+                output << sectionLink("Packaged License File", manifest.license, manifest.url)
+            } else {
+                output << section("Manifest License", "${manifest.license} (Not Packaged)")
+            }
+        }
+    }
+
+    protected void printDependencyPom(PomData pomData, boolean projectUrlDone) {
+        if (pomData.projectUrl && !projectUrlDone) {
+            output << sectionLink("POM Project URL", pomData.projectUrl, pomData.projectUrl)
+        }
+        if (pomData.licenses) {
+            pomData.licenses.each { License license ->
+                if (license.url) {
+                    output << section("POM License", "${license.name} - ${Files.maybeLicenseUrl(license.url) ? link(license.url, license.url) : section("License", license.url)}")
+                } else {
+                    output << section("POM License", license.name)
+                }
+            }
+        }
+    }
+
+    protected printDependencyLicenseFiles(TreeSet<LicenseFileData> licenseFiles) {
+        output << section("Embedded license files", licenseFiles.first().fileDetails.collect {
+            link(it.file, it.file)
+        }.unique().join('<br>'))
+    }
+
+    protected printImportedDependency(ImportedModuleData data) {
         output << "<div class='dependency'>\n"
         output << "<p><strong>${++counter}. ${data.name} v${data.version}</strong></p>"
         output << sectionLink("Project URL", data.projectUrl, data.projectUrl)
