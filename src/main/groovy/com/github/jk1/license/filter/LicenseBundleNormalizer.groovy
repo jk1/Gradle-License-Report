@@ -35,16 +35,16 @@ import java.util.regex.Pattern
 
 class LicenseBundleNormalizer implements DependencyFilter {
 
-    private Logger LOGGER = Logging.getLogger(ReportTask.class)
+    private static Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private String filterConfig = ""
-    private ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
-    private LicenseReportExtension config
-    private  LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
+    protected String filterConfig = ""
+    protected ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
+    protected LicenseReportExtension config
+    protected  LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
         bundles: new ArrayList<NormalizerLicenseBundle>(),
         transformationRules: new ArrayList<NormalizerTransformationRule>()
     )
-    private  Map<String, NormalizerLicenseBundle> bundleMap
+    protected  Map<String, NormalizerLicenseBundle> bundleMap
 
     LicenseBundleNormalizer(Map params = ["bundlePath": null, "createDefaultTransformationRules": true]) {
         this(params.bundlePath as String, params.get("createDefaultTransformationRules", true))
@@ -98,7 +98,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         return data
     }
 
-    private def applyDefaultNormalizerBundleFile() {
+    protected def applyDefaultNormalizerBundleFile() {
         LOGGER.debug("Applying default normalizer bundles")
 
         def normalizerTextStream = getClass().getResourceAsStream("/default-license-normalizer-bundle.json")
@@ -107,7 +107,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         mergeConfigIntoGlobalConfig(defaultConfig)
     }
 
-    private def applyBundleNamesAndUrlsAsExactMatchRules() {
+    protected def applyBundleNamesAndUrlsAsExactMatchRules() {
         Set<String> rulePatternNames = normalizerConfig.transformationRules*.licenseNamePattern as Set
         Set<String> rulePatternUrls = normalizerConfig.transformationRules*.licenseUrlPattern as Set
 
@@ -123,7 +123,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
     }
 
-    private void mergeConfigIntoGlobalConfig(LicenseBundleNormalizerConfig mergeIn) {
+    protected void mergeConfigIntoGlobalConfig(LicenseBundleNormalizerConfig mergeIn) {
         def existingBungleNames = normalizerConfig.bundles*.bundleName
 
         mergeIn.bundles.each { NormalizerLicenseBundle bundle ->
@@ -139,7 +139,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
     }
 
-    private def normalizePoms(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected def normalizePoms(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                               ModuleData dependency) {
         String module = dependency.group + ':' + dependency.name + ':' + dependency.version
         LOGGER.debug("Checking module {} (normalize pom)", module)
@@ -149,7 +149,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
             pom.licenses.addAll(normalizedLicense)
         }
     }
-    private def normalizeManifest(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected def normalizeManifest(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                   ModuleData dependency) {
         String module = dependency.group + ':' + dependency.name + ':' + dependency.version
         LOGGER.debug("Checking module {} (normalize manifest)", module)
@@ -159,7 +159,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         dependency.manifests.clear()
         dependency.manifests.addAll(normalizedManifests)
     }
-    private def normalizeLicenseFileDetails(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected def normalizeLicenseFileDetails(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                             ModuleData dependency) {
         String module = dependency.group + ':' + dependency.name + ':' + dependency.version
         LOGGER.debug("Checking module {} (normalize license file details)", module)
@@ -171,7 +171,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
     }
 
-    private def normalizeImportedModuleBundle(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected def normalizeImportedModuleBundle(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                               ImportedModuleBundle importedModuleBundle) {
         List<ModuleData> normalizedModuleData = importedModuleBundle.modules.collect {
             normalizeModuleData(transformationRuleMatchers, it)
@@ -180,7 +180,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         importedModuleBundle.modules.addAll(normalizedModuleData)
     }
 
-    private Collection<License> normalizePomLicense(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected Collection<License> normalizePomLicense(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                                     License license,
                                                     String module) {
         List<NormalizerTransformationRule> rules = transformationRulesFor(transformationRuleMatchers,
@@ -193,7 +193,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         rules.collect { normalizeSinglePomLicense(it, license) }
     }
 
-    private Collection<ManifestData> normalizeManifestLicense(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected Collection<ManifestData> normalizeManifestLicense(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                                               ManifestData manifest,
                                                               String module) {
         List<NormalizerTransformationRule> rules = transformationRulesFor(transformationRuleMatchers,
@@ -209,7 +209,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         rules.collect { normalizeSingleManifestLicense(it, manifest) }
     }
 
-    private Collection<LicenseFileDetails> normalizeLicenseFileDetailsLicense(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected Collection<LicenseFileDetails> normalizeLicenseFileDetailsLicense(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                                                               LicenseFileDetails licenseFileDetails,
                                                                               String module) {
         if (licenseFileDetails.file == null || licenseFileDetails.file.isEmpty()) return [licenseFileDetails]
@@ -228,7 +228,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         rules.collect { normalizeSingleLicenseFileDetailsLicense(it, licenseFileDetails) }
     }
 
-    private Collection<ImportedModuleData> normalizeModuleData(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
+    protected Collection<ImportedModuleData> normalizeModuleData(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                                                ImportedModuleData importedModuleData) {
         String module = importedModuleData.name + ':' + importedModuleData.version
 
@@ -246,12 +246,12 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     @CompileStatic
-    private NormalizerLicenseBundle findBundleForRule(NormalizerTransformationRule rule) {
+    protected NormalizerLicenseBundle findBundleForRule(NormalizerTransformationRule rule) {
         return bundleMap[rule?.bundleName]
     }
 
     @CompileStatic
-    private License normalizeSinglePomLicense(NormalizerTransformationRule rule, License license) {
+    protected License normalizeSinglePomLicense(NormalizerTransformationRule rule, License license) {
         License normalized = new License(
             name: license.name,
             url:  license.url
@@ -265,7 +265,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     @CompileStatic
-    private ManifestData normalizeSingleManifestLicense(NormalizerTransformationRule rule, ManifestData manifest) {
+    protected ManifestData normalizeSingleManifestLicense(NormalizerTransformationRule rule, ManifestData manifest) {
         ManifestData normalized = new ManifestData(
             name: manifest.name,
             version: manifest.version,
@@ -287,7 +287,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     @CompileStatic
-    private LicenseFileDetails normalizeSingleLicenseFileDetailsLicense(NormalizerTransformationRule rule,
+    protected LicenseFileDetails normalizeSingleLicenseFileDetailsLicense(NormalizerTransformationRule rule,
                                                                   LicenseFileDetails details) {
         LicenseFileDetails normalized = new LicenseFileDetails(
             file: details.file,
@@ -303,7 +303,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     @CompileStatic
-    private ImportedModuleData normalizeSingleModuleDataLicense(NormalizerTransformationRule rule, ImportedModuleData importedModuleData) {
+    protected ImportedModuleData normalizeSingleModuleDataLicense(NormalizerTransformationRule rule, ImportedModuleData importedModuleData) {
         ImportedModuleData normalized = new ImportedModuleData(
             name: importedModuleData.name,
             version: importedModuleData.version,
@@ -320,7 +320,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     @CompileStatic
-    private def normalizeWithBundle(NormalizerTransformationRule rule, Closure block) {
+    protected def normalizeWithBundle(NormalizerTransformationRule rule, Closure block) {
         def bundle = findBundleForRule(rule)
         if (bundle == null) {
             LOGGER.warn("No bundle found for bundle-name: ${rule?.bundleName}")
@@ -330,7 +330,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         block(bundle)
     }
 
-    private static def toConfig(Object slurpResult) {
+    protected static def toConfig(Object slurpResult) {
         def config = new LicenseBundleNormalizerConfig()
         config.bundles = slurpResult.bundles.collect { new NormalizerLicenseBundle(it) }
         config.transformationRules = slurpResult.transformationRules.collect { new NormalizerTransformationRule(it) }
