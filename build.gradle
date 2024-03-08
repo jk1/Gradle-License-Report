@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.github.jk1'
-version = '2.5'
+version = '2.6'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
