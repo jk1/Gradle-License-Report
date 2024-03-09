@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.reader
 
+import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.task.ReportTask
@@ -25,7 +26,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 interface ModuleReader {
-    ModuleData read(Project project, ResolvedDependency dependency)
+    ModuleData read(GradleProject project, ResolvedDependency dependency)
 }
 
 class ModuleReaderImpl implements ModuleReader {
@@ -43,7 +44,7 @@ class ModuleReaderImpl implements ModuleReader {
         this.filesReader = new LicenseFilesReader(config)
     }
 
-    ModuleData read(Project project, ResolvedDependency dependency) {
+    ModuleData read(GradleProject project, ResolvedDependency dependency) {
         ModuleData moduleData = new ModuleData(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
         dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
             LOGGER.info("Processing artifact: $artifact ($artifact.file)")
@@ -72,7 +73,7 @@ class CachedModuleReader implements ModuleReader {
         this.actualReader = new ModuleReaderImpl(config)
     }
 
-    ModuleData read(Project project, ResolvedDependency dependency) {
+    ModuleData read(GradleProject project, ResolvedDependency dependency) {
         String dataName = "${dependency.moduleGroup}:${dependency.moduleName}:${dependency.moduleVersion}"
         return moduleDataCache.computeIfAbsent(dataName) {
             actualReader.read(project, dependency)

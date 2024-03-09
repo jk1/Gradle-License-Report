@@ -18,6 +18,24 @@ package com.github.jk1.license
 import groovy.transform.Canonical
 import groovy.transform.Sortable
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ConfigurationContainer
+import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.api.initialization.dsl.ScriptHandler
+
+@Canonical
+class GradleProject {
+    String name
+    ConfigurationContainer configurations
+    DependencyHandler dependencies
+
+    static GradleProject ofProject(Project project) {
+        return new GradleProject(project.getName(), project.getConfigurations(), project.getDependencies());
+    }
+
+    static GradleProject ofScript(Project project) {
+        return new GradleProject(project.name + "/buildScript", project.buildscript.getConfigurations(), project.buildscript.getDependencies());
+    }
+}
 
 @Canonical
 class ProjectData {

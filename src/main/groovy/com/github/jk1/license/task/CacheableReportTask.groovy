@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.task
 
+import com.github.jk1.license.GradleProject
 import com.github.jk1.license.reader.ProjectReader
 import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.CacheableTask
@@ -25,8 +26,11 @@ class CacheableReportTask extends ReportTask {
 
     @Classpath
     FileCollection getClasspath() {
-        getConfig().projects
-            .collectMany { ProjectReader.findConfiguredConfigurations(it, getConfig()) }
-            .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
+        def projectConfigs = getConfig().projects
+                .collectMany { ProjectReader.findConfiguredConfigurations(GradleProject.ofProject(it), getConfig()) }
+        def buildScriptProjectConfigs = getConfig().buildScriptProjects
+                .collectMany { ProjectReader.findConfiguredConfigurations(GradleProject.ofScript(it), getConfig()) }
+        (projectConfigs + buildScriptProjectConfigs)
+                .inject(project.files(), { FileCollection memo, eachConfiguration -> memo + eachConfiguration })
     }
 }

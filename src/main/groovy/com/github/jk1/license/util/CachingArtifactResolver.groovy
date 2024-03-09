@@ -15,19 +15,17 @@
  */
 package com.github.jk1.license.util
 
-import org.gradle.api.Project
+import com.github.jk1.license.GradleProject
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ResolvedArtifact
 
-import java.util.concurrent.atomic.AtomicInteger
-
 class CachingArtifactResolver {
 
     private Map<Map<String, String>, Collection<ResolvedArtifact>> cache = new HashMap<>()
-    private Project project
+    private GradleProject project
 
-    CachingArtifactResolver(Project project) {
+    CachingArtifactResolver(GradleProject project) {
         this.project = project
     }
 
