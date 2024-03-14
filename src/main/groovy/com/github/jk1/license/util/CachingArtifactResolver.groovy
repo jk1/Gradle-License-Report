@@ -19,11 +19,12 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ResolvedArtifact
-
-import java.util.concurrent.atomic.AtomicInteger
+import org.gradle.api.logging.Logger
+import org.gradle.api.logging.Logging
 
 class CachingArtifactResolver {
 
+    private static Logger LOGGER = Logging.getLogger(CachingArtifactResolver.class)
     private Map<Map<String, String>, Collection<ResolvedArtifact>> cache = new HashMap<>()
     private Project project
 
@@ -52,6 +53,9 @@ class CachingArtifactResolver {
                 }
             }
             return artifacts
+        } catch (Throwable ignored) {
+            LOGGER.info("Could not resolve $spec.group:$spec.name:$spec.version. It will be skipped.")
+            return null
         } finally {
             project.configurations.remove(config)
         }
