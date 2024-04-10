@@ -37,6 +37,11 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     private static Logger LOGGER = Logging.getLogger(ReportTask.class)
 
+    protected String bundlePath
+    protected boolean createDefaultTransformationRules
+    protected boolean isInitialized
+
+    // following properties will only exist after the class is initialized
     protected String filterConfig = ""
     protected ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
     protected LicenseReportExtension config
@@ -51,6 +56,15 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     LicenseBundleNormalizer(String bundlePath, boolean createDefaultTransformationRules) {
+        this.bundlePath = bundlePath
+        this.createDefaultTransformationRules = createDefaultTransformationRules
+    }
+
+    synchronized void init() {
+        if (isInitialized) {
+            return
+        }
+        isInitialized = true
         LOGGER.debug("This build has requested module license bundle normalization")
 
         filterConfig += "bundlePath = $bundlePath\n"
@@ -80,6 +94,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     @Override
     ProjectData filter(ProjectData data) {
+        init()
         LOGGER.debug("Performing module license normalization")
         config = data.project.licenseReport
 
