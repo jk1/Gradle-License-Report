@@ -27,6 +27,7 @@ import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
+import org.gradle.api.artifacts.result.ResolvedArtifactResult
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.xml.sax.SAXException
@@ -71,6 +72,11 @@ class PomReader {
         } else {
             return readPomFile(pomContent)
         }
+    }
+
+    PomData readPomData(ResolvedArtifactResult artifact) {
+        GPathResult pomContent = findAndSlurpPom(artifact.file)
+        return readPomFile(pomContent)
     }
 
     private GPathResult findAndSlurpPom(File toSlurp) {
