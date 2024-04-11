@@ -91,6 +91,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Apache Commons Lang"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.7",
                 "poms": [
                     {
@@ -127,6 +128,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "name": null
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "16.0.1",
                 "poms": [
                     {
@@ -193,6 +195,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Apache Commons Lang"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.7",
                 "poms": [
                     {
@@ -250,6 +253,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Apache Commons Lang"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.7",
                 "poms": [
                     {
@@ -358,6 +362,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Apache Commons Lang"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.7",
                 "poms": [
                     {
@@ -457,6 +462,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
                         "name": null
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "16.0.1",
                 "poms": [
                     {

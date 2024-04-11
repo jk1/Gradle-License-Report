@@ -207,6 +207,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Sun Java System Application Server"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "1.1.1",
                 "poms": [
                     {
@@ -259,6 +260,7 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Jackson-core"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "2.12.3",
                 "poms": [
                     {

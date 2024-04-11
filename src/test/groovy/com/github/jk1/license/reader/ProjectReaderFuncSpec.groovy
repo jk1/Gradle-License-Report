@@ -299,6 +299,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": null
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "1.0",
                 "poms": [
                     {
@@ -335,6 +336,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Jakarta Commons Logging"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "1.1.1",
                 "poms": [
                     {
@@ -387,6 +389,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "Apache Commons Lang"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.7",
                 "poms": [
                     {
@@ -439,6 +442,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "ehcache 3"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.3.1",
                 "poms": [
                     {
@@ -491,6 +495,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "slf4j-api"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "1.7.7",
                 "poms": [
                     {
@@ -530,6 +535,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "spring-beans"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.2.3.RELEASE",
                 "poms": [
                     {
@@ -582,6 +588,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "spring-core"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.2.3.RELEASE",
                 "poms": [
                     {
@@ -634,6 +641,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                         "name": "spring-tx"
                     }
                 ],
+                "hasArtifactFile": true,
                 "version": "3.2.3.RELEASE",
                 "poms": [
                     {
