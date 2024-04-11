@@ -16,6 +16,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ConfigurationData
+import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.task.ReportTask
 import org.gradle.api.Project
@@ -37,7 +38,7 @@ class ConfigurationReader {
         this.moduleReader = moduleReader
     }
 
-    ConfigurationData read(Project project, Configuration configuration) {
+    ConfigurationData read(GradleProject project, Configuration configuration) {
         ConfigurationData data = new ConfigurationData()
         data.name = configuration.name
 

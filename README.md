@@ -53,6 +53,10 @@ licenseReport {
     // Defaults to current project and all its subprojects
     projects = [project] + project.subprojects
 
+    // Select projects to examine their buildScripts / plugins for dependencies.
+    // Defaults to nothing. Could be configured like [project] + project.subprojects
+    buildScriptProjects = []
+
     // Adjust the configurations to fetch dependencies. Default is 'runtimeClasspath'
     // For Android projects use 'releaseRuntimeClasspath' or 'yourFlavorNameReleaseRuntimeClasspath'
     // Use 'ALL' to dynamically resolve all configurations:

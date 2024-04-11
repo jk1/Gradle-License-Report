@@ -16,6 +16,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ConfigurationData
+import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.task.ReportTask
@@ -39,24 +40,41 @@ class ProjectReader {
         ProjectData data = new ProjectData()
         data.project = project
 
-        Project[] projectsToScan = config.projects
-        LOGGER.info("Configured projects: ${projectsToScan.join(',')}")
-
-        List<ConfigurationData> readConfigurations = projectsToScan.collect { subProject ->
-            Set<Configuration> configurationsToScan = findConfigurationsToScan(subProject)
-
-            configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
-
-            LOGGER.info("Configurations(${subProject.name}): ${configurationsToScan.join(',')}")
-            readConfigurationData(configurationsToScan, subProject)
-        }.flatten()
-        readConfigurations = mergeConfigurationDataWithSameName(readConfigurations)
-
-        data.configurations.addAll(readConfigurations)
+        data.configurations.addAll(readProjects(false))
+        data.configurations.addAll(readProjects(true))
         return data
     }
 
-    private Set<Configuration> findConfigurationsToScan(Project project) {
+    private List<ConfigurationData> readProjects(boolean buildScripts) {
+        Project[] projectsToScan;
+        if (buildScripts) {
+            projectsToScan = config.buildScriptProjects
+            LOGGER.info("Configured buildScript projects: ${projectsToScan.join(',')}")
+        } else {
+            projectsToScan = config.projects
+            LOGGER.info("Configured projects: ${projectsToScan.join(',')}")
+        }
+
+        List<ConfigurationData> readConfigurations = projectsToScan.collect { subProject ->
+            GradleProject gradleProject;
+
+            if (buildScripts) {
+                gradleProject = GradleProject.ofScript(subProject)
+            } else {
+                gradleProject = GradleProject.ofProject(subProject)
+            }
+
+            Set<Configuration> configurationsToScan = findConfigurationsToScan(gradleProject)
+
+            configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
+
+            LOGGER.info("Configurations(${gradleProject.name}): ${configurationsToScan.join(',')}")
+            readConfigurationData(configurationsToScan, gradleProject)
+        }.flatten()
+        mergeConfigurationDataWithSameName(readConfigurations)
+    }
+
+    private Set<Configuration> findConfigurationsToScan(GradleProject project) {
         Set<Configuration> toScan
         if (config.configurations.length == 0) {
             LOGGER.info("No configuration defined. Use all resolvable configurations.")
@@ -71,7 +89,7 @@ class ProjectReader {
         toScan
     }
 
-    private static Set<Configuration> findResolvableConfigurations(Project project) {
+    private static Set<Configuration> findResolvableConfigurations(GradleProject project) {
         project.configurations.findAll { config -> isResolvable(config) }
     }
 
@@ -79,14 +97,14 @@ class ProjectReader {
         configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }.toSet()
     }
 
-    private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, Project project) {
+    private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, GradleProject project) {
         configurationsToScan.collect { config ->
             LOGGER.info("Reading configuration: " + config)
             configurationReader.read(project, config)
         }
     }
 
-    static Set<Configuration> findConfiguredConfigurations(Project project, LicenseReportExtension extension) {
+    static Set<Configuration> findConfiguredConfigurations(GradleProject project, LicenseReportExtension extension) {
         project.configurations.findAll { config -> config.name in extension.configurations }
     }
 
