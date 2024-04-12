@@ -25,10 +25,8 @@ import com.github.jk1.license.ProjectData
 
 class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
 
-    InventoryMarkdownReportRenderer(String fileName = 'licenses.md', String name = null, File overridesFilename = null) {
-        this.name = name
-        this.fileName = fileName
-        if (overridesFilename) overrides = parseOverrides(overridesFilename)
+    InventoryMarkdownReportRenderer(String fileName = 'licenses.md', String name = null, File overridesFile = null) {
+        super(fileName, name, overridesFile)
     }
 
     @Override

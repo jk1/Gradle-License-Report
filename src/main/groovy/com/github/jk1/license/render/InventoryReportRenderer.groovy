@@ -18,7 +18,7 @@
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
 import org.gradle.api.Project
-import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 
 class InventoryReportRenderer implements ReportRenderer {
     protected String name
@@ -27,19 +27,26 @@ class InventoryReportRenderer implements ReportRenderer {
     protected LicenseReportExtension config
     protected File output
     protected int counter
-    protected Map<String, Map<String, String>> overrides = [:]
+    protected File overridesFile
+    protected boolean isInitialized = false
+    private Map<String, Map<String, String>> overrides = [:]
 
-    InventoryReportRenderer(String fileName = 'licenses.txt', String name = null, File overridesFilename = null) {
-            this.name = name
-            this.fileName = fileName
-            if (overridesFilename) overrides = parseOverrides(overridesFilename)
-        }
+    InventoryReportRenderer(String fileName = 'licenses.txt', String name = null, File overridesFile = null) {
+        this.name = name
+        this.fileName = fileName
+        this.overridesFile = overridesFile
+    }
 
-    @Input
+    @InputFile
     String getFileNameCache() { return this.fileName }
 
-    @Input
-    Map getOverrides() { return this.overrides }
+    @InputFile
+    File getOverridesFileCache() { return this.overridesFile }
+
+    Map<String, Map<String, String>> getOverrides() {
+        parseOverrides(overridesFile)
+        return this.overrides
+    }
 
     @Override
     void render(ProjectData data) {
@@ -54,14 +61,20 @@ class InventoryReportRenderer implements ReportRenderer {
 
     }
 
-    protected Map<String, Map<String, String>> parseOverrides(File file) {
+    protected synchronized Map<String, Map<String, String>> parseOverrides(File file) {
+        if (isInitialized) {
+            return
+        }
+        isInitialized = true
         overrides = [:]
-        file.withReader { Reader reader ->
-            String line
-            while ((line = reader.readLine()) != null) {
-                String[] columns = line.split(/\|/)
-                String groupNameVersion = columns[0]
-                overrides[groupNameVersion] = [projectUrl: safeGet(columns, 1), license: safeGet(columns, 2), licenseUrl: safeGet(columns, 3)]
+        if (file) {
+            file.withReader { Reader reader ->
+                String line
+                while ((line = reader.readLine()) != null) {
+                    String[] columns = line.split(/\|/)
+                    String groupNameVersion = columns[0]
+                    overrides[groupNameVersion] = [projectUrl: safeGet(columns, 1), license: safeGet(columns, 2), licenseUrl: safeGet(columns, 3)]
+                }
             }
         }
         return overrides

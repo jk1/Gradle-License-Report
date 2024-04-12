@@ -22,10 +22,8 @@ import org.gradle.api.logging.Logging
 
 class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
-    InventoryHtmlReportRenderer(String fileName = 'index.html', String name = null, File overridesFilename = null) {
-        this.name = name
-        this.fileName = fileName
-        if (overridesFilename) overrides = parseOverrides(overridesFilename)
+    InventoryHtmlReportRenderer(String fileName = 'index.html', String name = null, File overridesFile = null) {
+        super(fileName, name, overridesFile)
     }
 
     @Override
