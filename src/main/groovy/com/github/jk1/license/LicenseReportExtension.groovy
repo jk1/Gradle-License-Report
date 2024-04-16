@@ -15,6 +15,8 @@
  */
 package com.github.jk1.license
 
+import com.github.jk1.license.check.LicenseChecker
+import com.github.jk1.license.check.OneRequiredLicenseChecker
 import com.github.jk1.license.filter.DependencyFilter
 import com.github.jk1.license.importer.DependencyDataImporter
 import com.github.jk1.license.render.ReportRenderer
@@ -41,6 +43,7 @@ class LicenseReportExtension {
     public String[] excludeGroups
     public String[] excludes
     public Object allowedLicensesFile
+    public LicenseChecker licenseChecker
 
     LicenseReportExtension(Project project) {
         unionParentPomLicenses = true
@@ -54,6 +57,7 @@ class LicenseReportExtension {
         excludes = []
         importers = []
         filters = []
+        licenseChecker = new OneRequiredLicenseChecker()
     }
 
     @Nested
@@ -103,6 +107,8 @@ class LicenseReportExtension {
         snapshot += excludes
         snapshot << 'unionParentPomLicenses'
         snapshot += unionParentPomLicenses
+        snapshot << "licenseChecker"
+        snapshot += licenseChecker.class.name
         snapshot.join("!")
     }
 
