@@ -47,7 +47,7 @@ licenseReport {
    
     // Set output directory for the report data.
     // Defaults to ${project.buildDir}/reports/dependency-license.
-    outputDir = "$projectDir/build/licenses"
+    outputDir = project.layout.buildDirectory.dir("licenses").get().asFile.path
 
     // Select projects to examine for dependencies.
     // Defaults to current project and all its subprojects
@@ -84,7 +84,7 @@ licenseReport {
 
     // This is for the allowed-licenses-file in checkLicense Task
     // Accepts File, URL or String path to local or remote file
-    allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
+    allowedLicensesFile = project.layout.projectDirectory.file("config/allowed-licenses.json").asFile
 }
 ```
 
