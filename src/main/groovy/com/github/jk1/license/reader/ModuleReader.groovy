@@ -69,7 +69,7 @@ class ModuleReaderImpl implements ModuleReader {
             extraPomResults.each { ResolvedArtifactResult artifact ->
                 LOGGER.info("Processing artifact: $artifact ($artifact.file)")
                 if (artifact.file.exists()) {
-                    def pom = pomReader.readPomData(artifact)
+                    def pom = pomReader.readPomData(project, artifact)
                     if (pom) moduleData.poms << pom
                 } else {
                     LOGGER.info("Skipping artifact file $artifact.file as it does not exist")

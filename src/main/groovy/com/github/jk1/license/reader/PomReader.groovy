@@ -74,7 +74,8 @@ class PomReader {
         }
     }
 
-    PomData readPomData(ResolvedArtifactResult artifact) {
+    PomData readPomData(Project project, ResolvedArtifactResult artifact) {
+        resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file)
         return readPomFile(pomContent)
     }

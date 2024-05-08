@@ -56,6 +56,7 @@ class PomDependencyResolutionFuncSpec extends AbstractGradleRunnerFunctionalSpec
 
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+        // 2 licenses because it also resolves jackson-parent, which has its own license
         configurationsString == """[
     {
         "dependencies": [
@@ -80,6 +81,10 @@ class PomDependencyResolutionFuncSpec extends AbstractGradleRunnerFunctionalSpec
                             {
                                 "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
                                 "name": "Apache License, Version 2.0"
+                            },
+                            {
+                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
                             }
                         ]
                     }
