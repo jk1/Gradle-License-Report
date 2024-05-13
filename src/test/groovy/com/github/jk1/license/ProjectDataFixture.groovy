@@ -30,8 +30,13 @@ class ProjectDataFixture {
 
     static License APACHE2_LICENSE() {
         new License(
-            name: "Apache License, Version 2.0",
-            url: "https://www.apache.org/licenses/LICENSE-2.0"
+                name: "Apache License, Version 2.0",
+                url: "https://www.apache.org/licenses/LICENSE-2.0"
+        )
+    }
+    static License UNKNOWN_LICENSE() {
+        new License(
+                name: "Unknown"
         )
     }
     static License MIT_LICENSE() {

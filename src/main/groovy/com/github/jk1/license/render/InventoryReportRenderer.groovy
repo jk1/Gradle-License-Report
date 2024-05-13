@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- package com.github.jk1.license.render
+package com.github.jk1.license.render
 
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
@@ -29,7 +29,7 @@ class InventoryReportRenderer implements ReportRenderer {
     protected int counter
     protected File overridesFile
     protected boolean isInitialized = false
-    private Map<String, Map<String, String>> overrides = [:]
+    private Map<String, Map<String, String>> _overrides = [:]
 
     InventoryReportRenderer(String fileName = 'licenses.txt', String name = null, File overridesFile = null) {
         this.name = name
@@ -45,14 +45,14 @@ class InventoryReportRenderer implements ReportRenderer {
 
     Map<String, Map<String, String>> getOverrides() {
         parseOverrides(overridesFile)
-        return this.overrides
+        return _overrides
     }
 
     @Override
     void render(ProjectData data) {
         project = data.project
-        if( name == null ) name = project.name
-        config = project.licenseReport
+        if (name == null) name = project.name
+        config = (LicenseReportExtension) project.extensions.getByName("licenseReport")
         output = new File(config.absoluteOutputDir, fileName)
         output.delete() // clear old output
         def inventory = buildLicenseInventory(data)
@@ -61,23 +61,23 @@ class InventoryReportRenderer implements ReportRenderer {
 
     }
 
-    protected synchronized Map<String, Map<String, String>> parseOverrides(File file) {
+    protected synchronized void parseOverrides(File file) {
         if (isInitialized) {
             return
         }
-        isInitialized = true
-        overrides = [:]
+        Map<String, Map<String, String>> overrideMap = [:]
         if (file) {
             file.withReader { Reader reader ->
                 String line
                 while ((line = reader.readLine()) != null) {
                     String[] columns = line.split(/\|/)
                     String groupNameVersion = columns[0]
-                    overrides[groupNameVersion] = [projectUrl: safeGet(columns, 1), license: safeGet(columns, 2), licenseUrl: safeGet(columns, 3)]
+                    overrideMap[groupNameVersion] = [projectUrl: safeGet(columns, 1), license: safeGet(columns, 2), licenseUrl: safeGet(columns, 3)]
                 }
             }
         }
-        return overrides
+        _overrides = overrideMap
+        isInitialized = true
     }
 
     protected Map<String, List<ModuleData>> buildLicenseInventory(ProjectData data) {
@@ -238,7 +238,7 @@ class InventoryReportRenderer implements ReportRenderer {
         }
     }
 
-    protected printDependencyLicenseFiles(TreeSet<LicenseFileData> licenseFiles) {
+    protected printDependencyLicenseFiles(Set<LicenseFileData> licenseFiles) {
         output << "  - Embedded license files: \n    - " + licenseFiles.first().fileDetails.collect {
             it.file
         }.unique().join(' \n    - ')
