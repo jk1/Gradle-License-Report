@@ -25,25 +25,7 @@ class InventoryHtmlReportRendererSpec extends AbstractInventoryReportRendererSpe
 
         then:
         outputFile.exists()
-        outputFile.text.stripIndent().contains("""<h2>Apache License, Version 2.0</h2>
-<div class='dependency'>
-<p><strong> 1.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod1 <strong>Version:</strong> 0.0.1 </p><label>Manifest Project URL</label>
-<div class='dependency-value'><a href='http://dummy-mani-url'>http://dummy-mani-url</a></div>
-<label>Manifest License</label>
-<div class='dependency-value'>Apache 2.0 (Not Packaged)</div>
-<label>POM Project URL</label>
-<div class='dependency-value'><a href='http://dummy-pom-project-url'>http://dummy-pom-project-url</a></div>
-<label>POM License</label>
-<div class='dependency-value'>Apache License, Version 2.0 - <a href='https://www.apache.org/licenses/LICENSE-2.0'>https://www.apache.org/licenses/LICENSE-2.0</a></div>
-  - Embedded license files:
-    - apache2.license</div>
-<div class='dependency'>
-<p><strong> 2.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod2 <strong>Version:</strong> 0.0.1 </p><label>Project URL</label>
-<div class='dependency-value'><a href='https://projecturl'>https://projecturl</a></div>
-<label>License URL</label>
-<div class='dependency-value'><a href='http://www.apache.org/licenses/LICENSE-2.0.txt'>Apache License, Version 2.0</a></div>""")
-        outputFile.text.stripIndent().contains("""<h2>Unknown</h2>
-<div class='dependency'>
-<p><strong> 3.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod3 <strong>Version:</strong> 0.0.1 </p><label>POM Project URL</label>""")
+        def sanitizedOutput = outputFile.text.replaceAll("<em>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z0-9-]+</em>", "DATE")
+        snapshotter.assertThat(sanitizedOutput).matchesSnapshot()
     }
 }

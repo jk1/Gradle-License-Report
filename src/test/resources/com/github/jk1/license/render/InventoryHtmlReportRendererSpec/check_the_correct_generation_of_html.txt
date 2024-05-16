@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Dependency License Report for name</title>
+    <meta charset="utf-8">
+    <style>
+    @media print {
+        .inventory {
+            display: none;
+        }
+
+        .content {
+            position: static !important;
+        }
+    }
+
+    html, body, section {
+      height: 100%;
+    }
+
+    body {
+      font-family: sans-serif;
+      line-height: 125%;
+      margin: 0;
+      background: #eee;
+    }
+
+    .header {
+        /* #22aa44 */
+        background: #ff5588;
+        color: white;
+        padding: 2em 1em 1em 1em;
+    }
+
+    .header h1 {
+        font-size: 16pt;
+        margin: 0.5em 0;
+    }
+
+    .header h2 {
+        font-size: 10pt;
+        margin: 0;
+    }
+
+    .container {
+    }
+
+    .inventory {
+        background: #292e34;
+        color: #ddd;
+        padding: 0;
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 20em;
+        overflow: auto;
+    }
+
+    .inventory ul {
+        margin: 0;
+        padding: 0;
+    }
+
+    .inventory li {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .inventory li a {
+        width: 100%;
+        box-sizing: border-box;
+        color: #ddd;
+        text-decoration: none;
+        display: flex;
+        flex-direction: row;
+        padding: 15px 12px;
+    }
+
+    .inventory li a:hover {
+        background: #383f45;
+        color: white;
+    }
+
+    .license .name {
+        flex-grow: 1;
+
+    }
+
+    .license .badge {
+        background: #ff5588;
+        padding: 10px 15px;
+        border-radius: 20px;
+        color: white;
+    }
+
+    .content {
+        padding: 1rem;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 20em;
+    }
+
+    .dependency {
+        background: white;
+        padding: 1em;
+        margin-bottom: 1em;
+    }
+
+    .dependency label {
+        font-weight: bold;
+    }
+
+    .dependency-value {
+    }
+    </style>
+</head>
+<body>
+<div class="container">
+<div class='inventory'>
+<div class='header'>
+<h1>my-project </h1>
+<h2>Dependency License Report</h2>
+<h2 class='timestamp'>DATE.</h2></div>
+<h3>name</h3>
+<ul>
+<li><a class='license' href='#name_Apache_License,_Version_2.0'><span class='name'>Apache License, Version 2.0</span> <span class='badge'>3</span></a></li>
+<li><a class='license' href='#name_MIT_License'><span class='name'>MIT License</span> <span class='badge'>1</span></a></li>
+<li><a class='license' href='#name_Unknown'><span class='name'>Unknown</span> <span class='badge'>1</span></a></li>
+</ul>
+<h3>bundle1</h3>
+<ul>
+<li><a class='license' href='#bundle1_Apache__2'><span class='name'>Apache  2</span> <span class='badge'>2</span></a></li>
+</ul>
+</div>
+<div class='content'>
+<h1>name</h1>
+<a id='name_Apache_License,_Version_2.0'></a>
+<h2>Apache License, Version 2.0</h2>
+<div class='dependency'>
+<p><strong> 1.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod1 <strong>Version:</strong> 0.0.1 </p><label>Manifest Project URL</label>
+<div class='dependency-value'><a href='http://dummy-mani-url'>http://dummy-mani-url</a></div>
+<label>Manifest License</label>
+<div class='dependency-value'>Apache 2.0 (Not Packaged)</div>
+<label>POM Project URL</label>
+<div class='dependency-value'><a href='http://dummy-pom-project-url'>http://dummy-pom-project-url</a></div>
+<label>POM License</label>
+<div class='dependency-value'>Apache License, Version 2.0 - <a href='https://www.apache.org/licenses/LICENSE-2.0'>https://www.apache.org/licenses/LICENSE-2.0</a></div>
+<label>Embedded license files</label>
+<div class='dependency-value'><a href='apache2.license'>apache2.license</a></div>
+</div>
+<div class='dependency'>
+<p><strong> 2.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod2 <strong>Version:</strong> 0.0.1 </p><label>Project URL</label>
+<div class='dependency-value'><a href='https://projecturl'>https://projecturl</a></div>
+<label>License URL</label>
+<div class='dependency-value'><a href='http://www.apache.org/licenses/LICENSE-2.0.txt'>Apache License, Version 2.0</a></div>
+</div>
+<div class='dependency'>
+<p><strong> 3.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod4 <strong>Version:</strong> 0.0.1 </p><label>Manifest Project URL</label>
+<div class='dependency-value'><a href='http://dummy-mani-url'>http://dummy-mani-url</a></div>
+<label>Manifest License</label>
+<div class='dependency-value'>Apache 2.0 (Not Packaged)</div>
+<label>POM Project URL</label>
+<div class='dependency-value'><a href='http://dummy-pom-project-url'>http://dummy-pom-project-url</a></div>
+<label>POM License</label>
+<div class='dependency-value'>Apache License, Version 2.0 - <a href='https://www.apache.org/licenses/LICENSE-2.0'>https://www.apache.org/licenses/LICENSE-2.0</a></div>
+<label>Embedded license files</label>
+<div class='dependency-value'><a href='apache2.license'>apache2.license</a></div>
+</div>
+<a id='name_MIT_License'></a>
+<h2>MIT License</h2>
+<div class='dependency'>
+<p><strong> 4.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod4 <strong>Version:</strong> 0.0.1 </p><label>Manifest Project URL</label>
+<div class='dependency-value'><a href='http://dummy-mani-url'>http://dummy-mani-url</a></div>
+<label>Manifest License</label>
+<div class='dependency-value'>Apache 2.0 (Not Packaged)</div>
+<label>POM Project URL</label>
+<div class='dependency-value'><a href='http://dummy-pom-project-url'>http://dummy-pom-project-url</a></div>
+<label>POM License</label>
+<div class='dependency-value'>Apache License, Version 2.0 - <a href='https://www.apache.org/licenses/LICENSE-2.0'>https://www.apache.org/licenses/LICENSE-2.0</a></div>
+<label>Embedded license files</label>
+<div class='dependency-value'><a href='apache2.license'>apache2.license</a></div>
+</div>
+<a id='name_Unknown'></a>
+<h2>Unknown</h2>
+<div class='dependency'>
+<p><strong> 5.</strong> <strong>Group:</strong> dummy-group <strong>Name:</strong> mod3 <strong>Version:</strong> 0.0.1 </p><label>POM Project URL</label>
+<div class='dependency-value'><a href='http://dummy-pom-project-url'>http://dummy-pom-project-url</a></div>
+<label>POM License</label>
+<div class='dependency-value'>Unknown</div>
+</div>
+<h1>bundle1</h1>
+<a id='bundle1_Apache__2'></a>
+<h2>Apache  2</h2>
+<div class='dependency'>
+<p><strong>6. mod1 vsome-version</strong></p><label>Project URL</label>
+<div class='dependency-value'><a href='some-projectUrl'>some-projectUrl</a></div>
+<label>License URL</label>
+<div class='dependency-value'><a href='apache-url'>Apache  2</a></div>
+</div>
+<div class='dependency'>
+<p><strong>7. mod2 vsome-version</strong></p><label>Project URL</label>
+<div class='dependency-value'><a href='some-projectUrl'>some-projectUrl</a></div>
+<label>License URL</label>
+<div class='dependency-value'><a href='apache-url'>Apache  2</a></div>
+</div>
+</div>
+
+</div>
+</body>
+</html>

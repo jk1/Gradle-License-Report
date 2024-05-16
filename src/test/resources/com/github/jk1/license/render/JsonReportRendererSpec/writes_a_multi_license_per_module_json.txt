@@ -1,0 +1,110 @@
+{
+    "dependencies": [
+        {
+            "moduleName": "dummy-group:mod1",
+            "moduleVersion": "0.0.1",
+            "moduleUrls": [
+                "http://dummy-mani-url",
+                "http://dummy-pom-project-url"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache 2.0",
+                    "moduleLicenseUrl": null
+                },
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        },
+        {
+            "moduleName": "dummy-group:mod2",
+            "moduleVersion": "0.0.1",
+            "moduleUrls": [
+                "http://dummy-pom-project-url"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Unknown",
+                    "moduleLicenseUrl": null
+                }
+            ]
+        },
+        {
+            "moduleName": "dummy-group:mod3",
+            "moduleVersion": "0.0.1",
+            "moduleUrls": [
+                "http://dummy-pom-project-url"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Unknown",
+                    "moduleLicenseUrl": null
+                }
+            ]
+        },
+        {
+            "moduleName": "dummy-group:mod4",
+            "moduleVersion": "0.0.1",
+            "moduleUrls": [
+                "http://dummy-mani-url",
+                "http://dummy-pom-project-url"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache 2.0",
+                    "moduleLicenseUrl": null
+                },
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                },
+                {
+                    "moduleLicense": "MIT License",
+                    "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
+                }
+            ]
+        }
+    ],
+    "importedModules": [
+        {
+            "moduleName": "bundle1",
+            "dependencies": [
+                {
+                    "moduleName": "mod1",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                },
+                {
+                    "moduleName": "mod2",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                }
+            ]
+        },
+        {
+            "moduleName": "bundle1",
+            "dependencies": [
+                {
+                    "moduleName": "mod1",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                },
+                {
+                    "moduleName": "mod2",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                }
+            ]
+        }
+    ]
+}

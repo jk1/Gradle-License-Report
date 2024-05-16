@@ -20,7 +20,7 @@ dependencies {
     implementation localGroovy()
 
     testImplementation gradleTestKit()
-    testImplementation('org.spockframework:spock-core:2.1-groovy-3.0') {
+    testImplementation('org.spockframework:spock-core:2.4-M4-groovy-3.0') {
         exclude group: 'org.codehaus.groovy'
     }
 }
@@ -39,6 +39,10 @@ test {
         showStandardStreams = true
         exceptionFormat = 'full'
     }
+    systemProperty("spock.snapshots.rootPath", "src/test/resources")
+    systemProperty("spock.snapshots.updateSnapshots", !System.getenv("CI"))
+    systemProperty("spock.snapshots.writeActualSnapshotOnMismatch", !System.getenv("CI"))
+
     outputs.upToDateWhen { false }
 }
 

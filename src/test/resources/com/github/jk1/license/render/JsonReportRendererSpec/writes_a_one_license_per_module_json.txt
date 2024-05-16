@@ -1,0 +1,70 @@
+{
+    "dependencies": [
+        {
+            "moduleName": "dummy-group:mod1",
+            "moduleUrl": "http://dummy-pom-project-url",
+            "moduleVersion": "0.0.1",
+            "moduleLicense": "Apache License, Version 2.0",
+            "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+        },
+        {
+            "moduleName": "dummy-group:mod2",
+            "moduleUrl": "http://dummy-pom-project-url",
+            "moduleVersion": "0.0.1",
+            "moduleLicense": "Unknown"
+        },
+        {
+            "moduleName": "dummy-group:mod3",
+            "moduleUrl": "http://dummy-pom-project-url",
+            "moduleVersion": "0.0.1",
+            "moduleLicense": "Unknown"
+        },
+        {
+            "moduleName": "dummy-group:mod4",
+            "moduleUrl": "http://dummy-pom-project-url",
+            "moduleVersion": "0.0.1",
+            "moduleLicense": "MIT License",
+            "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
+        }
+    ],
+    "importedModules": [
+        {
+            "moduleName": "bundle1",
+            "dependencies": [
+                {
+                    "moduleName": "mod1",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                },
+                {
+                    "moduleName": "mod2",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                }
+            ]
+        },
+        {
+            "moduleName": "bundle1",
+            "dependencies": [
+                {
+                    "moduleName": "mod1",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                },
+                {
+                    "moduleName": "mod2",
+                    "moduleUrl": "some-projectUrl",
+                    "moduleVersion": "some-version",
+                    "moduleLicense": "Apache  2",
+                    "moduleLicenseUrl": "apache-url"
+                }
+            ]
+        }
+    ]
+}

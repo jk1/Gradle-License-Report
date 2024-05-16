@@ -18,6 +18,8 @@ package com.github.jk1.license.render
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -25,6 +27,8 @@ import static com.github.jk1.license.ProjectDataFixture.*
 
 class AbstractInventoryReportRendererSpec extends Specification {
 
+    @Snapshot
+    Snapshotter snapshotter
     @TempDir
     File testProjectDir
     File outputFile
@@ -70,6 +74,27 @@ class AbstractInventoryReportRendererSpec extends Specification {
                             license(UNKNOWN_LICENSE())
                         }
                     }
+
+                    module("mod4") {
+                        pom("pom2") {
+                            license(APACHE2_LICENSE())
+                        }
+                        pom("pom3") {
+                            license(APACHE2_LICENSE())
+                            license(MIT_LICENSE())
+                        }
+                        licenseFiles {
+                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org / licenses / LICENSE - 2.0 ")
+                        }
+                        manifest("mani1") {
+                            license("Apache 2.0")
+                        }
+                    }
+                }
+
+                importedModulesBundle("bundle1") {
+                    importedModule(name: "mod1", license: "Apache  2", licenseUrl: "apache-url")
+                    importedModule(name: "mod2", license: "Apache  2", licenseUrl: "apache-url")
                 }
             }
         }
