@@ -27,11 +27,14 @@ import org.gradle.api.logging.Logging
 class ProjectReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private LicenseReportExtension config
+    private Project[] projects
+    private String[] configurations
+
     private ConfigurationReader configurationReader
 
     ProjectReader(LicenseReportExtension config) {
-        this.config = config
+        this.projects = config.projects
+        this.configurations = config.configurations
         this.configurationReader = new ConfigurationReader(config, new CachedModuleReader(config))
     }
 
@@ -39,10 +42,9 @@ class ProjectReader {
         ProjectData data = new ProjectData()
         data.project = project
 
-        Project[] projectsToScan = config.projects
-        LOGGER.info("Configured projects: ${projectsToScan.join(',')}")
+        LOGGER.info("Configured projects: ${projects.join(',')}")
 
-        List<ConfigurationData> readConfigurations = projectsToScan.collect { subProject ->
+        List<ConfigurationData> readConfigurations = projects.collect { subProject ->
             Set<Configuration> configurationsToScan = findConfigurationsToScan(subProject)
 
             configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
@@ -56,13 +58,17 @@ class ProjectReader {
         return data
     }
 
-    public Set<Configuration> findConfigurationsToScan(Project project) {
+    private Set<Configuration> findConfigurationsToScan(Project project) {
         Set<Configuration> toScan
-        if (config.configurations.length == 0) {
-            LOGGER.info("No configuration defined. Use all resolvable configurations.")
+        if (configurations == null) {
+            LOGGER.info("No configurations defined, falling back to the default ones")
+            configurations = project.getPlugins().hasPlugin('com.android.application') ? ['releaseRuntimeClasspath'] : ['runtimeClasspath']
+        }
+        if (configurations.length == 0) {
+            LOGGER.info("Using all resolvable configurations")
             toScan = findResolvableConfigurations(project)
         } else {
-            toScan = findConfiguredConfigurations(project, config)
+            toScan = findConfiguredConfigurations(project)
             Set<Configuration> unresolvable = findUnresolvable(toScan)
             if (unresolvable) {
                 throw new UnresolvableConfigurationException("Unable to resolve configurations: $unresolvable")
@@ -75,7 +81,7 @@ class ProjectReader {
         project.configurations.findAll { config -> isResolvable(config) }
     }
 
-    public static Set<Configuration> getAllExtendedConfigurations(Collection<Configuration> configurationsToScan) {
+    private static Set<Configuration> getAllExtendedConfigurations(Collection<Configuration> configurationsToScan) {
         configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }.toSet()
     }
 
@@ -86,8 +92,8 @@ class ProjectReader {
         }
     }
 
-    static Set<Configuration> findConfiguredConfigurations(Project project, LicenseReportExtension extension) {
-        project.configurations.findAll { config -> config.name in extension.configurations }
+    private Set<Configuration> findConfiguredConfigurations(Project project) {
+        project.configurations.findAll { config -> config.name in configurations }
     }
 
     private static Set<Configuration> findUnresolvable(Set<Configuration> toScan) {
