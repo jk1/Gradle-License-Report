@@ -15,8 +15,10 @@
  */
 package com.github.jk1.license.task
 
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.render.JsonReportRenderer
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
 
 class CheckLicensePreparationTask extends DefaultTask {
@@ -26,9 +28,12 @@ class CheckLicensePreparationTask extends DefaultTask {
         description = "Prepare for checkLicense"
     }
 
+    @Nested
+    LicenseReportExtension config
+
     @TaskAction
     void checkPreparation() {
-        getProject().licenseReport.renderers +=
+        config.renderers +=
             [ new JsonReportRenderer(CheckLicenseTask.PROJECT_JSON_FOR_LICENSE_CHECKING_FILE,false) ]
     }
 }

@@ -33,13 +33,16 @@ class LicenseReportPlugin implements Plugin<Project> {
 
         def extension = project.extensions.create('licenseReport', LicenseReportExtension, project)
 
-        def preparationTask = project.tasks.register("checkLicensePreparation", CheckLicensePreparationTask)
+        def preparationTask = project.tasks.register("checkLicensePreparation", CheckLicensePreparationTask) {
+            it.config = extension
+        }
         def generateLicenseReportTask = project.tasks.register('generateLicenseReport', ReportTask) {
             it.shouldRunAfter(preparationTask)
             it.config = extension
         }
         project.tasks.register('checkLicense', CheckLicenseTask) {
             it.dependsOn(preparationTask, generateLicenseReportTask)
+            it.config = extension
         }
     }
 

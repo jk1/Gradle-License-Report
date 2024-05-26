@@ -23,6 +23,7 @@ import org.gradle.api.logging.Logging
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.TaskAction
@@ -35,12 +36,14 @@ class CheckLicenseTask extends DefaultTask {
     final static String NOT_PASSED_DEPENDENCIES_FILE = "dependencies-without-allowed-license.json"
 
     private static Logger LOGGER = Logging.getLogger(CheckLicenseTask.class)
-    private LicenseReportExtension config = getProject().licenseReport
 
     CheckLicenseTask() {
         group = 'Checking'
         description = 'Check if License could be used'
     }
+
+    @Nested
+    LicenseReportExtension config
 
     @Input
     Object getAllowedLicenseFile() {
