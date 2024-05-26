@@ -52,6 +52,7 @@ abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
             .withProjectDir(testProjectDir)
             .withArguments(args + additionalArguments)
             .withPluginClasspath(pluginClasspath)
+            .withDebug(true)
             .forwardOutput()
             .build()
     }

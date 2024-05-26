@@ -183,9 +183,10 @@ class ReportTaskCachingSpec extends Specification {
     private BuildResult runBuildWith(String... params) {
         return GradleRunner.create()
             .withPluginClasspath()
-            .forwardOutput()
             .withProjectDir(testProjectDir)
             .withArguments(params)
+            .withDebug(true)
+            .forwardOutput()
             .build()
     }
 

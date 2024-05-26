@@ -15,7 +15,6 @@
  */
 package com.github.jk1.license
 
-import com.github.jk1.license.task.CacheableReportTask
 import com.github.jk1.license.task.CheckLicensePreparationTask
 import com.github.jk1.license.task.CheckLicenseTask
 import com.github.jk1.license.task.ReportTask
@@ -35,8 +34,7 @@ class LicenseReportPlugin implements Plugin<Project> {
         def extension = project.extensions.create('licenseReport', LicenseReportExtension, project)
 
         def preparationTask = project.tasks.register("checkLicensePreparation", CheckLicensePreparationTask)
-        def taskClass = project.getPlugins().hasPlugin('com.android.application') ? ReportTask : CacheableReportTask
-        def generateLicenseReportTask = project.tasks.register('generateLicenseReport', taskClass) {
+        def generateLicenseReportTask = project.tasks.register('generateLicenseReport', ReportTask) {
             it.shouldRunAfter(preparationTask)
             it.config = extension
         }

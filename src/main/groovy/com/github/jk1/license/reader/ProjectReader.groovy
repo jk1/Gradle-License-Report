@@ -56,7 +56,7 @@ class ProjectReader {
         return data
     }
 
-    private Set<Configuration> findConfigurationsToScan(Project project) {
+    public Set<Configuration> findConfigurationsToScan(Project project) {
         Set<Configuration> toScan
         if (config.configurations.length == 0) {
             LOGGER.info("No configuration defined. Use all resolvable configurations.")
@@ -75,7 +75,7 @@ class ProjectReader {
         project.configurations.findAll { config -> isResolvable(config) }
     }
 
-    private static Set<Configuration> getAllExtendedConfigurations(Collection<Configuration> configurationsToScan) {
+    public static Set<Configuration> getAllExtendedConfigurations(Collection<Configuration> configurationsToScan) {
         configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }.toSet()
     }
 
