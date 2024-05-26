@@ -44,7 +44,7 @@ class LicenseReportExtension {
 
     LicenseReportExtension(Project project) {
         unionParentPomLicenses = true
-        outputDir = "${project.buildDir}/reports/dependency-license"
+        outputDir = project.layout.buildDirectory.dir("reports/dependency-license").get().asFile.absolutePath
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()
         configurations = null
@@ -76,7 +76,7 @@ class LicenseReportExtension {
         if (new File(outputDir).isAbsolute()) {
             return outputDir
         } else {
-            return projects.first().absoluteProjectPath(outputDir)
+            return projects.first().layout.projectDirectory.dir(outputDir).asFile.absolutePath
         }
     }
 

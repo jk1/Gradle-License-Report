@@ -580,7 +580,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
 
         newSubBuildFile("shared") << """
             plugins {
-                id "com.android.library" version "8.1.3"
+                id "com.android.library" version "7.4.0"
                 id "org.jetbrains.kotlin.multiplatform" version "1.9.20"
                 id "com.github.jk1.dependency-license-report"
             }
@@ -629,7 +629,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
 
         newSubBuildFile("android") << """
             plugins {
-                id "com.android.application" version "8.1.3"
+                id "com.android.application" version "7.4.0"
                 id "org.jetbrains.kotlin.android" version "1.9.20"
                 id "com.github.jk1.dependency-license-report"
             }
