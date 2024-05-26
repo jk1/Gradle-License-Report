@@ -33,18 +33,22 @@ class CheckLicenseTaskSpec extends Specification {
 
     BuildResult result(String[] arguments) {
         return GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments(arguments)
-            .build()
+                .withPluginClasspath()
+                .withProjectDir(testProjectDir)
+                .withArguments(arguments)
+                .withDebug(true)
+                .forwardOutput()
+                .build()
     }
 
     BuildResult failResult(String[] arguments) {
         return GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments(arguments)
-            .buildAndFail()
+                .withPluginClasspath()
+                .withProjectDir(testProjectDir)
+                .withArguments(arguments)
+                .withDebug(true)
+                .forwardOutput()
+                .buildAndFail()
     }
 
     def setup() {

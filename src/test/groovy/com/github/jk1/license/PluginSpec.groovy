@@ -28,7 +28,7 @@ import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathF
 class PluginSpec extends Specification {
 
     private final static def supportedGradleVersions = ["7.6.1", "8.1.1"]
-    private final static def unsupportedGradleVersions = [ "5.6", "6.8.2" ]
+    private final static def unsupportedGradleVersions = ["5.6", "6.8.2"]
 
     @TempDir
     File testProjectDir
@@ -142,11 +142,12 @@ class PluginSpec extends Specification {
 
     private def runGradle(String gradleVersion) {
         GradleRunner.create()
-            .withGradleVersion(gradleVersion)
-            .withProjectDir(testProjectDir)
-            .withArguments("generateLicenseReport", "--info", "--stacktrace")
-            .withPluginClasspath()
-            .forwardOutput()
-            .build()
+                .withGradleVersion(gradleVersion)
+                .withProjectDir(testProjectDir)
+                .withArguments("generateLicenseReport", "--info", "--stacktrace")
+                .withPluginClasspath()
+                .withDebug(true)
+                .forwardOutput()
+                .build()
     }
 }

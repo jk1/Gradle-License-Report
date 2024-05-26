@@ -75,11 +75,7 @@ class MultiProjectReportCachingSpec extends Specification {
         """
 
 
-        BuildResult result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport")
-            .build()
+        BuildResult result = runBuild()
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
@@ -91,13 +87,19 @@ class MultiProjectReportCachingSpec extends Specification {
             }
         """
 
-        result = GradleRunner.create()
-            .withPluginClasspath()
-            .withProjectDir(testProjectDir)
-            .withArguments('--build-cache', "generateLicenseReport")
-            .build()
+        result = runBuild()
 
         then:
         result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
+    }
+
+    private BuildResult runBuild() {
+        return GradleRunner.create()
+                .withPluginClasspath()
+                .withProjectDir(testProjectDir)
+                .withArguments('--build-cache', "generateLicenseReport")
+                .withDebug(true)
+                .forwardOutput()
+                .build()
     }
 }
