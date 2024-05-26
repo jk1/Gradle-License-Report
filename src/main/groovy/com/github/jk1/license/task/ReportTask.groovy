@@ -56,9 +56,10 @@ class ReportTask extends DefaultTask {
 
     @TaskAction
     void generateReport() {
-        LOGGER.info("Processing dependencies for project ${getProject().name}")
+        def project = config.projects.first()
+        LOGGER.info("Processing dependencies for project ${project.name}")
         new File(config.absoluteOutputDir).mkdirs()
-        ProjectData data = new ProjectReader(config).read(getProject())
+        ProjectData data = new ProjectReader(config).read(project)
         LOGGER.info("Importing external dependency data. A total of ${config.importers.length} configured.")
         config.importers.each {
             data.importedModules.addAll(it.doImport())
@@ -67,10 +68,10 @@ class ReportTask extends DefaultTask {
         config.filters.each {
             data = it.filter(data)
         }
-        LOGGER.info("Building report for project ${getProject().name}")
+        LOGGER.info("Building report for project ${project.name}")
         config.renderers.each {
             it.render(data)
         }
-        LOGGER.info("Dependency license report for project ${getProject().name} created in ${config.absoluteOutputDir}")
+        LOGGER.info("Dependency license report for project ${project.name} created in ${config.absoluteOutputDir}")
     }
 }
