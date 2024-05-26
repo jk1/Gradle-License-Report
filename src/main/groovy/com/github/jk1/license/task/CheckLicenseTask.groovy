@@ -63,7 +63,7 @@ class CheckLicenseTask extends DefaultTask {
 
     @TaskAction
     void checkLicense() {
-        LOGGER.info("Startup CheckLicense for ${getProject().name}")
+        LOGGER.info("Startup CheckLicense for ${config.projects.first()}")
         LicenseChecker licenseChecker = new LicenseChecker()
         LOGGER.info("Check licenses if they are allowed to use.")
         licenseChecker.checkAllDependencyLicensesAreAllowed(

@@ -19,6 +19,7 @@ import groovy.json.StringEscapeUtils
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -109,7 +110,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
             apply plugin: 'java'
@@ -184,7 +185,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
             apply plugin: 'java'
@@ -290,7 +291,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
 
@@ -369,7 +370,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
 
@@ -427,7 +428,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
             group 'greeting'
@@ -502,7 +503,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
             group 'greeting'
@@ -560,7 +561,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
             apply plugin: 'java'
@@ -623,7 +624,7 @@ class CheckLicenseTaskSpec extends Specification {
 
             plugins {
                 id 'org.jetbrains.kotlin.jvm' version '1.8.21'
-                id 'com.github.jk1.dependency-license-report' version '2.1'
+                id 'com.github.jk1.dependency-license-report'
             }
 
             apply plugin: 'java'
@@ -677,5 +678,24 @@ class CheckLicenseTaskSpec extends Specification {
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
+    }
+
+    @Ignore // https://github.com/jk1/Gradle-License-Report/issues/255
+    def "using it with configuration cache should not cause the build to fail"() {
+        given:
+        buildFile << """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+            }
+            
+            licenseReport {
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
+            }
+        """
+        when:
+        BuildResult buildResult = result("--configuration-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
     }
 }
