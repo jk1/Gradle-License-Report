@@ -23,187 +23,29 @@ import spock.lang.TempDir
 
 import static com.github.jk1.license.ProjectDataFixture.*
 
-class JsonReportRendererSpec extends Specification {
-
-    @TempDir
-    File testProjectDir
-    File outputJson
-
-    ProjectBuilder builder = new ProjectBuilder()
-    ProjectData projectData
-
-    def setup() {
-        outputJson = new File(testProjectDir, "index.json")
-        outputJson.delete()
-
-        LicenseReportExtension extension = GRADLE_PROJECT().licenseReport
-        extension.outputDir = testProjectDir
-
-        // copy apache2 license file
-        def apache2LicenseFile = new File(getClass().getResource('/apache2.license').toURI())
-        new File(testProjectDir, "apache2.license") << apache2LicenseFile.text
-
-        projectData = builder.project {
-            configurations(["runtime", "test"]) { configName ->
-                configuration(configName) {
-                    module("mod1") {
-                        pom("pom1") {
-                            license(APACHE2_LICENSE(), url: "https://www.apache.org/licenses/LICENSE-2.0")
-                        }
-                        licenseFiles {
-                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
-                        }
-                        manifest("mani1") {
-                            license("Apache 2.0")
-                        }
-                    }
-                    module("mod2") {
-                        pom("pom2") {
-                            license(APACHE2_LICENSE())
-                        }
-                        pom("pom3") {
-                            license(APACHE2_LICENSE())
-                            license(MIT_LICENSE())
-                        }
-                        licenseFiles {
-                            licenseFileDetails(file: "apache2.license", license: "Apache License, Version 2.0", licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0")
-                        }
-                        manifest("mani1") {
-                            license("Apache 2.0")
-                        }
-                    }
-                }
-            }
-            importedModulesBundle("bundle1") {
-                importedModule(name: "mod1", license: "Apache  2", licenseUrl: "apache-url")
-                importedModule(name: "mod2", license: "Apache  2", licenseUrl: "apache-url")
-            }
-        }
-    }
-
+class JsonReportRendererSpec extends AbstractInventoryReportRendererSpec {
     def "writes a one-license-per-module json"() {
-        def jsonRenderer = new JsonReportRenderer()
+        def jsonRenderer = new JsonReportRenderer(outputFile.name)
 
         when:
         jsonRenderer.render(projectData)
 
         then:
-        outputJson.exists()
-        outputJson.text == """{
-    "dependencies": [
-        {
-            "moduleName": "dummy-group:mod1",
-            "moduleUrl": "http://dummy-pom-project-url",
-            "moduleVersion": "0.0.1",
-            "moduleLicense": "Apache License, Version 2.0",
-            "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-        },
-        {
-            "moduleName": "dummy-group:mod2",
-            "moduleUrl": "http://dummy-pom-project-url",
-            "moduleVersion": "0.0.1",
-            "moduleLicense": "MIT License",
-            "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
-        }
-    ],
-    "importedModules": [
-        {
-            "moduleName": "bundle1",
-            "dependencies": [
-                {
-                    "moduleName": "mod1",
-                    "moduleUrl": "some-projectUrl",
-                    "moduleVersion": "some-version",
-                    "moduleLicense": "Apache  2",
-                    "moduleLicenseUrl": "apache-url"
-                },
-                {
-                    "moduleName": "mod2",
-                    "moduleUrl": "some-projectUrl",
-                    "moduleVersion": "some-version",
-                    "moduleLicense": "Apache  2",
-                    "moduleLicenseUrl": "apache-url"
-                }
-            ]
-        }
-    ]
-}"""
+        outputFile.exists()
+        snapshotter.assertThat(outputFile.text).matchesSnapshot()
     }
 
     def "writes a multi-license-per-module json"() {
         def jsonRenderer = new JsonReportRenderer(
-            onlyOneLicensePerModule: false
+                outputFile.name,
+                false
         )
 
         when:
         jsonRenderer.render(projectData)
 
         then:
-        outputJson.exists()
-        outputJson.text == """{
-    "dependencies": [
-        {
-            "moduleName": "dummy-group:mod1",
-            "moduleVersion": "0.0.1",
-            "moduleUrls": [
-                "http://dummy-mani-url",
-                "http://dummy-pom-project-url"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache 2.0",
-                    "moduleLicenseUrl": null
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                }
-            ]
-        },
-        {
-            "moduleName": "dummy-group:mod2",
-            "moduleVersion": "0.0.1",
-            "moduleUrls": [
-                "http://dummy-mani-url",
-                "http://dummy-pom-project-url"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache 2.0",
-                    "moduleLicenseUrl": null
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                },
-                {
-                    "moduleLicense": "MIT License",
-                    "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
-                }
-            ]
-        }
-    ],
-    "importedModules": [
-        {
-            "moduleName": "bundle1",
-            "dependencies": [
-                {
-                    "moduleName": "mod1",
-                    "moduleUrl": "some-projectUrl",
-                    "moduleVersion": "some-version",
-                    "moduleLicense": "Apache  2",
-                    "moduleLicenseUrl": "apache-url"
-                },
-                {
-                    "moduleName": "mod2",
-                    "moduleUrl": "some-projectUrl",
-                    "moduleVersion": "some-version",
-                    "moduleLicense": "Apache  2",
-                    "moduleLicenseUrl": "apache-url"
-                }
-            ]
-        }
-    ]
-}"""
+        outputFile.exists()
+        snapshotter.assertThat(outputFile.text).matchesSnapshot()
     }
 }
