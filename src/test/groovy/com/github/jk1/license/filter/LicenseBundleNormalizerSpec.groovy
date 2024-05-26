@@ -57,6 +57,7 @@ class LicenseBundleNormalizerSpec extends Specification {
         when:
         new LicenseBundleNormalizer()
         new LicenseBundleNormalizer(bundlePath: null)
+        new LicenseBundleNormalizer(bundleStream: null)
         new LicenseBundleNormalizer(createDefaultTransformationRules: false)
         new LicenseBundleNormalizer(bundlePath: null, createDefaultTransformationRules: false)
 
@@ -849,6 +850,6 @@ class LicenseBundleNormalizerSpec extends Specification {
     }
 
     private LicenseBundleNormalizer newNormalizer(boolean createDefaultTransformationRules = false) {
-        new LicenseBundleNormalizer(bundlePath: normalizerFile.absolutePath, createDefaultTransformationRules: createDefaultTransformationRules)
+        new LicenseBundleNormalizer(normalizerFile.absolutePath, createDefaultTransformationRules)
     }
 }

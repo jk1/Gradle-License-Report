@@ -38,6 +38,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     private static Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     protected String bundlePath
+    protected InputStream bundleStream
     protected boolean createDefaultTransformationRules
     protected boolean isInitialized
 
@@ -60,6 +61,11 @@ class LicenseBundleNormalizer implements DependencyFilter {
         this.createDefaultTransformationRules = createDefaultTransformationRules
     }
 
+    LicenseBundleNormalizer(InputStream bundleStream, boolean createDefaultTransformationRules) {
+        this.bundleStream = bundleStream
+        this.createDefaultTransformationRules = createDefaultTransformationRules
+    }
+
     synchronized void init() {
         if (isInitialized) {
             return
@@ -71,14 +77,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
         filterConfig += "createDefaultTransformationRules = $createDefaultTransformationRules\n"
 
         if (bundlePath != null) {
-            def normalizerText = new File(bundlePath).text
-            filterConfig += "normalizerText = $normalizerText\n"
-
-            LOGGER.debug("Using supplied normalizer bundle from {}: {}", bundlePath, normalizerText)
-
-            def config = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(normalizerText.chars))
-
-            mergeConfigIntoGlobalConfig(config)
+            applyBundleFrom(new File(bundlePath).text)
+        }
+        if (bundleStream != null) {
+            applyBundleFrom(bundleStream.text)
         }
 
         if (createDefaultTransformationRules) {
@@ -87,6 +89,13 @@ class LicenseBundleNormalizer implements DependencyFilter {
         }
 
         LOGGER.debug("Bundle normalizer initialized (Bundles: ${normalizerConfig.bundles.size()}, Rules: ${normalizerConfig.transformationRules.size()})")
+    }
+
+    private def applyBundleFrom(String text) {
+        filterConfig += "normalizerText = $text\n"
+        LOGGER.debug("Using supplied normalizer bundle: {}", text)
+        def config = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(text.chars))
+        mergeConfigIntoGlobalConfig(config)
     }
 
     @Input

@@ -293,11 +293,12 @@ The normalizer can be enabled via a filter.
 import com.github.jk1.license.filter.*
 
 licenseReport {
+    // LicenseBundleNormalizer also accepts bundle stream as a parameter
     filters = [new LicenseBundleNormalizer(bundlePath: "$projectDir/config/license-normalizer-bundle.json")]
 }
 ```
 
-If no bundle-file is specified, a default file is used containing some commons rules. You are encouraged to create your own bundle-file
+If no bundle-file is specified, a default file is used containing some common rules. You are encouraged to create your own bundle-file
 and contribute back useful rules.
 
 ### SPDX support
