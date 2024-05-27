@@ -148,10 +148,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     protected void mergeConfigIntoGlobalConfig(LicenseBundleNormalizerConfig mergeIn) {
-        def existingBungleNames = normalizerConfig.bundles*.bundleName
+        def existingBundleNames = normalizerConfig.bundles*.bundleName
 
         mergeIn.bundles.each { NormalizerLicenseBundle bundle ->
-            if (!existingBungleNames.contains(bundle.bundleName)) {
+            if (!existingBundleNames.contains(bundle.bundleName)) {
                 normalizerConfig.bundles << bundle
             }
         }
