@@ -1,0 +1,41 @@
+[
+    {
+        "dependencies": [
+            {
+                "group": "org.jetbrains",
+                "manifests": [
+                    {
+                        "licenseUrl": null,
+                        "vendor": null,
+                        "hasPackagedLicense": false,
+                        "version": null,
+                        "license": null,
+                        "description": null,
+                        "url": null,
+                        "name": null
+                    }
+                ],
+                "hasArtifactFile": true,
+                "version": "16.0.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "https://github.com/JetBrains/java-annotations",
+                        "description": "A set of annotations used for code inspection support and code documentation.",
+                        "name": "JetBrains Java Annotations",
+                        "organization": null,
+                        "licenses": [
+                            {
+                                "url": "http://www.apache.org/license/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "empty": false,
+                "name": "annotations"
+            }
+        ],
+        "name": "subConfig"
+    }
+]

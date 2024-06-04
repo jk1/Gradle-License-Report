@@ -1,0 +1,42 @@
+[
+    {
+        "dependencies": [
+            {
+                "group": "com.fasterxml.jackson",
+                "manifests": [
+                    
+                ],
+                "hasArtifactFile": false,
+                "version": "2.12.3",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "https://github.com/FasterXML/jackson-bom",
+                        "description": "Bill of Materials pom for getting full, complete set of compatible versions\nof Jackson components maintained by FasterXML.com\n  ",
+                        "name": "Jackson BOM",
+                        "organization": {
+                            "url": "http://fasterxml.com/",
+                            "name": "FasterXML"
+                        },
+                        "licenses": [
+                            {
+                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "Apache License, Version 2.0"
+                            },
+                            {
+                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    
+                ],
+                "empty": false,
+                "name": "jackson-bom"
+            }
+        ],
+        "name": "runtimeClasspath"
+    }
+]

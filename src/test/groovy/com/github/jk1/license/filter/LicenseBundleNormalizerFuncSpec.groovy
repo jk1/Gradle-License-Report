@@ -17,10 +17,14 @@ package com.github.jk1.license.filter
 
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
 
 import static com.github.jk1.license.reader.ProjectReaderFuncSpec.removeDevelopers
 
 class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec {
+    @Snapshot(extension = 'json')
+    Snapshotter snapshotter
 
     File licenseResultJsonFile
     File normalizerFile
@@ -186,52 +190,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        licenseResultJsonFile.text == """{
-    "dependencies": [
-        {
-            "moduleName": "io.netty:netty-common",
-            "moduleVersion": "4.1.17.Final",
-            "moduleUrls": [
-                "http://netty.io/"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                }
-            ]
-        },
-        {
-            "moduleName": "org.apache.commons:commons-lang3",
-            "moduleVersion": "3.7",
-            "moduleUrls": [
-                "http://commons.apache.org/proper/commons-lang/"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                }
-            ]
-        },
-        {
-            "moduleName": "org.jetbrains:annotations",
-            "moduleVersion": "13.0",
-            "moduleUrls": [
-                "http://www.jetbrains.org"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                }
-            ]
-        }
-    ],
-    "importedModules": [
-        
-    ]
-}"""
+        snapshotter.assertThat(licenseResultJsonFile.text).matchesSnapshot()
     }
 
     def "licenseFileDetails are extended with the license information"() {
@@ -257,36 +216,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        licenseFileString == """[
-    {
-        "fileDetails": [
-            {
-                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                "file": "joda-time-2.9.9.jar/META-INF/LICENSE.txt",
-                "license": "Apache License, Version 2.0"
-            },
-            {
-                "licenseUrl": null,
-                "file": "joda-time-2.9.9.jar/META-INF/NOTICE.txt",
-                "license": null
-            }
-        ]
-    },
-    {
-        "fileDetails": [
-            {
-                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
-                "license": "Apache License, Version 2.0"
-            },
-            {
-                "licenseUrl": null,
-                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                "license": null
-            }
-        ]
-    }
-]"""
+        snapshotter.assertThat(licenseFileString).matchesSnapshot()
     }
 
     def "normalizes dependencies by configured license text and exports result to json"() {
@@ -309,47 +239,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        licenseResultJsonFile.text == """{
-    "dependencies": [
-        {
-            "moduleName": "joda-time:joda-time",
-            "moduleVersion": "2.9.9",
-            "moduleUrls": [
-                "http://www.joda.org/joda-time/"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache 2",
-                    "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                },
-                {
-                    "moduleLicense": "Apache 2.0",
-                    "moduleLicenseUrl": null
-                },
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                }
-            ]
-        },
-        {
-            "moduleName": "org.apache.commons:commons-lang3",
-            "moduleVersion": "3.7",
-            "moduleUrls": [
-                "http://commons.apache.org/proper/commons-lang/"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt"
-                }
-            ]
-        }
-    ],
-    "importedModules": [
-        
-    ]
-}"""
+        snapshotter.assertThat(licenseResultJsonFile.text).matchesSnapshot()
     }
 
     def "multiple license-details are added to the pom, when one pom-license contains multiple license infos"() {
@@ -376,16 +266,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        pomsString == """[
-    {
-        "url": "https://github.com/javaee/javax.annotation/blob/master/LICENSE",
-        "name": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"
-    },
-    {
-        "url": "https://github.com/javaee/javax.annotation/blob/master/LICENSE",
-        "name": "GNU GENERAL PUBLIC LICENSE, Version 2"
-    }
-]"""
+        snapshotter.assertThat(pomsString).matchesSnapshot()
     }
 
     def "multiple license-details are added to the files-structure, when one license-file contains multiple licenses"() {
@@ -411,22 +292,7 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        licenseFileString == """[
-    {
-        "fileDetails": [
-            {
-                "licenseUrl": "https://opensource.org/licenses/CDDL-1.0",
-                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
-                "license": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"
-            },
-            {
-                "licenseUrl": "https://www.gnu.org/licenses/gpl-2.0",
-                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
-                "license": "GNU GENERAL PUBLIC LICENSE, Version 2"
-            }
-        ]
-    }
-]"""
+        snapshotter.assertThat(licenseFileString).matchesSnapshot()
     }
 
     def "check modulePattern matching"() {

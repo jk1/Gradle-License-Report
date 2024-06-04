@@ -1,0 +1,18 @@
+[
+    {
+        "inceptionYear": "2006",
+        "projectUrl": "http://opensaml.org/",
+        "description": "\n        The OpenSAML-J library provides tools to support developers working with the Security Assertion Markup Language\n        (SAML).\n    ",
+        "name": "OpenSAML-J",
+        "organization": {
+            "url": "http://www.internet2.edu/",
+            "name": "Internet2"
+        },
+        "licenses": [
+            {
+                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                "name": "Apache 2"
+            }
+        ]
+    }
+]

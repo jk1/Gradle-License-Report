@@ -1,0 +1,16 @@
+[
+    {
+        "fileDetails": [
+            {
+                "licenseUrl": "https://opensource.org/licenses/CDDL-1.0",
+                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
+                "license": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0"
+            },
+            {
+                "licenseUrl": "https://www.gnu.org/licenses/gpl-2.0",
+                "file": "javax.annotation-api-1.3.2.jar/META-INF/LICENSE.txt",
+                "license": "GNU GENERAL PUBLIC LICENSE, Version 2"
+            }
+        ]
+    }
+]
