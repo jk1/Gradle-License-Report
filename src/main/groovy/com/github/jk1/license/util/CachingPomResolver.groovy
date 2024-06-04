@@ -16,23 +16,22 @@
 package com.github.jk1.license.util
 
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.Dependency
-import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.maven.MavenModule
+import org.gradle.maven.MavenPomArtifact
 
-class CachingArtifactResolver {
+class CachingPomResolver {
 
-    private static Logger LOGGER = Logging.getLogger(CachingArtifactResolver.class)
-    private Map<Map<String, String>, Collection<ResolvedArtifact>> cache = new HashMap<>()
+    private static Logger LOGGER = Logging.getLogger(CachingPomResolver.class)
+    private Map<Map<String, String>, Collection<File>> cache = new HashMap<>()
     private Project project
 
-    CachingArtifactResolver(Project project) {
+    CachingPomResolver(Project project) {
         this.project = project
     }
 
-    Collection<ResolvedArtifact> resolveArtifacts(Map<String, String> spec) {
+    Collection<File> resolveArtifacts(Map<String, String> spec) {
         Map<String, String> copy = new HashMap<String, String>()
         spec.each { copy.put(it.key.trim(), it.value.trim()) }
         if (!cache.containsKey(copy)) {
@@ -41,23 +40,20 @@ class CachingArtifactResolver {
         return cache.get(copy)
     }
 
-    private Collection<ResolvedArtifact> doResolveArtifact(Object spec) {
-        Dependency dependency = project.dependencies.create(spec)
-        Configuration config = project.configurations.detachedConfiguration(dependency).setTransitive(false)
+    private Collection<File> doResolveArtifact(Object spec) {
         try {
-            Collection<ResolvedArtifact> artifacts = config.resolvedConfiguration.resolvedArtifacts
-            if (artifacts != null) {
-                // Exercise #getFile() to download the file and catch exceptions here
-                for (ResolvedArtifact artifact : artifacts) {
-                    artifact.getFile()
-                }
-            }
-            return artifacts
+            return project
+                  .dependencies
+                  .createArtifactResolutionQuery()
+                  .forModule(spec.group, spec.name, spec.version)
+                  .withArtifacts(MavenModule, MavenPomArtifact)
+                  .execute()
+                  .resolvedComponents
+                  .collectMany { it.getArtifacts(MavenPomArtifact) }
+                  *.file
         } catch (Throwable ignored) {
             LOGGER.info("Could not resolve $spec.group:$spec.name:$spec.version. It will be skipped.")
             return null
-        } finally {
-            project.configurations.remove(config)
         }
     }
 }

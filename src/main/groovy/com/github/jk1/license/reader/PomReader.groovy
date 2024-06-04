@@ -21,7 +21,7 @@ import com.github.jk1.license.PomData
 import com.github.jk1.license.PomDeveloper
 import com.github.jk1.license.PomOrganization
 import com.github.jk1.license.task.ReportTask
-import com.github.jk1.license.util.CachingArtifactResolver
+import com.github.jk1.license.util.CachingPomResolver
 import com.github.jk1.license.util.Files
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
@@ -40,14 +40,14 @@ class PomReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     private LicenseReportExtension config
-    private CachingArtifactResolver resolver
+    private CachingPomResolver resolver
 
     PomReader(LicenseReportExtension config) {
         this.config = config
     }
 
     PomData readPomData(Project project, ResolvedArtifact artifact) {
-        resolver = new CachingArtifactResolver(project)
+        resolver = new CachingPomResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file)
         boolean pomRepresentsArtifact = true
         boolean pomHasLicense = true
@@ -75,7 +75,7 @@ class PomReader {
     }
 
     PomData readPomData(Project project, ResolvedArtifactResult artifact) {
-        resolver = new CachingArtifactResolver(project)
+        resolver = new CachingPomResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file)
         return readPomFile(pomContent)
     }
@@ -124,14 +124,14 @@ class PomReader {
     }
 
     private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact) {
-        Collection<ResolvedArtifact> artifacts = fetchRemoteArtifactPoms(artifact.moduleVersion.id.group,
+        Collection<File> artifacts = fetchRemoteArtifactPoms(artifact.moduleVersion.id.group,
             artifact.moduleVersion.id.name, artifact.moduleVersion.id.version)
 
         return artifacts.collect {
             try {
-                findAndSlurpPom(it.file)
+                findAndSlurpPom(it)
             } catch (Exception e) {
-                LOGGER.warn("Error slurping pom from $it.file", e)
+                LOGGER.warn("Error slurping pom from $it", e)
                 null
             }
         }.find {
@@ -139,12 +139,11 @@ class PomReader {
         }
     }
 
-    private Collection<ResolvedArtifact> fetchRemoteArtifactPoms(String group, String name, String version) {
+    private Collection<File> fetchRemoteArtifactPoms(String group, String name, String version) {
         Map<String, String> pomId = [
             "group"  : group,
             "name"   : name,
-            "version": version,
-            "ext"    : "pom"
+            "version": version
         ]
 
         LOGGER.debug("Fetch: $pomId")
@@ -174,10 +173,10 @@ class PomReader {
         String artifactId = parentContent.artifactId.text()
         String version = parentContent.version.text()
 
-        Collection<ResolvedArtifact> parentArtifacts = fetchRemoteArtifactPoms(groupId, artifactId, version)
+        Collection<File> parentArtifacts = fetchRemoteArtifactPoms(groupId, artifactId, version)
 
         if (parentArtifacts) {
-            (parentArtifacts*.file as Set).each { File file ->
+            (parentArtifacts as Set).each { File file ->
                 LOGGER.debug("Processing parent POM file: $file")
                 GPathResult childPomGPath = slurpPomItself(file)
 
