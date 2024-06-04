@@ -1,0 +1,38 @@
+{
+    "dependencies": [
+        {
+            "moduleName": "org.ehcache:ehcache",
+            "moduleVersion": "3.3.1",
+            "moduleUrls": [
+                "ehcache-3.3.1.jar/LICENSE.html",
+                "http://ehcache.org"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                },
+                {
+                    "moduleLicense": "LICENSE",
+                    "moduleLicenseUrl": null
+                }
+            ]
+        },
+        {
+            "moduleName": "org.slf4j:slf4j-api",
+            "moduleVersion": "1.7.7",
+            "moduleUrls": [
+                "http://www.slf4j.org"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "MIT License",
+                    "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
+                }
+            ]
+        }
+    ],
+    "importedModules": [
+        
+    ]
+}

@@ -18,8 +18,12 @@ package com.github.jk1.license.reader
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
 import spock.lang.IgnoreIf
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
 
 class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
+    @Snapshot(extension = 'json')
+    Snapshotter snapshotter
 
     def setup() {
         settingsGradle = new File(testProjectDir, "settings.gradle")
@@ -82,84 +86,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        configurationsString == """[
-    {
-        "dependencies": [
-            {
-                "group": "org.apache.commons",
-                "manifests": [
-                    {
-                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                        "vendor": "The Apache Software Foundation",
-                        "hasPackagedLicense": false,
-                        "version": "3.7.0",
-                        "license": null,
-                        "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
-                        "url": "http://commons.apache.org/proper/commons-lang/",
-                        "name": "Apache Commons Lang"
-                    }
-                ],
-                "hasArtifactFile": true,
-                "version": "3.7",
-                "poms": [
-                    {
-                        "inceptionYear": "2001",
-                        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
-                        "description": "\\n  Apache Commons Lang, a package of Java utility classes for the\\n  classes that are in java.lang's hierarchy, or are considered to be so\\n  standard as to justify existence in java.lang.\\n  ",
-                        "name": "Apache Commons Lang",
-                        "organization": {
-                            "url": "https://www.apache.org/",
-                            "name": "The Apache Software Foundation"
-                        },
-                        "licenses": [
-                            {
-                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                                "name": "Apache License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "empty": false,
-                "name": "commons-lang3"
-            },
-            {
-                "group": "org.jetbrains",
-                "manifests": [
-                    {
-                        "licenseUrl": null,
-                        "vendor": null,
-                        "hasPackagedLicense": false,
-                        "version": null,
-                        "license": null,
-                        "description": null,
-                        "url": null,
-                        "name": null
-                    }
-                ],
-                "hasArtifactFile": true,
-                "version": "16.0.1",
-                "poms": [
-                    {
-                        "inceptionYear": "",
-                        "projectUrl": "https://github.com/JetBrains/java-annotations",
-                        "description": "A set of annotations used for code inspection support and code documentation.",
-                        "name": "JetBrains Java Annotations",
-                        "organization": null,
-                        "licenses": [
-                            {
-                                "url": "http://www.apache.org/license/LICENSE-2.0.txt",
-                                "name": "The Apache Software License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "empty": false,
-                "name": "annotations"
-            }
-        ],
-        "name": "mainConfig"
-    }
-]"""
+        snapshotter.assertThat(configurationsString).matchesSnapshot()
     }
 
     def "different configurations are kept"() {
@@ -186,124 +113,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        configurationsString == """[
-    {
-        "dependencies": [
-            {
-                "group": "org.apache.commons",
-                "manifests": [
-                    {
-                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                        "vendor": "The Apache Software Foundation",
-                        "hasPackagedLicense": false,
-                        "version": "3.7.0",
-                        "license": null,
-                        "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
-                        "url": "http://commons.apache.org/proper/commons-lang/",
-                        "name": "Apache Commons Lang"
-                    }
-                ],
-                "hasArtifactFile": true,
-                "version": "3.7",
-                "poms": [
-                    {
-                        "inceptionYear": "2001",
-                        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
-                        "description": "\\n  Apache Commons Lang, a package of Java utility classes for the\\n  classes that are in java.lang's hierarchy, or are considered to be so\\n  standard as to justify existence in java.lang.\\n  ",
-                        "name": "Apache Commons Lang",
-                        "organization": {
-                            "url": "https://www.apache.org/",
-                            "name": "The Apache Software Foundation"
-                        },
-                        "licenses": [
-                            {
-                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                                "name": "Apache License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    {
-                        "fileDetails": [
-                            {
-                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
-                                "license": "Apache License, Version 2.0"
-                            },
-                            {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            }
-                        ]
-                    }
-                ],
-                "empty": false,
-                "name": "commons-lang3"
-            }
-        ],
-        "name": "mainConfig"
-    },
-    {
-        "dependencies": [
-            {
-                "group": "org.apache.commons",
-                "manifests": [
-                    {
-                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                        "vendor": "The Apache Software Foundation",
-                        "hasPackagedLicense": false,
-                        "version": "3.7.0",
-                        "license": null,
-                        "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
-                        "url": "http://commons.apache.org/proper/commons-lang/",
-                        "name": "Apache Commons Lang"
-                    }
-                ],
-                "hasArtifactFile": true,
-                "version": "3.7",
-                "poms": [
-                    {
-                        "inceptionYear": "2001",
-                        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
-                        "description": "\\n  Apache Commons Lang, a package of Java utility classes for the\\n  classes that are in java.lang's hierarchy, or are considered to be so\\n  standard as to justify existence in java.lang.\\n  ",
-                        "name": "Apache Commons Lang",
-                        "organization": {
-                            "url": "https://www.apache.org/",
-                            "name": "The Apache Software Foundation"
-                        },
-                        "licenses": [
-                            {
-                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                                "name": "Apache License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    {
-                        "fileDetails": [
-                            {
-                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
-                                "license": "Apache License, Version 2.0"
-                            },
-                            {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            }
-                        ]
-                    }
-                ],
-                "empty": false,
-                "name": "commons-lang3"
-            }
-        ],
-        "name": "subConfig"
-    }
-]"""
+        snapshotter.assertThat(configurationsString).matchesSnapshot()
     }
 
     def "project filtering is respected"() {
@@ -353,66 +163,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        configurationsString == """[
-    {
-        "dependencies": [
-            {
-                "group": "org.apache.commons",
-                "manifests": [
-                    {
-                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                        "vendor": "The Apache Software Foundation",
-                        "hasPackagedLicense": false,
-                        "version": "3.7.0",
-                        "license": null,
-                        "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
-                        "url": "http://commons.apache.org/proper/commons-lang/",
-                        "name": "Apache Commons Lang"
-                    }
-                ],
-                "hasArtifactFile": true,
-                "version": "3.7",
-                "poms": [
-                    {
-                        "inceptionYear": "2001",
-                        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
-                        "description": "\\n  Apache Commons Lang, a package of Java utility classes for the\\n  classes that are in java.lang's hierarchy, or are considered to be so\\n  standard as to justify existence in java.lang.\\n  ",
-                        "name": "Apache Commons Lang",
-                        "organization": {
-                            "url": "https://www.apache.org/",
-                            "name": "The Apache Software Foundation"
-                        },
-                        "licenses": [
-                            {
-                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
-                                "name": "Apache License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    {
-                        "fileDetails": [
-                            {
-                                "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0",
-                                "file": "commons-lang3-3.7.jar/META-INF/LICENSE.txt",
-                                "license": "Apache License, Version 2.0"
-                            },
-                            {
-                                "licenseUrl": null,
-                                "file": "commons-lang3-3.7.jar/META-INF/NOTICE.txt",
-                                "license": null
-                            }
-                        ]
-                    }
-                ],
-                "empty": false,
-                "name": "commons-lang3"
-            }
-        ],
-        "name": "mainConfig"
-    }
-]"""
+        snapshotter.assertThat(configurationsString).matchesSnapshot()
     }
 
     def "repositories of the sub-projects are used"() {
@@ -453,47 +204,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        configurationsString == """[
-    {
-        "dependencies": [
-            {
-                "group": "org.jetbrains",
-                "manifests": [
-                    {
-                        "licenseUrl": null,
-                        "vendor": null,
-                        "hasPackagedLicense": false,
-                        "version": null,
-                        "license": null,
-                        "description": null,
-                        "url": null,
-                        "name": null
-                    }
-                ],
-                "hasArtifactFile": true,
-                "version": "16.0.1",
-                "poms": [
-                    {
-                        "inceptionYear": "",
-                        "projectUrl": "https://github.com/JetBrains/java-annotations",
-                        "description": "A set of annotations used for code inspection support and code documentation.",
-                        "name": "JetBrains Java Annotations",
-                        "organization": null,
-                        "licenses": [
-                            {
-                                "url": "http://www.apache.org/license/LICENSE-2.0.txt",
-                                "name": "The Apache Software License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "empty": false,
-                "name": "annotations"
-            }
-        ],
-        "name": "subConfig"
-    }
-]"""
+        snapshotter.assertThat(configurationsString).matchesSnapshot()
     }
 
     def "only defined configurations (and their extended forms) are considered"() {

@@ -21,6 +21,8 @@ import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.testkit.runner.UnexpectedBuildFailure
 import spock.lang.IgnoreIf
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
 import spock.lang.Specification
 import spock.lang.TempDir
 import spock.lang.Unroll
@@ -29,6 +31,8 @@ import spock.util.environment.Jvm
 import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathForBuildFile
 
 class PluginSpec extends Specification {
+    @Snapshot(extension = 'json')
+    Snapshotter snapshotter
 
     // See https://endoflife.date/gradle and/or https://docs.gradle.org/current/userguide/compatibility.html
     private final static def supportedVersions = [
@@ -107,44 +111,7 @@ class PluginSpec extends Specification {
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         licenseResultJsonFile.exists()
-        licenseResultJsonFile.text == """{
-    "dependencies": [
-        {
-            "moduleName": "org.ehcache:ehcache",
-            "moduleVersion": "3.3.1",
-            "moduleUrls": [
-                "ehcache-3.3.1.jar/LICENSE.html",
-                "http://ehcache.org"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "Apache License, Version 2.0",
-                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
-                },
-                {
-                    "moduleLicense": "LICENSE",
-                    "moduleLicenseUrl": null
-                }
-            ]
-        },
-        {
-            "moduleName": "org.slf4j:slf4j-api",
-            "moduleVersion": "1.7.7",
-            "moduleUrls": [
-                "http://www.slf4j.org"
-            ],
-            "moduleLicenses": [
-                {
-                    "moduleLicense": "MIT License",
-                    "moduleLicenseUrl": "https://opensource.org/licenses/MIT"
-                }
-            ]
-        }
-    ],
-    "importedModules": [
-        
-    ]
-}"""
+        snapshotter.assertThat(licenseResultJsonFile.text).matchesSnapshot()
 
         where:
         gradle << supportedVersions

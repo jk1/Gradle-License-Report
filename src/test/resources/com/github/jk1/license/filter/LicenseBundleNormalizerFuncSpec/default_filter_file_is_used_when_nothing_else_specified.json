@@ -1,0 +1,46 @@
+{
+    "dependencies": [
+        {
+            "moduleName": "io.netty:netty-common",
+            "moduleVersion": "4.1.17.Final",
+            "moduleUrls": [
+                "http://netty.io/"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        },
+        {
+            "moduleName": "org.apache.commons:commons-lang3",
+            "moduleVersion": "3.7",
+            "moduleUrls": [
+                "http://commons.apache.org/proper/commons-lang/"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        },
+        {
+            "moduleName": "org.jetbrains:annotations",
+            "moduleVersion": "13.0",
+            "moduleUrls": [
+                "http://www.jetbrains.org"
+            ],
+            "moduleLicenses": [
+                {
+                    "moduleLicense": "Apache License, Version 2.0",
+                    "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
+                }
+            ]
+        }
+    ],
+    "importedModules": [
+        
+    ]
+}
