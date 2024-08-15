@@ -136,7 +136,6 @@ class ExtendedJsonReportRenderer implements ReportRenderer {
                     licenseFile.fileDetails.file.collect({ new File("$config.absoluteOutputDir/$it").text })
                 })
 
-            println(embeddedLicensesList)
             trimAndRemoveNullEntries([moduleName      : moduleName,
                                       moduleUrl       : moduleUrl,
                                       moduleVersion   : moduleVersion,
