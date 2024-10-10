@@ -251,14 +251,16 @@ class PomReader {
             }
         }
         // If we didn't find a license in the root pom, then parent pom always applies (if it has one)
-        if ( !pomData.licenses ) {
-            childPoms.each { pom ->
-                pom.licenses?.license?.each { GPathResult license ->
-                    LOGGER.debug("Processing license: ${license.name.text()}")
-                    pomData.licenses << new License(
-                            name: license.name?.text(),
-                            url: license.url?.text()
-                    )
+        if (config.unionParentPomLicensesWhenLicenseNotFound) {
+            if (!pomData.licenses) {
+                childPoms.each { pom ->
+                    pom.licenses?.license?.each { GPathResult license ->
+                        LOGGER.debug("Processing license: ${license.name.text()}")
+                        pomData.licenses << new License(
+                                name: license.name?.text(),
+                                url: license.url?.text()
+                        )
+                    }
                 }
             }
         }
