@@ -30,6 +30,7 @@ class LicenseReportExtension {
     public static final String[] ALL = []
 
     public boolean unionParentPomLicenses
+    public boolean unionParentPomLicensesWhenLicenseNotFound
     public String outputDir
     public Project[] projects
     public ReportRenderer[] renderers
@@ -44,6 +45,7 @@ class LicenseReportExtension {
 
     LicenseReportExtension(Project project) {
         unionParentPomLicenses = true
+        unionParentPomLicensesWhenLicenseNotFound = true
         outputDir = project.layout.buildDirectory.dir("reports/dependency-license").get().asFile.absolutePath
         projects = [project] + project.subprojects
         renderers = new SimpleHtmlReportRenderer()

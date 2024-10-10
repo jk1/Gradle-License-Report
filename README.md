@@ -45,6 +45,10 @@ licenseReport {
     // Defaults to: true
     unionParentPomLicenses = false
    
+    // If we didn't find a license in the root pom, by default, then parent pom always applies (if it has one),
+    // even if unionParentPomLicenses is false. This property allows to disable that as well.
+    unionParentPomLicensesWhenLicenseNotFound = false
+   
     // Set output directory for the report data.
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = project.layout.buildDirectory.dir("licenses").get().asFile.path

@@ -35,7 +35,6 @@ import org.xml.sax.SAXException
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-
 class PomReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
@@ -48,7 +47,7 @@ class PomReader {
 
     PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)
-        GPathResult pomContent = findAndSlurpPom(artifact.file)
+        GPathResult pomContent = findAndSlurpPom(artifact.file, artifact)
         boolean pomRepresentsArtifact = true
         boolean pomHasLicense = true
 
@@ -76,11 +75,11 @@ class PomReader {
 
     PomData readPomData(Project project, ResolvedArtifactResult artifact) {
         resolver = new CachingArtifactResolver(project)
-        GPathResult pomContent = findAndSlurpPom(artifact.file)
+        GPathResult pomContent = findAndSlurpPom(artifact.file, null)
         return readPomFile(pomContent)
     }
 
-    private GPathResult findAndSlurpPom(File toSlurp) {
+    private GPathResult findAndSlurpPom(File toSlurp, ResolvedArtifact artifact) {
         if (toSlurp.name == "pom.xml") {
             LOGGER.debug("Slurping pom from pom.xml file: $toSlurp")
             return slurpPomItself(toSlurp)
@@ -98,29 +97,46 @@ class PomReader {
             case "zip":
             case "jar":
                 LOGGER.debug("Processing pom from archive: $toSlurp")
-                return slurpFirstPomFromZip(toSlurp)
+                return slurpBestMatchPomFromZip(artifact)
         }
 
         LOGGER.debug("No idea how to process a pom from: $toSlurp")
         return null
     }
 
-    private GPathResult slurpFirstPomFromZip(File archiveToSearch) {
+    private GPathResult slurpBestMatchPomFromZip(ResolvedArtifact artifact) {
+        File archiveToSearch = artifact.file
         ZipFile archive = new ZipFile(archiveToSearch, ZipFile.OPEN_READ)
-        ZipEntry pomEntry = archive.entries().toList().find { ZipEntry entry ->
+        List<ZipEntry> pomEntries = archive.entries().toList().<ZipEntry>findAll { ZipEntry entry ->
             entry.name.endsWith("pom.xml") || entry.name.endsWith(".pom")
         }
-        LOGGER.debug("Searching for POM file in $archiveToSearch -- found ${pomEntry?.name}")
-        if (!pomEntry) return null
+        LOGGER.debug("Searching for POM file in $archiveToSearch -- found ${pomEntries?.size()}")
+        if (!pomEntries) return null
         try {
-            return createParser().parse(archive.getInputStream(pomEntry))
+            if (1 == pomEntries.size()) {
+                LOGGER.debug("Only one POM file was found in $archiveToSearch")
+                return createParser().parse(archive.getInputStream(pomEntries.first))
+            }
+
+            for (final ZipEntry zipEntry in pomEntries) {
+                final GPathResult pom = createParser().parse(archive.getInputStream(zipEntry))
+
+                if (areArtifactAndPomGroupAndArtifactIdEqual(artifact, pom)) {
+                    LOGGER.debug("POM file in $archiveToSearch matched the artifact.")
+                    return pom
+                } else {
+                    LOGGER.debug("POM file in $archiveToSearch does not match the artifact, trying another one.")
+                }
+            }
         } catch (SAXException e) {
-            LOGGER.warn("Error parsing $pomEntry.name in $archiveToSearch", e)
+            LOGGER.warn("Error parsing $pomEntries.name in $archiveToSearch", e)
             return null
         } catch (IOException e) {
-            LOGGER.warn("Error reading $pomEntry.name in $archiveToSearch", e)
+            LOGGER.warn("Error reading $pomEntries.name in $archiveToSearch", e)
             return null
         }
+
+        return null
     }
 
     private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact) {
@@ -129,7 +145,7 @@ class PomReader {
 
         return artifacts.collect {
             try {
-                findAndSlurpPom(it.file)
+                findAndSlurpPom(it.file, artifact)
             } catch (Exception e) {
                 LOGGER.warn("Error slurping pom from $it.file", e)
                 null
@@ -235,14 +251,16 @@ class PomReader {
             }
         }
         // If we didn't find a license in the root pom, then parent pom always applies (if it has one)
-        if ( !pomData.licenses ) {
-            childPoms.each { pom ->
-                pom.licenses?.license?.each { GPathResult license ->
-                    LOGGER.debug("Processing license: ${license.name.text()}")
-                    pomData.licenses << new License(
-                            name: license.name?.text(),
-                            url: license.url?.text()
-                    )
+        if (config.unionParentPomLicensesWhenLicenseNotFound) {
+            if (!pomData.licenses) {
+                childPoms.each { pom ->
+                    pom.licenses?.license?.each { GPathResult license ->
+                        LOGGER.debug("Processing license: ${license.name.text()}")
+                        pomData.licenses << new License(
+                                name: license.name?.text(),
+                                url: license.url?.text()
+                        )
+                    }
                 }
             }
         }
@@ -271,7 +289,7 @@ class PomReader {
     private static boolean areArtifactAndPomGroupAndArtifactIdEqual(ResolvedArtifact artifact, GPathResult pom) {
         if (artifact == null) return false
         artifact.moduleVersion.id.group == tryReadGroupId(pom) &&
-            artifact.moduleVersion.id.name == pom.artifactId.text()
+                artifact.moduleVersion.id.name == pom.artifactId.text()
     }
 
     private static boolean hasLicense(GPathResult pom) {
