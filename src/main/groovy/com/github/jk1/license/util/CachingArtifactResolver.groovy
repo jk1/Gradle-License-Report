@@ -25,24 +25,22 @@ import org.gradle.api.logging.Logging
 class CachingArtifactResolver {
 
     private static Logger LOGGER = Logging.getLogger(CachingArtifactResolver.class)
-    private Map<Map<String, String>, Collection<ResolvedArtifact>> cache = new HashMap<>()
+    private Map<String, Collection<ResolvedArtifact>> cache = new HashMap<>()
     private Project project
 
     CachingArtifactResolver(Project project) {
         this.project = project
     }
 
-    Collection<ResolvedArtifact> resolveArtifacts(Map<String, String> spec) {
-        Map<String, String> copy = new HashMap<String, String>()
-        spec.each { copy.put(it.key.trim(), it.value.trim()) }
-        if (!cache.containsKey(copy)) {
-            cache.put(copy, doResolveArtifact(copy))
+    Collection<ResolvedArtifact> resolveArtifacts(String dependencyNotation) {
+        if (!cache.containsKey(dependencyNotation)) {
+            cache.put(dependencyNotation, doResolveArtifact(dependencyNotation))
         }
-        return cache.get(copy)
+        return cache.get(dependencyNotation)
     }
 
-    private Collection<ResolvedArtifact> doResolveArtifact(Object spec) {
-        Dependency dependency = project.dependencies.create(spec)
+    private Collection<ResolvedArtifact> doResolveArtifact(String dependencyNotation) {
+        Dependency dependency = project.dependencies.create(dependencyNotation)
         Configuration config = project.configurations.detachedConfiguration(dependency).setTransitive(false)
         try {
             Collection<ResolvedArtifact> artifacts = config.resolvedConfiguration.resolvedArtifacts
@@ -54,7 +52,7 @@ class CachingArtifactResolver {
             }
             return artifacts
         } catch (Throwable ignored) {
-            LOGGER.info("Could not resolve $spec.group:$spec.name:$spec.version. It will be skipped.")
+            LOGGER.info("Could not resolve $dependencyNotation. It will be skipped.")
             return null
         } finally {
             project.configurations.remove(config)

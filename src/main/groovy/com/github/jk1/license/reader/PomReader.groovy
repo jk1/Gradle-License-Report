@@ -140,13 +140,7 @@ class PomReader {
     }
 
     private Collection<ResolvedArtifact> fetchRemoteArtifactPoms(String group, String name, String version) {
-        Map<String, String> pomId = [
-            "group"  : group,
-            "name"   : name,
-            "version": version,
-            "ext"    : "pom"
-        ]
-
+        String pomId = "${group.trim()}:${name.trim()}:${version.trim()}@pom"
         LOGGER.debug("Fetch: $pomId")
         try {
             resolver.resolveArtifacts(pomId)
