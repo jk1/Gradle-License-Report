@@ -45,7 +45,8 @@ class CheckLicenseTask extends DefaultTask {
     @Nested
     LicenseReportExtension config
 
-    @Input
+    @InputFile
+    @PathSensitive(PathSensitivity.RELATIVE)
     Object getAllowedLicenseFile() {
         return config.allowedLicensesFile
     }
