@@ -1,57 +1,58 @@
 plugins {
     id 'idea'
     id 'groovy'
-    id 'com.gradle.plugin-publish' version '1.2.0'
-    id 'com.github.hierynomus.license' version '0.16.1'
+    alias(libs.plugins.gradle.pluginPublish)
+    alias(libs.plugins.license)
 }
 
 group = 'com.github.jk1'
 version = '2.9'
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-repositories {
-    mavenCentral()
+tasks.withType(AbstractCompile).configureEach {
+    options.release = 8
 }
 
 dependencies {
-    implementation gradleApi()
-    implementation localGroovy()
+    implementation(localGroovy())
 
-    testImplementation gradleTestKit()
-    testImplementation('org.spockframework:spock-core:2.4-M4-groovy-3.0') {
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(platform(libs.spock.bom))
+    testImplementation(libs.spock.core) {
         exclude group: 'org.codehaus.groovy'
     }
+    testRuntimeOnly(libs.junit.platformSuiteEngine)
+    testRuntimeOnly(libs.junit.platformLauncher)
 }
 
 idea {
     module {
         downloadSources = true
-        outputDir file("$buildDir/idea/main")
-        testOutputDir file("$buildDir/idea/test")
+        outputDir = layout.buildDirectory.dir("idea/main").get().asFile
+        testOutputDir = layout.buildDirectory.dir("idea/test").get().asFile
     }
 }
 
 test {
     useJUnitPlatform()
+
     testLogging {
-        showStandardStreams = true
-        exceptionFormat = 'full'
+        events "started", "passed", "skipped", "failed"
     }
+
     systemProperty("spock.snapshots.rootPath", "src/test/resources")
     systemProperty("spock.snapshots.updateSnapshots", !System.getenv("CI"))
     systemProperty("spock.snapshots.writeActualSnapshotOnMismatch", !System.getenv("CI"))
 
-    outputs.upToDateWhen { false }
+    reports.html.required = true
+    reports.junitXml.required = System.getenv("CI")
 }
 
 // local maven publishing to ease development
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId 'com.github.jk1.dependency-license-report'
-            artifactId 'com.github.jk1.dependency-license-report.gradle.plugin'
+            groupId = 'com.github.jk1.dependency-license-report'
+            artifactId = 'com.github.jk1.dependency-license-report.gradle.plugin'
             from components.java
         }
     }

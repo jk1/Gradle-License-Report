@@ -32,16 +32,16 @@ class ReportTaskCachingSpec extends Specification {
     File localBuildCacheDirectory
 
     def setup() {
-        buildFile = new File(testProjectDir, 'build.gradle')
         localBuildCacheDirectory = new File(testProjectDir, '.local-cache')
         localBuildCacheDirectory.mkdir()
-        new File(testProjectDir, 'settings.gradle') << """
-        buildCache {
-            local {
-                directory '${localBuildCacheDirectory.toURI()}'
+        buildFile = new File(testProjectDir, 'settings.gradle') << """
+            buildCache {
+                local {
+                    directory '${localBuildCacheDirectory.toURI()}'
+                }
             }
-        }
-    """
+        """
+        buildFile = new File(testProjectDir, 'build.gradle')
         buildFile << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
