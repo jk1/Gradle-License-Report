@@ -33,6 +33,11 @@ idea {
     }
 }
 
+license {
+    header = rootProject.file("NOTICE.txt") 
+    includes(["**/*.groovy"])
+}
+
 test {
     useJUnitPlatform()
     testLogging {
