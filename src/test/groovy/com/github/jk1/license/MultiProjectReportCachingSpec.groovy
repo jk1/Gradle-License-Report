@@ -95,11 +95,11 @@ class MultiProjectReportCachingSpec extends Specification {
 
     private BuildResult runBuild() {
         return GradleRunner.create()
-                .withPluginClasspath()
-                .withProjectDir(testProjectDir)
-                .withArguments('--build-cache', "generateLicenseReport")
-                .withDebug(true)
-                .forwardOutput()
-                .build()
+            .withPluginClasspath()
+            .withProjectDir(testProjectDir)
+            .withArguments('--build-cache', "generateLicenseReport")
+            .withDebug(true)
+            .forwardOutput()
+            .build()
     }
 }
