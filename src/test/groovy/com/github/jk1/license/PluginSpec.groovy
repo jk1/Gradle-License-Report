@@ -19,16 +19,20 @@ import org.gradle.api.Project
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.testkit.runner.UnexpectedBuildFailure
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 import spock.lang.TempDir
 import spock.lang.Unroll
+import org.spockframework.runtime.extension.builtin.PreconditionContext
 
 import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathForBuildFile
 
 class PluginSpec extends Specification {
 
-    private final static def supportedGradleVersions = ["7.6.1", "8.1.1"]
-    private final static def unsupportedGradleVersions = ["5.6", "6.8.2"]
+    private final static def supportedGradleVersions = ["7.6.6", "8.14.3", "9.1.0"]
+    private final static def supportedGradleVersionsJdkMax = [20, 24, 25]
+    private final static def unsupportedGradleVersions = ["6.9.4"]
+    private final static def unsupportedGradleVersionsJdkMax = [16]
 
     @TempDir
     File testProjectDir
@@ -38,7 +42,7 @@ class PluginSpec extends Specification {
     File licenseResultJsonFile
 
     def setup() {
-        outputDir = new File(testProjectDir, "/build/licenses")
+        outputDir = new File(testProjectDir, "build/licenses")
         licenseResultJsonFile = new File(outputDir, "index.json")
 
         buildFile = new File(testProjectDir, 'build.gradle')
@@ -79,7 +83,8 @@ class PluginSpec extends Specification {
     }
 
     @Unroll
-    def "run plugin with gradle #gradleVersion"(String gradleVersion) {
+    @IgnoreIf(value = { PreconditionContext it -> it.jvm.isJavaVersionCompatible(it.data.maxJdk) }, reason = "Java version is not supported by gradle version")
+    def "run plugin with gradle #gradleVersion"(String gradleVersion, int maxJdk) {
         when:
         def runResult = runGradle(gradleVersion)
 
@@ -125,9 +130,11 @@ class PluginSpec extends Specification {
 
         where:
         gradleVersion << supportedGradleVersions
+        maxJdk << supportedGradleVersionsJdkMax
     }
 
     @Unroll
+    @IgnoreIf(value = { PreconditionContext it -> it.jvm.isJavaVersionCompatible(it.data.maxJdk) }, reason = "Java version is not supported by gradle version")
     def "the plugin doesn't start if the required gradle-version is not met (#gradleVersion)"(String gradleVersion) {
         when:
         runGradle(gradleVersion)
@@ -138,6 +145,7 @@ class PluginSpec extends Specification {
 
         where:
         gradleVersion << unsupportedGradleVersions
+        maxJdk << unsupportedGradleVersionsJdkMax
     }
 
     private def runGradle(String gradleVersion) {
