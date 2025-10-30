@@ -37,6 +37,7 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       tag_name: ${{ needs.release.outputs.tag_name }}
+      validate_only: false
     secrets:
       publish_key: ${{ vars.JK1_GRADLE_PUBLISH_KEY }}
       publish_secret: ${{ secrets.JK1_GRADLE_PUBLISH_SECRET }}

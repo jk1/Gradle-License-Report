@@ -11,6 +11,10 @@
       "extra-files": [
         {
           "type": "generic",
+          "path": "README.md"
+        },
+        {
+          "type": "generic",
           "path": "build.gradle"
         },
         {

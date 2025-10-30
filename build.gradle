@@ -63,6 +63,7 @@ test {
     systemProperty("spock.snapshots.updateSnapshots", !System.getenv("CI"))
     systemProperty("spock.snapshots.writeActualSnapshotOnMismatch", !System.getenv("CI"))
 
+    outputs.upToDateWhen { false }
     reports.html.required = true
     reports.junitXml.required = System.getenv("CI") != null ? true : false
 }
