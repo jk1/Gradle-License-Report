@@ -99,11 +99,11 @@ class ManifestReader {
 				def additionalParameter = it.split('=')
 
 				if (additionalParameter[0] == 'description')
-					data.license = additionalParameter[1]
+					data.license = additionalParameter[1]?.trim()
 			}
         }
         else {
-            data.license = bundleLicense
+            data.license = bundleLicense?.trim()
         }
         LOGGER.info("Returning manifest data: " + data.dump())
         return data

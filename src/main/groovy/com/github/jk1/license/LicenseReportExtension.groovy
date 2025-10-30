@@ -41,6 +41,7 @@ class LicenseReportExtension {
     public String[] excludeGroups
     public String[] excludes
     public Object allowedLicensesFile
+    public boolean allowEmptyLicense
 
     LicenseReportExtension(Project project) {
         unionParentPomLicenses = true
@@ -54,6 +55,7 @@ class LicenseReportExtension {
         excludes = []
         importers = []
         filters = []
+        allowEmptyLicense = false
     }
 
     @Nested
@@ -69,6 +71,11 @@ class LicenseReportExtension {
     @Nested
     DependencyFilter[] getFilters() {
         return filters
+    }
+
+    @Input
+    boolean getAllowEmptyLicense() {
+        return allowEmptyLicense
     }
 
     @Internal
@@ -101,6 +108,8 @@ class LicenseReportExtension {
         snapshot += excludeGroups
         snapshot << 'excludes'
         snapshot += excludes
+        snapshot << 'allowEmptyLicenses'
+        snapshot += allowEmptyLicense
         snapshot << 'unionParentPomLicenses'
         snapshot += unionParentPomLicenses
         snapshot.join("!")

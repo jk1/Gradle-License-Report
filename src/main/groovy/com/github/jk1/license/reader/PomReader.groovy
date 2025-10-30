@@ -227,9 +227,9 @@ class PomReader {
         }
         licensePoms.each { pom ->
             pom.licenses?.license?.each { GPathResult license ->
-                LOGGER.debug("Processing license: ${license.name.text()}")
+                LOGGER.debug("Processing license: ${license.name.text()} will be trimmed if needed")
                 pomData.licenses << new License(
-                    name: license.name?.text(),
+                    name: license.name?.text()?.trim(),
                     url: license.url?.text()
                 )
             }
@@ -238,9 +238,9 @@ class PomReader {
         if ( !pomData.licenses ) {
             childPoms.each { pom ->
                 pom.licenses?.license?.each { GPathResult license ->
-                    LOGGER.debug("Processing license: ${license.name.text()}")
+                    LOGGER.debug("Processing license: ${license.name.text()} will be trimmed if needed")
                     pomData.licenses << new License(
-                            name: license.name?.text(),
+                            name: license.name?.text()?.trim(),
                             url: license.url?.text()
                     )
                 }

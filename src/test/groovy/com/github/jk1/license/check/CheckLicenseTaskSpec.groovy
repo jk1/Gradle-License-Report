@@ -97,6 +97,9 @@ class CheckLicenseTaskSpec extends Specification {
                     "moduleLicense": "MIT License"
                 },
                 {
+                    "moduleLicense": "CDDL License"
+                },
+                {
                     "moduleLicense": ".*", "moduleName": "org.jetbrains"
                 }
             ]
@@ -652,6 +655,128 @@ class CheckLicenseTaskSpec extends Specification {
             licenseReport {
                 filters = new LicenseBundleNormalizer()
                 allowedLicensesFile = "${StringEscapeUtils.escapeJava(allowed.path)}"
+            }
+        """
+
+        when:
+        BuildResult buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
+
+        when:
+        buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
+
+        when:
+        buildResult = result("--build-cache", "clean", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.FROM_CACHE
+
+        when:
+        buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
+    }
+
+    def "it should pass when empty license and allowEmptyLicense set to true"() {
+        given:
+        buildFile << """
+            import com.github.jk1.license.filter.*
+
+            plugins {
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report'
+            }
+
+            apply plugin: 'java'
+
+            group 'greeting'
+            version '0.0.1'
+
+            repositories {
+                mavenCentral()
+            }
+
+            dependencies {
+                implementation group: "javax.xml", name: "jaxrpc-api", version: "1.1"
+            }
+
+            compileKotlin {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+            compileTestKotlin {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+            licenseReport {
+                filters = new LicenseBundleNormalizer()
+                allowEmptyLicense = true    
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
+            }
+        """
+
+        when:
+        BuildResult buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
+
+        when:
+        buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
+
+        when:
+        buildResult = result("--build-cache", "clean", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.FROM_CACHE
+
+        when:
+        buildResult = result("--build-cache", "checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
+    }
+
+    def "it should trim and record license without whitespaces around"() {
+        given:
+        buildFile << """
+            import com.github.jk1.license.filter.*
+
+            plugins {
+                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+                id 'com.github.jk1.dependency-license-report'
+            }
+
+            apply plugin: 'java'
+
+            group 'greeting'
+            version '0.0.1'
+
+            repositories {
+                mavenCentral()
+            }
+
+            dependencies {
+                implementation group: "javax.ws.rs", name: "jsr311-api", version: "1.1.1"
+            }
+
+            compileKotlin {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+            compileTestKotlin {
+                kotlinOptions.jvmTarget = "1.8"
+            }
+            licenseReport {
+                filters = new LicenseBundleNormalizer()
+                allowEmptyLicense = true    
+                allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
             }
         """
 

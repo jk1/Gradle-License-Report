@@ -85,6 +85,10 @@ licenseReport {
     // This is for the allowed-licenses-file in checkLicense Task
     // Accepts File, URL or String path to local or remote file
     allowedLicensesFile = project.layout.projectDirectory.file("config/allowed-licenses.json").asFile
+
+    // If set to true, the plugin will not fail the build if no licenses are found
+    // simply to support quite old libraries that do not provide any license information.
+    allowEmptyLicense = false
 }
 ```
 
