@@ -1,10 +1,9 @@
-Gradle License Report
-=====================
+# Gradle License Report
 
 [![Build Status](https://travis-ci.org/jk1/Gradle-License-Report.svg?branch=master)](https://travis-ci.org/jk1/Gradle-License-Report)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A plugin for generating reports about the licenses of the dependencies for your Gradle project. 
+A plugin for generating reports about the licenses of the dependencies for your Gradle project.
 
 This plugin will resolve all your dependencies, and then scour them for anything that looks like relevant licensing information. The theory is
 to automatically generate a report that you can hand to corporate IP lawyers in order to keep them busy.
@@ -15,9 +14,13 @@ Add this to your `build.gradle` file for Gradle 7+:
 
 ```groovy
 plugins {
-    id 'com.github.jk1.dependency-license-report' version '2.9'
+    id 'com.github.jk1.dependency-license-report' version '2.9.1-SNAPSHOT'  // x-release-please-version
 }
 ```
+
+Please note, for Gradle 9+ it is necessary to specify `--no-parallel` for the moment, to avoid errors like:
+
+> Resolution of the configuration ':<something>:runtimeClasspath' was attempted without an exclusive lock. This is unsafe and not allowed
 
 For Gradle 6.X stick to 1.X plugin versions:
 
@@ -38,13 +41,13 @@ import com.github.jk1.license.render.*
 import com.github.jk1.license.importer.*
 
 licenseReport {
-    // By default this plugin will collect the union of all licenses from 
-    // the immediate pom and the parent poms. If your legal team thinks this 
+    // By default this plugin will collect the union of all licenses from
+    // the immediate pom and the parent poms. If your legal team thinks this
     // is too liberal, you can restrict collected licenses to only include the
     // those found in the immediate pom file
     // Defaults to: true
     unionParentPomLicenses = false
-   
+
     // Set output directory for the report data.
     // Defaults to ${project.buildDir}/reports/dependency-license.
     outputDir = project.layout.buildDirectory.dir("licenses").get().asFile.path
@@ -148,7 +151,7 @@ licenseReport {
 ### InventoryHtmlReportRender
 
 The InventoryHtmlReportRender renders a report grouped by license type, so you can more easily identify which dependencies
-share the same license.  This makes it easier to know the individual licenses you need to verify with your legal department.
+share the same license. This makes it easier to know the individual licenses you need to verify with your legal department.
 To use this report you simply add it to the configuration:
 
 ```groovy
@@ -159,10 +162,10 @@ licenseReport {
 }
 ```
 
-This defaults to using the name of the project as the title and index.html as the name of the file it creates.  You can
-change this by passing additional arguments.  The first argument is the filename to write out, and the 2nd is the title
-to use in the report.  For dependencies that don't declare their license they will be listed underneath the `Unknown`
-license group.  You can provide the license information for these dependencies statically using the `overridesFilename`.
+This defaults to using the name of the project as the title and index.html as the name of the file it creates. You can
+change this by passing additional arguments. The first argument is the filename to write out, and the 2nd is the title
+to use in the report. For dependencies that don't declare their license they will be listed underneath the `Unknown`
+license group. You can provide the license information for these dependencies statically using the `overridesFilename`.
 The overrides file is a pipe-separated value file with the columns for `Dependency Name`,`Project URL`,`License`, and
 `License URL`, respectively. Here is an example of the contents of the override file:
 
@@ -172,7 +175,7 @@ org.springframework.security:spring-security-core:3.2.9.RELEASE|https://github.c
 org.springframework.security:spring-security-acl:3.2.9.RELEASE|https://github.com/spring-projects/spring-security|The Apache Software License, Version 2.0|https://github.com/spring-projects/spring-security/blob/master/license.txt
 ```
 
-There are no column headers on this file.  Here is the example of how to config the InventoryHtmlReportRenderer to use
+There are no column headers on this file. Here is the example of how to config the InventoryHtmlReportRenderer to use
 an overrides file:
 
 ```groovy
@@ -186,6 +189,7 @@ licenseReport {
 ## Importers
 
 Importer adds license information from an external source to your report. Importer may come in handy if
+
 - some modules within your application use their own means of library dependency resolution, e.g. npm registry
 - your application integrates third party components or services with their own library dependencies
 - joint report for a multimodule project is required
@@ -262,24 +266,50 @@ Apache License, Version 2.0
 This can be avoided by providing an accurate normalisation file which contains rules
 to unify such entries. The configuration file has two sections:
 
-* license-bundles: Defines the actual licenses with their correct name and their correct url
-* transformation-rules: A rule defines a reference to one license-bundle and a pattern for
-   a malformed name or url. When a pattern matches the license of a dependency, the
-   output license-information for that dependency will be updated with the referenced license-bundle.
+- license-bundles: Defines the actual licenses with their correct name and their correct url
+- transformation-rules: A rule defines a reference to one license-bundle and a pattern for
+  a malformed name or url. When a pattern matches the license of a dependency, the
+  output license-information for that dependency will be updated with the referenced license-bundle.
 
 ```json
 {
-  "bundles" : [
-    { "bundleName" : "apache1", "licenseName" : "Apache Software License, Version 1.1", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-1.1" },
-    { "bundleName" : "apache2", "licenseName" : "Apache License, Version 2.0", "licenseUrl" : "http://www.apache.org/licenses/LICENSE-2.0" },
-    { "bundleName" : "cddl1", "licenseName" : "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0 (CDDL-1.0)", "licenseUrl" : "http://opensource.org/licenses/CDDL-1.0" }
+  "bundles": [
+    {
+      "bundleName": "apache1",
+      "licenseName": "Apache Software License, Version 1.1",
+      "licenseUrl": "http://www.apache.org/licenses/LICENSE-1.1"
+    },
+    {
+      "bundleName": "apache2",
+      "licenseName": "Apache License, Version 2.0",
+      "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    {
+      "bundleName": "cddl1",
+      "licenseName": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0 (CDDL-1.0)",
+      "licenseUrl": "http://opensource.org/licenses/CDDL-1.0"
+    }
   ],
-  "transformationRules" : [
-    { "bundleName" : "apache2", "licenseNamePattern" : ".*The Apache Software License, Version 2.0.*" },
-    { "bundleName" : "apache2", "licenseNamePattern" : "Apache 2" },
-    { "bundleName" : "apache2", "licenseUrlPattern" : "http://www.apache.org/licenses/LICENSE-2.0.txt" },
-    { "bundleName" : "apache2", "licenseNamePattern" : "Special Apache", "transformUrl" : false },
-    { "bundleName" : "apache2", "licenseNamePattern" : "Keep this name", "transformName" : false }
+  "transformationRules": [
+    {
+      "bundleName": "apache2",
+      "licenseNamePattern": ".*The Apache Software License, Version 2.0.*"
+    },
+    { "bundleName": "apache2", "licenseNamePattern": "Apache 2" },
+    {
+      "bundleName": "apache2",
+      "licenseUrlPattern": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    },
+    {
+      "bundleName": "apache2",
+      "licenseNamePattern": "Special Apache",
+      "transformUrl": false
+    },
+    {
+      "bundleName": "apache2",
+      "licenseNamePattern": "Keep this name",
+      "transformName": false
+    }
   ]
 }
 ```
