@@ -1,0 +1,45 @@
+---
+name: release-please
+run-name: "🤖 Release Please (via ${{ github.ref_name }})"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+# prevents concurrent runs of the same workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        name: Release Please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  release-publish:
+    needs: [release-please]
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    uses: ./.github/workflows/publish.yml
+    with:
+      tag_name: ${{ needs.release.outputs.tag_name }}
+    secrets:
+      publish_key: ${{ vars.JK1_GRADLE_PUBLISH_KEY }}
+      publish_secret: ${{ secrets.JK1_GRADLE_PUBLISH_SECRET }}
+      signing_key_id: ${{ vars.JK1_GRADLE_SIGNING_KEY_ID || '' }}
+      signing_password: ${{ secrets.JK1_GRADLE_SIGNING_PASSWORD || '' }}
+      signing_key: ${{ secrets.JK1_GRADLE_SIGNING_KEY || '' }}
