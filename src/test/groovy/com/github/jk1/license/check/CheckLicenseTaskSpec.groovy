@@ -184,7 +184,6 @@ class CheckLicenseTaskSpec extends Specification {
             import com.github.jk1.license.filter.*
 
             plugins {
-                id 'org.jetbrains.kotlin.jvm' version '1.8.21'
                 id 'com.github.jk1.dependency-license-report'
             }
 
@@ -204,12 +203,6 @@ class CheckLicenseTaskSpec extends Specification {
                 implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
             }
 
-            compileKotlin {
-                kotlinOptions.jvmTarget = "1.8"
-            }
-            compileTestKotlin {
-                kotlinOptions.jvmTarget = "1.8"
-            }
             licenseReport {
                 filters = new LicenseBundleNormalizer()
                 allowedLicensesFile = new File("${StringEscapeUtils.escapeJava(allowed.path)}")
