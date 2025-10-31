@@ -24,9 +24,14 @@ import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
 
 class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
+    private Boolean includeTimestamp
+    private Boolean includeCounter
 
-    InventoryMarkdownReportRenderer(String fileName = 'licenses.md', String name = null, File overridesFile = null) {
+    InventoryMarkdownReportRenderer(String fileName = 'licenses.md', String name = null, File overridesFile = null,
+                                    Boolean includeTimestamp = true, Boolean includeCounter = true) {
         super(fileName, name, overridesFile)
+        this.includeTimestamp = includeTimestamp
+        this.includeCounter = includeCounter
     }
 
     @Override
@@ -68,7 +73,7 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         output << "\n"
         output << "# ${name}\n"
         output << "## Dependency License Report\n"
-        output << "_${new Date().format('yyyy-MM-dd HH:mm:ss z')}_\n"
+        if (includeTimestamp) output << "_${new Date().format('yyyy-MM-dd HH:mm:ss z')}_\n"
     }
 
     protected void printDependency(ModuleData data) {
@@ -109,7 +114,7 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
     }
 
     protected void printDependencyMetaInformation(ModuleData data) {
-        output << "**${++counter}** "
+        if (includeCounter) output << "**${++counter}** "
         if (data.group) output << "**Group:** `$data.group` "
         if (data.name) output << "**Name:** `$data.name` "
         if (data.version) output << "**Version:** `$data.version` "
@@ -154,7 +159,8 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
 
     protected printImportedDependency(ImportedModuleData data) {
         output << "\n\n"
-        output << "${++counter}. **${data.name} v${data.version}**\n"
+        if (includeCounter) output << "${++counter}. "
+        output << "**${data.name} v${data.version}**\n"
         output << sectionLink("Project URL", data.projectUrl, data.projectUrl)
         output << sectionLink("License URL", data.license, data.licenseUrl)
         output << "\n\n"
