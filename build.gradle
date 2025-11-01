@@ -1,7 +1,7 @@
 plugins {
     id 'idea'
     id 'groovy'
-    id 'signing'
+    //id 'signing'
     alias(libs.plugins.gradle.pluginPublish)
     alias(libs.plugins.license)
 }
@@ -14,18 +14,20 @@ tasks.withType(AbstractCompile).configureEach {
     options.release = 8
 }
 
+/**
 signing {
     def signingKeyId = findProperty("signingKeyId")
     def signingKey = findProperty("signingKey")
     def signingPassword = findProperty("signingPassword")
     useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
-
+    required { isReleaseVersion && gradle.taskGraph.hasTask("publish")}
     sign publishing.publications
 }
 
 tasks.withType(Sign) {
-    onlyIf("isReleaseVersion is set") { isReleaseVersion }
+    onlyIf("isReleaseVersion is set and signing key supplied") { isReleaseVersion && findProperty("signingKey")?.trim() }
 }
+*/
 
 dependencies {
     implementation(localGroovy())
