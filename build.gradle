@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.github.jk1'
-version = '2.9.1-SNAPSHOT'  // x-release-please-version
+version = '3.0.0'  // x-release-please-version
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 tasks.withType(AbstractCompile).configureEach {
