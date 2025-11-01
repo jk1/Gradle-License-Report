@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.2 (2025-11-01)
+
+## What's Changed
+* chore(master): release 3.0.2-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/357
+
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.0.1...v3.0.2
+
 ## 3.0.1 (2025-11-01)
 
 ## What's Changed
