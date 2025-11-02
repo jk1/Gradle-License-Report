@@ -34,6 +34,7 @@
     { "bundleName" : "LGPL-2.1-only", "licenseName" : "GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-2.1" },
     { "bundleName" : "LGPL-3.0-only", "licenseName" : "GNU LESSER GENERAL PUBLIC LICENSE, Version 3", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-3.0" },
     { "bundleName" : "MIT", "licenseName" : "MIT License", "licenseUrl" : "https://opensource.org/licenses/MIT" },
+    { "bundleName" : "MIT-0", "licenseName" : "MIT No Attribution License", "licenseUrl" : "https://opensource.org/license/mit-0" },
     { "bundleName" : "MPL-1.1", "licenseName" : "Mozilla Public License Version 1.1", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/1.1" },
     { "bundleName" : "MPL-2.0", "licenseName" : "Mozilla Public License, Version 2.0", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/2.0" },
     { "bundleName" : "Public-Domain", "licenseName" : "PUBLIC DOMAIN", "licenseUrl" : "" }
@@ -94,6 +95,7 @@
     { "bundleName" : "LGPL-3.0-only", "licenseUrlPattern" : ".*(www\\.)?gnu\\.org/licenses(/old-licenses)?/lgpl(-3)?(\\.(html|txt))?" },
     { "bundleName" : "MIT", "licenseNamePattern" : "(The\\s)?MIT(\\slicen[cs]e)?(\\s\\(MIT\\))?" },
     { "bundleName" : "MIT", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/MIT(\\.php)?" },
+    { "bundleName" : "MIT-0", "licenseNamePattern" : "(The\\s)?MIT No Attribution(\\slicen[cs]e)?(\\s\\(MIT[-]?0\\))?" },
     { "bundleName" : "MPL-1.1", "licenseNamePattern" : "MPL 1\\.1" },
     { "bundleName" : "MPL-2.0", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/MPL-2\\.0" },
     { "bundleName" : "MPL-2.0", "licenseUrlPattern" : ".*(www\\.)mozilla\\.org/MPL/2\\.0/" },
