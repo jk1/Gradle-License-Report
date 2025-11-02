@@ -26,4 +26,13 @@ class InventoryMarkdownReportRendererSpec extends AbstractInventoryReportRendere
         def sanitizedOutput = outputFile.text.replaceAll("_[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z0-9-]+_", "DATE")
         snapshotter.assertThat(sanitizedOutput).matchesSnapshot()
     }
+
+    def "check the correct generation of markdown without timestamp and counter"() {
+        def renderer = new InventoryMarkdownReportRenderer(outputFile.name, "name", overrides, false, false)
+        when:
+        renderer.render(projectData)
+        then:
+        outputFile.exists()
+        snapshotter.assertThat(outputFile.text).matchesSnapshot()
+    }
 }
