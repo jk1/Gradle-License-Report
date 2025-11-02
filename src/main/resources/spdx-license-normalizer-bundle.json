@@ -35,8 +35,7 @@
     { "bundleName" : "LGPL-3.0-only", "licenseName" : "LGPL-3.0-only", "licenseUrl" : "https://www.gnu.org/licenses/lgpl-3.0" },
     { "bundleName" : "MIT", "licenseName" : "MIT", "licenseUrl" : "https://opensource.org/licenses/MIT" },
     { "bundleName" : "MPL-1.1", "licenseName" : "MPL-1.1", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/1.1" },
-    { "bundleName" : "MPL-2.0", "licenseName" : "MPL-2.0", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/2.0" },
-    { "bundleName" : "Public-Domain", "licenseName" : "Public-Domain", "licenseUrl" : "" }
+    { "bundleName" : "MPL-2.0", "licenseName" : "MPL-2.0", "licenseUrl" : "https://www.mozilla.org/en-US/MPL/2.0" }
   ],
   "transformationRules" : [
     { "bundleName" : "0BSD", "licenseNamePattern" : "BSD Zero Clause License" },
@@ -96,9 +95,6 @@
     { "bundleName" : "MIT", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/MIT(\\.php)?" },
     { "bundleName" : "MPL-1.1", "licenseNamePattern" : "MPL 1\\.1" },
     { "bundleName" : "MPL-2.0", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/MPL-2\\.0" },
-    { "bundleName" : "MPL-2.0", "licenseUrlPattern" : ".*(www\\.)mozilla\\.org/MPL/2\\.0/" },
-    { "bundleName" : "Public-Domain", "licenseNamePattern" : "((public)\\s(domain)).*", "transformUrl" : false },
-    { "bundleName" : "Public-Domain", "licenseFileContentPattern" : ".*(Creative)\\s(Commons).*", "transformUrl" : false },
-    { "bundleName" : "Public-Domain", "licenseFileContentPattern" : ".*((Public)\\s(Domain)).*", "transformUrl" : false }
+    { "bundleName" : "MPL-2.0", "licenseUrlPattern" : ".*(www\\.)mozilla\\.org/MPL/2\\.0/" }
   ]
 }
