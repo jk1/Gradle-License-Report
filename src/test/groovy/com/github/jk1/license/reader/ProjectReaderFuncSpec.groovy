@@ -153,7 +153,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        runResult.output.contains("Use remote pom because the found pom seems not to represent artifact. $expectedMismatchMessage")
         pomsString == expectedContent
 
         where:

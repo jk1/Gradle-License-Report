@@ -48,20 +48,13 @@ class PomReader {
     PomData readPomData(Project project, ResolvedArtifact artifact) {
         resolver = new CachingArtifactResolver(project)
         GPathResult pomContent = findAndSlurpPom(artifact.file, artifact)
-        boolean pomRepresentsArtifact = true
         boolean pomHasLicense = true
 
         if (pomContent) {
-            pomRepresentsArtifact = areArtifactAndPomGroupAndArtifactIdEqual(artifact, pomContent)
-            if (!pomRepresentsArtifact) {
-                LOGGER.debug("Use remote pom because the found pom seems not to represent artifact. " +
-                    "Artifact: ${artifact.moduleVersion.id.group}:${artifact.moduleVersion.id.name} / " +
-                    "Pom: ${pomContent.groupId.text()}:${pomContent.artifactId.text()})")
-            }
             pomHasLicense = hasLicense(pomContent)
         }
 
-        if (!pomContent || !pomRepresentsArtifact || !pomHasLicense) {
+        if (!pomContent || !pomHasLicense) {
             pomContent = fetchRemoteArtifactPom(artifact) ?: pomContent
         }
 
@@ -115,7 +108,7 @@ class PomReader {
         try {
             if (1 == pomEntries.size()) {
                 LOGGER.debug("Only one POM file was found in $archiveToSearch")
-                return createParser().parse(archive.getInputStream(zipEntry))
+                return createParser().parse(archive.getInputStream(pomEntries.first()))
             }
 
             for (final ZipEntry zipEntry in pomEntries) {
