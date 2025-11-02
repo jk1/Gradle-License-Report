@@ -96,7 +96,6 @@
     { "bundleName" : "MPL-2.0", "licenseUrlPattern" : ".*(www\\.)?opensource\\.org/licenses/MPL-2\\.0" },
     { "bundleName" : "MPL-2.0", "licenseUrlPattern" : ".*(www\\.)mozilla\\.org/MPL/2\\.0/" },
     { "bundleName" : "Public-Domain", "licenseNamePattern" : "((public)\\s(domain)).*", "transformUrl" : false },
-    { "bundleName" : "Public-Domain", "licenseFileContentPattern" : ".*(Creative)\\s(Commons).*", "transformUrl" : false },
     { "bundleName" : "Public-Domain", "licenseFileContentPattern" : ".*((Public)\\s(Domain)).*", "transformUrl" : false }
   ]
 }
