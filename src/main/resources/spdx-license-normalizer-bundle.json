@@ -26,6 +26,8 @@
     { "bundleName" : "CPL-1.0", "licenseName" : "CPL-1.0", "licenseUrl" : "https://www.eclipse.org/legal/cpl-v10.html" },
     { "bundleName" : "EPL-1.0", "licenseName" : "EPL-1.0", "licenseUrl" : "http://www.eclipse.org/legal/epl-v10.html" },
     { "bundleName" : "EPL-2.0", "licenseName" : "EPL-2.0", "licenseUrl" : "https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt" },
+    { "bundleName" : "FSL-1.1-ALv2", "licenseName" : "FSL-1.1-ALv2", "licenseUrl" : "https://fsl.software/FSL-1.1-ALv2.template.md" },
+    { "bundleName" : "FSL-1.1-MIT", "licenseName" : "FSL-1.1-MIT", "licenseUrl" : "https://fsl.software/FSL-1.1-MIT.template.md" },
     { "bundleName" : "GPL-1.0", "licenseName" : "GPL-1.0", "licenseUrl" : "https://www.gnu.org/licenses/gpl-1.0" },
     { "bundleName" : "GPL-2.0-only", "licenseName" : "GPL-2.0-only", "licenseUrl" : "https://www.gnu.org/licenses/gpl-2.0" },
     { "bundleName" : "GPL-3.0-only", "licenseName" : "GPL-3.0-only", "licenseUrl" : "https://www.gnu.org/licenses/gpl-3.0" },
