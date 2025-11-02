@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.1.0 (2025-11-02)
+
+## What's Changed
+* chore(master): release 3.0.2-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/357
+* fix: align normalizer rules between SPDX+default; fixing minor attribution issues by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/360
+* feat: add GPL+Universal FOSS exception/FSL/Bouncy Castle/MIT-0 normalising rules by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/359
+* Make markdown reporter more diff friendly by @suniala in https://github.com/jk1/Gradle-License-Report/pull/326
+* #322 Pick the best matching pom.xml in the jar, instead of randomly choosing the first one. by @AlexanderBartash in https://github.com/jk1/Gradle-License-Report/pull/323
+
+## New Contributors
+* @suniala made their first contribution in https://github.com/jk1/Gradle-License-Report/pull/326
+* @AlexanderBartash made their first contribution in https://github.com/jk1/Gradle-License-Report/pull/323
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.0.1...v3.1.0
+
 ## 3.0.1 (2025-11-01)
 
 ## What's Changed

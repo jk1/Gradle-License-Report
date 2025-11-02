@@ -7,7 +7,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'com.github.jk1.dependency-license-report:com.github.jk1.dependency-license-report.gradle.plugin:3.0.2-SNAPSHOT'  // x-release-please-version
+        classpath 'com.github.jk1.dependency-license-report:com.github.jk1.dependency-license-report.gradle.plugin:3.1.0'  // x-release-please-version
     }
 }
 
