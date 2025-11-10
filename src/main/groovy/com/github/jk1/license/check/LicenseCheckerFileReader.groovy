@@ -18,23 +18,34 @@ package com.github.jk1.license.check
 import groovy.json.JsonParserType
 import groovy.json.JsonSlurper
 import org.gradle.api.InvalidUserDataException
+import org.gradle.api.file.RegularFile
+import org.gradle.api.resources.TextResource
+
+import java.nio.file.Path
 
 class LicenseCheckerFileReader {
+    private static final LAX_PARSER = new JsonSlurper().setType(JsonParserType.LAX)
 
     static List<AllowedLicense> importAllowedLicenses(Object allowedLicensesFile) {
         def slurpResult
-        if(allowedLicensesFile instanceof File ) {
-            slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
-        } else if(allowedLicensesFile instanceof URL) {
-            slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(allowedLicensesFile)
-        } else if(allowedLicensesFile instanceof String) {
-            def source
+        if (allowedLicensesFile instanceof File) {
+            slurpResult = LAX_PARSER.parse(allowedLicensesFile)
+        } else if (allowedLicensesFile instanceof URI) {
+            slurpResult = LAX_PARSER.parse(allowedLicensesFile.toURL())
+        } else if (allowedLicensesFile instanceof URL) {
+            slurpResult = LAX_PARSER.parse(allowedLicensesFile)
+        } else if (allowedLicensesFile instanceof Path) {
+            slurpResult = LAX_PARSER.parse(allowedLicensesFile)
+        } else if (allowedLicensesFile instanceof RegularFile) {
+            slurpResult = LAX_PARSER.parse(allowedLicensesFile.asFile)
+        } else if (allowedLicensesFile instanceof TextResource) {
+            slurpResult = LAX_PARSER.parse(allowedLicensesFile.asReader())
+        } else if (allowedLicensesFile instanceof String) {
             try {
-                source = new URL(allowedLicensesFile)
+                slurpResult = LAX_PARSER.parse(new URL(allowedLicensesFile))
             } catch (MalformedURLException ignored) {
-                source = new File(allowedLicensesFile)
+                slurpResult = LAX_PARSER.parse(new File(allowedLicensesFile))
             }
-            return importAllowedLicenses(source)
         } else {
             throw new InvalidUserDataException("Unknown type for allowedLicensesFile: " + allowedLicensesFile.getClass())
         }
@@ -42,7 +53,7 @@ class LicenseCheckerFileReader {
     }
 
     static List<Dependency> importDependencies(File projectDependenciesFile) {
-        def slurpResult = new JsonSlurper().setType(JsonParserType.LAX).parse(projectDependenciesFile)
+        def slurpResult = LAX_PARSER.parse(projectDependenciesFile)
         def allDependencies = slurpResult.dependencies.collect { new Dependency(it.moduleName, it.moduleVersion, it.moduleLicenses) }
         def importedDependencies = slurpResult.importedModules.collect { it.dependencies.collect { new Dependency(it) } }.flatten()
         allDependencies.findAll { it.moduleLicenses.isEmpty() }.collect {
