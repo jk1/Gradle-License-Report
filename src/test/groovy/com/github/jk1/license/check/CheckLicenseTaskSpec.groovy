@@ -698,4 +698,22 @@ class CheckLicenseTaskSpec extends Specification {
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
     }
+
+    def "loading allowed licenses from remote URI TextResource should be possible"() {
+        given:
+        buildFile << """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+            }
+            
+            licenseReport {
+                allowedLicensesFile = resources.text.fromUri("https://raw.githubusercontent.com/jk1/Gradle-License-Report/9e95aa2d2c78e40cacaf533d72657e420ad67684/src/test/resources/empty-allowed-licenses.json")
+            }
+        """
+        when:
+        BuildResult buildResult = result("checkLicense")
+
+        then:
+        buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
+    }
 }
