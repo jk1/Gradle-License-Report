@@ -25,6 +25,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         buildFile << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
+                id 'org.openjfx.javafxplugin' version '0.1.0'
             }
             configurations {
                 forTesting
@@ -268,6 +269,14 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 forTesting "org.springframework:spring-tx:3.2.3.RELEASE"
                 forTesting "org.ehcache:ehcache:3.3.1"
                 forTesting "org.apache.commons:commons-lang3:3.7"
+                forTesting("org.openjfx:javafx-base:22.0.1") {
+                    attributes {
+                        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+                        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+                        attribute(OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE, objects.named(OperatingSystemFamily, OperatingSystemFamily.LINUX))
+                        attribute(MachineArchitecture.ARCHITECTURE_ATTRIBUTE, objects.named(MachineArchitecture, MachineArchitecture.X86_64))
+                    }
+               }
             }
         """
 
@@ -281,7 +290,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        configurationsString == prettyPrintJson(jsonSlurper.parse("""[
+        def expected = prettyPrintJson(jsonSlurper.parse("""[
     {
         "dependencies": [
             {
@@ -479,6 +488,43 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 ],
                 "empty": false,
                 "name": "ehcache"
+            },
+            {
+                "group": "org.openjfx",
+                "manifests": [
+                    {
+                        "licenseUrl": null,
+                        "vendor": null,
+                        "hasPackagedLicense": false,
+                        "version": null,
+                        "license": null,
+                        "description": null,
+                        "url": null,
+                        "name": null
+                    }
+                ],
+                "hasArtifactFile": true,
+                "version": "22.0.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "",
+                        "description": "",
+                        "name": "",
+                        "organization": null,
+                        "licenses": [
+                            {
+                                "url": "https://openjdk.java.net/legal/gplv2+ce.html",
+                                "name": "GPLv2+CE"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    
+                ],
+                "empty": false,
+                "name": "javafx-base"
             },
             {
                 "group": "org.slf4j",
@@ -683,6 +729,7 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         "name": "forTesting"
     }
 ]""".toCharArray()))
+           configurationsString == expected
     }
 
 
