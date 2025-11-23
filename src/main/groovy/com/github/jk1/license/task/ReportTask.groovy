@@ -48,8 +48,7 @@ class ReportTask extends DefaultTask {
         def reader = new ProjectReader(config)
         // take configurations' shallow snapshot but don't revolve them
         def deps = getConfig().projects
-                .collectMany { reader.findConfigurationsToScan(it) }
-                .collectMany { it.allDependencies }
+                .collectMany { reader.read(it).allDependencies }
                 .collect { it.name + it.group + it.version}
         deps
     }
