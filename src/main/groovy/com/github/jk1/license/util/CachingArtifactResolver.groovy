@@ -55,7 +55,9 @@ class CachingArtifactResolver {
             LOGGER.info("Could not resolve $dependencyNotation. It will be skipped.")
             return null
         } finally {
-            project.configurations.remove(config)
+            if (!project.isIsBuildScript()) {
+                project.configurations.remove(config)
+            }
         }
     }
 }

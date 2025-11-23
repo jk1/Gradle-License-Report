@@ -29,13 +29,14 @@ class GradleProject {
     ConfigurationContainer configurations
     DependencyHandler dependencies
     PluginContainer plugins
+    boolean isBuildScript
 
     static GradleProject ofProject(Project project) {
-        return new GradleProject(project.getName(), project.getConfigurations(), project.getDependencies(), project.getPlugins());
+        return new GradleProject(project.getName(), project.getConfigurations(), project.getDependencies(), project.getPlugins(), false);
     }
 
     static GradleProject ofScript(Project project) {
-        return new GradleProject(project.name + "/buildScript", project.buildscript.getConfigurations(), project.buildscript.getDependencies(), project.getPlugins());
+        return new GradleProject(project.name + "/buildScript", project.buildscript.getConfigurations(), project.buildscript.getDependencies(), project.getPlugins(), true);
     }
 }
 
