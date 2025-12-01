@@ -117,6 +117,45 @@ class ReportTaskCachingSpec extends Specification {
 
     }
 
+    def "should invalidate cache when transitive dependency version changes"() {
+        setup:
+        buildFile.text = """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+                id 'java'
+            }
+            repositories {
+                mavenCentral()
+            }
+            dependencies {
+                implementation "junit:junit:4.12"
+            }
+            configurations.all {
+                resolutionStrategy {
+                    force "org.hamcrest:hamcrest-core:\${project.ext.hamcrestVersion}"
+                }
+            }
+        """
+
+        when:
+        BuildResult result = runBuildWith('--build-cache', "generateLicenseReport", "-PhamcrestVersion=1.3")
+
+        then:
+        result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
+
+        when:
+        result = runBuildWith('--build-cache', "clean", "generateLicenseReport", "-PhamcrestVersion=1.3")
+
+        then:
+        result.task(':generateLicenseReport').outcome == TaskOutcome.FROM_CACHE
+
+        when:
+        result = runBuildWith('--build-cache', "clean", "generateLicenseReport", "-PhamcrestVersion=1.1")
+
+        then:
+        result.task(':generateLicenseReport').outcome == TaskOutcome.SUCCESS
+    }
+
     @Ignore // Fails with test kit only. Todo: find a way to make it green with Gradle 7+
     def "should cache task outputs for filter"() {
         when:
