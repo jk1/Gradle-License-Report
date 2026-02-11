@@ -15,29 +15,40 @@ env:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        test-java-version: [8, 11, 17, 21, 25]
+      fail-fast: false
+
+    name: build (test with Java ${{ matrix.test-java-version }})
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up JDK 17
+      - name: Set up JDKs
         uses: actions/setup-java@v5
         with:
-          java-version: "17"
-          distribution: "adopt"
+          java-version: | # Last version in list is the default that Gradle will run with
+            ${{ matrix.test-java-version }}
+            17
+          distribution: temurin
+          check-latest: true
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
       - name: Build with Gradle
+        env:
+          TEST_JAVA_VERSION: ${{ matrix.test-java-version }}
         run: ./gradlew build
 
       - name: Problems Report
         uses: actions/upload-artifact@v5
         if: always()
         with:
-          name: problems-report
+          name: problems-report-${{ matrix.test-java-version }}
           path: build/reports/problems/problems-report.html
           if-no-files-found: ignore
 
@@ -45,5 +56,5 @@ jobs:
         uses: actions/upload-artifact@v5
         if: always()
         with:
-          name: unit-tests-results
+          name: unit-tests-results-${{ matrix.test-java-version }}
           path: build/reports/tests/test

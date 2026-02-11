@@ -19,7 +19,7 @@ package com.github.jk1.license
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import spock.lang.Ignore
+import spock.lang.PendingFeature
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -117,7 +117,7 @@ class ReportTaskCachingSpec extends Specification {
 
     }
 
-    @Ignore // Fails with test kit only. Todo: find a way to make it green with Gradle 7+
+    @PendingFeature(reason = "task output caching not working correctly when filteres are changed")
     def "should cache task outputs for filter"() {
         when:
         addFilterToBuildFile("foo")
@@ -149,7 +149,7 @@ class ReportTaskCachingSpec extends Specification {
 
     }
 
-    @Ignore // Fails with test kit only. Todo: find a way to make it green with Gradle 7+
+    @PendingFeature(reason = "test fails with testkit on gradle 7+")
     def "should cache task outputs for renderer"() {
         when:
         addRendererToBuildFile("foo")

@@ -10,8 +10,20 @@ group = 'com.github.jk1'
 version = '3.0.2-SNAPSHOT'  // x-release-please-version
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-tasks.withType(AbstractCompile).configureEach {
-    options.release = 8
+def targetJdkVersion = '8'
+def defaultToolchainJdkVersion = '17'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(defaultToolchainJdkVersion)
+    }
+}
+
+tasks.withType(GroovyCompile).configureEach {
+    // Groovy compiler does not support -release flags and ignores it
+    // see https://github.com/gradle/gradle/issues/15703 and https://issues.apache.org/jira/browse/GROOVY-11105
+    sourceCompatibility = targetJdkVersion
+    targetCompatibility = targetJdkVersion
 }
 
 /**
@@ -34,9 +46,7 @@ dependencies {
 
     testImplementation(platform(libs.junit.bom))
     testImplementation(platform(libs.spock.bom))
-    testImplementation(libs.spock.core) {
-        exclude group: 'org.codehaus.groovy'
-    }
+    testImplementation(libs.spock.core)
     testRuntimeOnly(libs.junit.platformSuiteEngine)
     testRuntimeOnly(libs.junit.platformLauncher)
 }
@@ -58,7 +68,7 @@ test {
     useJUnitPlatform()
 
     testLogging {
-        events "started", "passed", "skipped", "failed"
+        events "passed", "skipped", "failed"
     }
 
     systemProperty("spock.snapshots.rootPath", "src/test/resources")
@@ -68,6 +78,13 @@ test {
     outputs.upToDateWhen { false }
     reports.html.required = true
     reports.junitXml.required = System.getenv("CI") != null ? true : false
+
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(System.getenv("TEST_JAVA_VERSION") ?: defaultToolchainJdkVersion)
+    }
+    doFirst {
+        logger.lifecycle("Testing with Java version: " + javaLauncher.get().metadata.languageVersion)
+    }
 }
 
 // local maven publishing to ease development

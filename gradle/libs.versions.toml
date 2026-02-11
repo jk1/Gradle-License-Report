@@ -1,12 +1,11 @@
 [versions]
 gradlePluginPublish = "2.0.0"
 licensePlugin = "0.16.1"
-junit = "5.13.4"
-spock = "2.4-M6-groovy-3.0"
+junit = "5.14.2"
+spock = "2.4-groovy-3.0"
 
 [libraries]
 junit-bom = {module = "org.junit:junit-bom", version.ref = "junit" }
-junit-platformSuiteApi = { module = "org.junit.platform:junit-platform-suite-api" }
 junit-platformSuiteEngine = { module = "org.junit.platform:junit-platform-suite-engine" }
 junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
 spock-bom = { module = "org.spockframework:spock-bom", version.ref = "spock" }
