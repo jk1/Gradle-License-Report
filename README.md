@@ -476,6 +476,6 @@ or from a remote resource
 
 ```groovy
 licenseReport {
-    allowedLicensesFile = resources.text.fromUri('https://company.com/licenses/allowed-licenses.json')
+    allowedLicensesFile = resources.text.fromUri('https://example.com/licenses/allowed-licenses.json')
 }
 ```
