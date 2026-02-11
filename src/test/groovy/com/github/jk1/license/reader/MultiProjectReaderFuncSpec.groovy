@@ -17,6 +17,7 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.IgnoreIf
 
 class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
 
@@ -573,6 +574,7 @@ class MultiProjectReaderFuncSpec  extends AbstractGradleRunnerFunctionalSpec {
     Test kotlin multiplatform project structure, including subproject reports and custom
     output dirs
      */
+    @IgnoreIf(value = { !jvm.isJavaVersionCompatible(11) }, reason = "Android library under test requires Java 11")
     def "Test Kotlin Multiplatform"() {
         setup:
         def properties = new File(testProjectDir, "gradle.properties")
