@@ -16,6 +16,7 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ConfigurationData
+import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.task.ReportTask
@@ -27,13 +28,15 @@ import org.gradle.api.logging.Logging
 class ProjectReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private Project[] projects
+    private GradleProject[] projects
+    private GradleProject[] buildScriptProjects
     private String[] configurations
 
     private ConfigurationReader configurationReader
 
     ProjectReader(LicenseReportExtension config) {
-        this.projects = config.projects
+        this.projects = config.projects.collect { GradleProject.ofProject(it) }
+        this.buildScriptProjects = config.buildScriptProjects.collect { GradleProject.ofScript(it) }
         this.configurations = config.configurations
         this.configurationReader = new ConfigurationReader(config, new CachedModuleReader(config))
     }
@@ -43,22 +46,14 @@ class ProjectReader {
         data.project = project
 
         LOGGER.info("Configured projects: ${projects.join(',')}")
+        data.configurations.addAll(readProjects(projects))
+        LOGGER.info("Configured buildScript projects: ${buildScriptProjects.join(',')}")
+        data.configurations.addAll(readProjects(buildScriptProjects))
 
-        List<ConfigurationData> readConfigurations = projects.collect { subProject ->
-            Set<Configuration> configurationsToScan = findConfigurationsToScan(subProject)
-
-            configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
-
-            LOGGER.info("Configurations(${subProject.name}): ${configurationsToScan.join(',')}")
-            readConfigurationData(configurationsToScan, subProject)
-        }.flatten()
-        readConfigurations = mergeConfigurationDataWithSameName(readConfigurations)
-
-        data.configurations.addAll(readConfigurations)
         return data
     }
 
-    private Set<Configuration> findConfigurationsToScan(Project project) {
+    private Set<Configuration> findConfigurationsToScan(GradleProject project) {
         Set<Configuration> toScan
         if (configurations == null) {
             LOGGER.info("No configurations defined, falling back to the default ones")
@@ -77,7 +72,7 @@ class ProjectReader {
         toScan
     }
 
-    private static Set<Configuration> findResolvableConfigurations(Project project) {
+    private static Set<Configuration> findResolvableConfigurations(GradleProject project) {
         project.configurations.findAll { config -> isResolvable(config) }
     }
 
@@ -85,14 +80,24 @@ class ProjectReader {
         configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }.toSet()
     }
 
-    private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, Project project) {
+    private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, GradleProject project) {
         configurationsToScan.collect { config ->
             LOGGER.info("Reading configuration: " + config)
             configurationReader.read(project, config)
         }
     }
 
-    private Set<Configuration> findConfiguredConfigurations(Project project) {
+    private List<ConfigurationData> readProjects(GradleProject[] projectsToScan) {
+        List<ConfigurationData> readConfigurations = projectsToScan.collect { subProject ->
+            Set<Configuration> configurationsToScan = findConfigurationsToScan(subProject)
+            configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
+            LOGGER.info("Configurations(${subProject.name}): ${configurationsToScan.join(',')}")
+            readConfigurationData(configurationsToScan, subProject)
+        }.flatten()
+        mergeConfigurationDataWithSameName(readConfigurations)
+    }
+
+    private Set<Configuration> findConfiguredConfigurations(GradleProject project) {
         project.configurations.findAll { config -> config.name in configurations }
     }
 
