@@ -28,7 +28,7 @@ class MultiProjectBuildScriptFuncSpec extends AbstractGradleRunnerFunctionalSpec
         newSubBuildFile("sub1") << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
-                id 'org.owasp.dependencycheck' version '9.0.7'
+                id 'com.github.hierynomus.license-base' version '0.16.1' apply false
             }
             configurations {
                 mainConfig
@@ -49,7 +49,7 @@ class MultiProjectBuildScriptFuncSpec extends AbstractGradleRunnerFunctionalSpec
         newSubBuildFile("sub2") << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
-                id 'com.diffplug.spotless' version '6.24.0'
+                id 'com.diffplug.spotless' version '6.13.0' apply false
             }
             configurations {
                 mainConfig
@@ -80,17 +80,15 @@ class MultiProjectBuildScriptFuncSpec extends AbstractGradleRunnerFunctionalSpec
         runResult.task(":sub1:generateLicenseReport").outcome == TaskOutcome.SUCCESS
         runResult.task(":sub2:generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
-        System.out.println(testProjectDir)
         !new File(testProjectDir, "build/reports/dependency-license").exists()
-        new File(testProjectDir, "sub1/build/reports/dependency-license/dependency-check-core-9.0.7.jar/META-INF/LICENSE.txt").exists()
-        new File(testProjectDir, "sub2/build/reports/dependency-license/commons-codec-1.16.0.jar/META-INF/NOTICE.txt").exists()
-        new File(testProjectDir, "sub2/build/reports/dependency-license/commons-codec-1.16.0.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "sub1/build/reports/dependency-license").list().contains("xmltool-3.3.jar")
+        new File(testProjectDir, "sub2/build/reports/dependency-license").list().contains("org.eclipse.jgit-5.13.1.202206130422-r.jar")
 
-        configurationsSub1String.contains("Dependency-Check Core")
-        !configurationsSub1String.contains("commons-codec")
+        configurationsSub1String.contains("mycila-xmltool")
+        !configurationsSub1String.contains("JGit - Core")
 
-        configurationsSub2String.contains("commons-codec")
-        !configurationsSub2String.contains("Dependency-Check Core")
+        configurationsSub2String.contains("JGit - Core")
+        !configurationsSub2String.contains("mycila-xmltool")
     }
 
     def "plugin is executed in module independently and globally on root project when configured in allprojects"() {
@@ -100,7 +98,7 @@ class MultiProjectBuildScriptFuncSpec extends AbstractGradleRunnerFunctionalSpec
         buildFile << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
-                id 'com.github.ben-manes.versions' version '0.48.0'
+                id 'com.github.ben-manes.versions' version '0.48.0' apply false
             }
             configurations {
                 mainConfig
@@ -116,12 +114,12 @@ class MultiProjectBuildScriptFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 configurations = []
                 buildScriptProjects = [project] + project.subprojects
             }
-"""
+        """
 
         newSubBuildFile("sub1") << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
-                id 'org.owasp.dependencycheck' version '9.0.7'
+                id 'com.github.hierynomus.license-base' version '0.16.1' apply false
             }
             configurations {
                 mainConfig
@@ -142,7 +140,7 @@ class MultiProjectBuildScriptFuncSpec extends AbstractGradleRunnerFunctionalSpec
         newSubBuildFile("sub2") << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
-                id 'com.diffplug.spotless' version '6.24.0'
+                id 'com.diffplug.spotless' version '6.13.0' apply false
             }
             configurations {
                 mainConfig
@@ -175,28 +173,23 @@ class MultiProjectBuildScriptFuncSpec extends AbstractGradleRunnerFunctionalSpec
         runResult.task(":sub2:generateLicenseReport").outcome == TaskOutcome.SUCCESS
 
         // root project should contains all the deps
-        new File(testProjectDir, "build/reports/dependency-license/mxparser-1.2.2.jar/META-INF/LICENSE").exists()
-        new File(testProjectDir, "build/reports/dependency-license/dependency-check-core-9.0.7.jar/META-INF/LICENSE.txt").exists()
-        new File(testProjectDir, "build/reports/dependency-license/commons-codec-1.16.0.jar/META-INF/NOTICE.txt").exists()
-        new File(testProjectDir, "build/reports/dependency-license/commons-codec-1.16.0.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "build/reports/dependency-license").list().contains("mxparser-1.2.2.jar")
+        new File(testProjectDir, "build/reports/dependency-license").list().contains("xmltool-3.3.jar")
+        new File(testProjectDir, "build/reports/dependency-license").list().contains("org.eclipse.jgit-5.13.1.202206130422-r.jar")
 
-        new File(testProjectDir, "sub1/build/reports/dependency-license/dependency-check-core-9.0.7.jar/META-INF/LICENSE.txt").exists()
+        new File(testProjectDir, "sub1/build/reports/dependency-license").list().contains("xmltool-3.3.jar")
+        new File(testProjectDir, "sub2/build/reports/dependency-license").list().contains("org.eclipse.jgit-5.13.1.202206130422-r.jar")
 
-        new File(testProjectDir, "sub2/build/reports/dependency-license/commons-codec-1.16.0.jar/META-INF/NOTICE.txt").exists()
-        new File(testProjectDir, "sub2/build/reports/dependency-license/commons-codec-1.16.0.jar/META-INF/LICENSE.txt").exists()
-
-        configurationsRootString.contains("Dependency-Check Core")
-        configurationsRootString.contains("commons-codec")
+        configurationsRootString.contains("mycila-xmltool")
+        configurationsRootString.contains("JGit - Core")
         configurationsRootString.contains("mxparser")
 
-        configurationsSub1String.contains("Dependency-Check Core")
-        !configurationsSub1String.contains("commons-codec")
+        configurationsSub1String.contains("mycila-xmltool")
+        !configurationsSub1String.contains("JGit - Core")
         !configurationsSub1String.contains("mxparser")
 
-        !configurationsSub2String.contains("Dependency-Check Core")
-        configurationsSub2String.contains("commons-codec")
+        !configurationsSub2String.contains("mycila-xmltool")
+        configurationsSub2String.contains("JGit - Core")
         !configurationsSub2String.contains("mxparser")
-
-
     }
 }
