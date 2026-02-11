@@ -15,8 +15,12 @@
  */
 package com.github.jk1.license.check
 
+import org.gradle.api.file.RegularFile
+import org.gradle.api.internal.resources.StringBackedTextResource
 import spock.lang.Specification
 import spock.lang.TempDir
+
+import java.util.function.Function
 
 class LicenseCheckerFileReaderSpec extends Specification {
 
@@ -24,7 +28,6 @@ class LicenseCheckerFileReaderSpec extends Specification {
     File testProjectDir
 
     File allowedLicenseFile
-    URL allowedLicenseUrl
     File projectDataFile
 
     def setup() {
@@ -45,12 +48,11 @@ class LicenseCheckerFileReaderSpec extends Specification {
                 }
             ]
         }"""
-        allowedLicenseUrl =  allowedLicenseFile.toURI().toURL()
     }
 
     def "it reads out all the allowed licenses"() {
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
 
         then:
         allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
@@ -62,7 +64,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
         allowedLicenseFile.text = """{"allowedLicenses":[]}"""
 
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
 
         then:
         allowedLicenses == []
@@ -86,7 +88,7 @@ class LicenseCheckerFileReaderSpec extends Specification {
         }"""
 
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
 
         then:
         allowedLicenses.moduleLicense == [null, null, null]
@@ -582,22 +584,25 @@ class LicenseCheckerFileReaderSpec extends Specification {
         dependencies == []
     }
 
-    def "it reads out all the allowed licenses from an url"() {
+    def "it reads out all the allowed licenses from a #type"(String type, Function<File, Object> fromAllowedLicensesFile) {
         when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseUrl)
+        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(fromAllowedLicensesFile(allowedLicenseFile))
 
         then:
         allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
         allowedLicenses.collect { it.moduleName } == [null,  null, null]
-    }
 
-    def "it reads out all the allowed licenses from a file reference by string"() {
-        when:
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile.path)
-
-        then:
-        allowedLicenses.collect { it.moduleLicense } == ["License1", "License2", "License3"]
-        allowedLicenses.collect { it.moduleName } == [null,  null, null]
+        where:
+        [type, fromAllowedLicensesFile] << [
+                ['File', { file -> file }],
+                ['String (path to file)', { file -> file.path }],
+                ['String (URL to file)', { file -> file.toURI().toURL().toString() }],
+                ['Path', { file -> file.toPath() }],
+                ['URI (to file)', { file -> file.toURI() }],
+                ['URL (to file)', { file -> file.toURI().toURL() }],
+                ['RegularFile', { file -> { file } as RegularFile }],
+                ['TextResource', { file -> new StringBackedTextResource(null, file.text) }],
+        ]
     }
 }
 

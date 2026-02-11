@@ -472,10 +472,10 @@ licenseReport {
 }
 ```
 
-or
+or from a remote resource
 
 ```groovy
 licenseReport {
-    allowedLicensesFile = new URL('http://company.com/licenses/allowed-licenses.json')
+    allowedLicensesFile = resources.text.fromUri('https://company.com/licenses/allowed-licenses.json')
 }
 ```
