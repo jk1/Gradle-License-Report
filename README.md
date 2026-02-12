@@ -276,9 +276,7 @@ licenseReport {
 }
 ```
 
-### License data grouping
-
-This feature was contributed by [Günther Grill](https://github.com/guenhter)
+### License data grouping / normalization
 
 When multiple dependencies are analysed and displayed in a report, often
 e.g. two licenses like the following one appears:
@@ -291,8 +289,8 @@ Apache License, Version 2.0
 This can be avoided by providing an accurate normalisation file which contains rules
 to unify such entries. The configuration file has two sections:
 
-- license-bundles: Defines the actual licenses with their correct name and their correct url
-- transformation-rules: A rule defines a reference to one license-bundle and a pattern for
+- **bundles**: Defines the actual licenses with their correct name and their correct url
+- **transformationRules**: A rule defines a reference to one license-bundle and a pattern for
   a malformed name or url. When a pattern matches the license of a dependency, the
   output license-information for that dependency will be updated with the referenced license-bundle.
 
@@ -342,23 +340,36 @@ to unify such entries. The configuration file has two sections:
 So dependencies with license-name `The Apache Software License, Version 2.0` / `Apache 2` or license-url `http://www.apache.org/licenses/LICENSE-2.0.txt`
 are changed to license-name `Apache License, Version 2.0` and license-url `http://www.apache.org/licenses/LICENSE-2.0`
 
-The normalizer can be enabled via a filter.
+The normalizer can be enabled via a filter:
 
-```groovy
-import com.github.jk1.license.filter.*
+1. If a `bundlePath` is specified, your custom rules are merged with the [the default rules](src/main/resources/default-license-normalizer-bundle.json).
+    ```groovy
+    import com.github.jk1.license.filter.*
+    
+    licenseReport {
+        filters = [new LicenseBundleNormalizer(bundlePath: layout.projectDirectory.file("config/license-normalizer-bundle.json").asFile.path)]
+    }
+    ```
+2. If no `bundlePath` is specified, [the default rules](src/main/resources/default-license-normalizer-bundle.json) are used.
+    ```groovy
+    licenseReport {
+       filters = [new LicenseBundleNormalizer()]
+    }
+    ```
+3. To disable the default rules and use **only** use your custom rules:
+    ```groovy
+    licenseReport {
+        filters = [new LicenseBundleNormalizer(bundlePath: pathToCustomRules, createDefaultTransformationRules: false)]
+    }
+    ```
 
-licenseReport {
-    // LicenseBundleNormalizer also accepts bundle stream as a parameter
-    filters = [new LicenseBundleNormalizer(bundlePath: layout.projectDirectory.file("config/license-normalizer-bundle.json").asFile.path)]
-}
-```
+You are encouraged to create your own bundle file and contribute back useful rules.
 
-If no bundle-file is specified, a default file is used containing some common rules. You are encouraged to create your own bundle-file
-and contribute back useful rules.
+#### SPDX support
 
-### SPDX support
+Normalizers are also capable of mapping licenses to [SPDX IDs](https://spdx.org/licenses/).
 
-Normalizers are also capable of mapping licenses to SPDX identifiers. The code
+The below uses [these default rules](src/main/resources/spdx-license-normalizer-bundle.json).
 
 ```groovy
 import com.github.jk1.license.filter.*
@@ -367,8 +378,6 @@ licenseReport {
     filters = [new SpdxLicenseBundleNormalizer()]
 }
 ```
-
-replaces string license names in the report with the corresponding [SPDX IDs](https://spdx.org/licenses/)
 
 ## Writing custom renderers, importers and filters
 
