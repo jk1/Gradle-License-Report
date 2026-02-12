@@ -1,0 +1,26 @@
+{
+  "allowedLicenses": [
+    // Allow any dependency with MIT License
+    { "moduleLicense": "MIT License" },
+
+    // Allow MIT license only for any dependency starting woth org.jetbrains
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": "org.jetbrains.*"
+    },
+
+    // Allow MIT license only for any dependency starting woth org.jetbrains (same as above)
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": "org.jetbrains.*",
+      "moduleVersion": ".*"
+    },
+
+    // Allow apache license only for specific module and version
+    {
+      "moduleLicense": "Apache License, Version 2.0",
+      "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
+      "moduleVersion": "1.2.60"
+    }
+  ]
+}
