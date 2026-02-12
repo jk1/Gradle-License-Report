@@ -175,7 +175,7 @@ class JsonReportRenderer implements ReportRenderer {
 
     static def trimAndRemoveNullEntries(def map) {
         map.collectEntries { k, v ->
-            v ? [(k): v instanceof String ? v.trim() : v] : [:]
+            v != null ? [(k): v instanceof String ? v.trim() : v] : [:]
         }
     }
 }
