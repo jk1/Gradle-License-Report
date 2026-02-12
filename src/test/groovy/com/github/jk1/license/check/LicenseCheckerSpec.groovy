@@ -891,4 +891,62 @@ class LicenseCheckerSpec extends Specification {
         notPassedDependencies.moduleLicense == ["License1", "License2", "License3"]
         thrown GradleException
     }
+
+    def "check when ProjectData contains no licenses it is treated as allowed with empty license name rule"() {
+
+        allowedLicenseFile << """
+        {
+            "allowedLicenses":[
+                {
+                    "moduleLicense": "",
+                    "moduleName": "dummy-group:.*"
+                }
+            ]
+        }"""
+
+        projectDataFile << """
+        {
+            "dependencies":[
+                {
+                    "moduleName": "dummy-group:allowed1",
+                    "moduleLicenses": [],
+                },
+                {
+                    "moduleName": "dummy-group:allowed2",
+                    "moduleLicenses": null,
+                },
+                {
+                    "moduleName": "dummy-group:allowed3",
+                    "moduleLicenses": [
+                        {
+                            "moduleLicense": "",
+                        }
+                    ],
+                },
+                {
+                    "moduleName": "notallowed-group:mod",
+                    "moduleLicenses": [],
+                },
+                {
+                    "moduleName": "dummy-group:notallowed1",
+                    "moduleLicenses": [
+                        {
+                            "moduleLicense": "some-other-license",
+                        }
+                    ],
+                }
+            ]
+        }"""
+
+        when:
+        def licenseChecker = new LicenseChecker()
+        licenseChecker.checkAllDependencyLicensesAreAllowed(
+                allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
+
+        then:
+        thrown GradleException
+        def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
+        notPassedDependencies.moduleName == ["notallowed-group:mod", "dummy-group:notallowed1"]
+        notPassedDependencies.moduleLicense == ["", "some-other-license"]
+    }
 }

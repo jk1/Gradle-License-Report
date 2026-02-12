@@ -227,6 +227,9 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 }
             ]
         }
+    ],
+    "importedModules": [
+        
     ]
 }"""
     }
@@ -342,6 +345,9 @@ class LicenseBundleNormalizerFuncSpec extends AbstractGradleRunnerFunctionalSpec
                 }
             ]
         }
+    ],
+    "importedModules": [
+        
     ]
 }"""
     }
