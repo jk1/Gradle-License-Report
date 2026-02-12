@@ -44,12 +44,15 @@ class ReportTask extends DefaultTask {
     }
 
     @Input
-    String[] getClasspath() {
+    String[] getResolvedDependencies() {
         def reader = new ProjectReader(config)
-        // take configurations' shallow snapshot but don't revolve them
+        // Use resolved dependencies (including transitives) for cache key to ensure
+        // the cache is invalidated when any dependency changes, not just declared ones.
         def deps = getConfig().projects
                 .collectMany { reader.read(it).allDependencies }
-                .collect { it.name + it.group + it.version}
+                .collect { "${it.group}:${it.name}:${it.version}" }
+                .unique()
+                .sort()
         deps
     }
 
