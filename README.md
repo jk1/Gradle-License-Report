@@ -412,7 +412,7 @@ This task is for checking dependencies/imported modules if their licenses are al
 ./gradlew checkLicense
 ```
 
-If there are not allowed licenses, the task will fail and a report like the following
+If there are licenses which are not allowed, the task will fail and a report like the following
 will be generated under `$outputDir` which you specified in the configuration:
 
 ```json
@@ -432,33 +432,54 @@ will be generated under `$outputDir` which you specified in the configuration:
 }
 ```
 
+A dependency must declare AT LEAST ONE license that matches a rule in the allowed licenses list. 
+In other words, multiple licenses are currently assumed to be "dual/triple/etc licensing" situations
+where the user can choose to use under one of the licenses.
+
+This means that when a dependency appears in `dependenciesWithoutAllowedLicenses` with multiple
+licenses, and you think it should be allowed, you only need to declare an `allowedLicenses` rule 
+(or `transformationRules` entry) that will cause a match to ONE of the declared licenses.
+
 ### Allowed licenses file
 
-Defines which licenses are allowed to be used:
+Defines which licenses are allowed to be used.
+
+- All fields are matched as either an exact text match, or a "whole string" regular expression match
+- Missing or `null` rules for a given field are the same as matching "all", or `.*`, for that field.
+
+Some individual examples (don't all make sense together, presented here for demonstration purposes):
 
 ```json
 {
   "allowedLicenses": [
+    // Allow any dependency with MIT License
+    { "moduleLicense": "MIT License" },
+
+    // Allow MIT license only for any dependency starting woth org.jetbrains
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": "org.jetbrains.*"
+    },
+    
+    // Allow MIT license only for any dependency starting woth org.jetbrains (same as above)
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": "org.jetbrains.*",
+      "moduleVersion": ".*"
+    },
+    
+    // Allow apache license only for specific module and version
     {
       "moduleLicense": "Apache License, Version 2.0",
       "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
       "moduleVersion": "1.2.60"
     },
+
+    // Allow legacy.project:has-no-license-declared if it has no license found at all.
+    // Use with caution and scope it carefully to names/versions. This is usually not what you want.
     {
-      "moduleLicense": "Apache License, Version 2.0",
-      "moduleName": "org.jetbrains.kotlin*",
-      "moduleVersion": ".*"
-    },
-    {
-      "moduleLicense": "MIT License",
-      "moduleName": ".*"
-    },
-    {
-      "moduleLicense": "MIT License"
-    },
-    {
-      "moduleLicense": "MIT License",
-      "moduleName": ""
+      "moduleLicense": "", // "no license found"
+      "moduleName": "legacy.project:has-no-license-declared"
     }
   ]
 }
