@@ -92,6 +92,10 @@ licenseReport {
     // This is for the allowed-licenses-file in checkLicense Task
     // Accepts File, URL or String path to local or remote file
     allowedLicensesFile = project.layout.projectDirectory.file("config/allowed-licenses.json").asFile
+    // (default) OneRequiredLicenseChecker: a dependency is good, if any of its licenses are matched with allowedLicenses
+    // AllRequiredLicenseChecker: a dependency is good, if all of its (non-null) licenses are matched with allowedLicenses
+    // any class implementing LicenseChecker can be provided here
+    licenseChecker = new com.github.jk1.license.check.OneRequiredLicenseChecker()
 }
 ```
 

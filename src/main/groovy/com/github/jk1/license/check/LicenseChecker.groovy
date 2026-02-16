@@ -18,70 +18,50 @@ package com.github.jk1.license.check
 import groovy.json.JsonOutput
 import org.gradle.api.GradleException
 
-class LicenseChecker {
+/**
+ * This class compares the found licences with the allowed licenses and creates a report for any missing license
+ */
+interface LicenseChecker extends Serializable {
+    List<Tuple2<Dependency, List<ModuleLicense>>> checkAllDependencyLicensesAreAllowed(
+            List<AllowedLicense> allowedLicenses,
+            List<Dependency> allDependencies)
 
-    void checkAllDependencyLicensesAreAllowed(
-        Object allowedLicensesFile, File projectLicensesDataFile, File notPassedDependenciesOutputFile) {
-        List<Dependency> allDependencies = LicenseCheckerFileReader.importDependencies(projectLicensesDataFile)
-        List<AllowedLicense> allowedLicenses = LicenseCheckerFileReader.importAllowedLicenses(allowedLicensesFile)
-        List<Dependency> notPassedDependencies = searchForNotAllowedDependencies(allDependencies, allowedLicenses)
+    default void checkAllDependencyLicensesAreAllowed(
+            Object allowedLicensesFile, File projectLicensesDataFile, File notPassedDependenciesOutputFile) {
+        def notPassedDependencies = checkAllDependencyLicensesAreAllowed(
+                parseAllowedLicenseFile(allowedLicensesFile), getProjectDependencies(projectLicensesDataFile))
+
         generateNotPassedDependenciesFile(notPassedDependencies, notPassedDependenciesOutputFile)
-
         if (!notPassedDependencies.isEmpty()) {
-            throw new GradleException("Some library licenses are not allowed.\n" +
-                "Read [$notPassedDependenciesOutputFile.path] for more information.")
+            throw new GradleException("Some library licenses are not allowed:\n" +
+                    "$notPassedDependenciesOutputFile.text\n\n" +
+                    "Read [$notPassedDependenciesOutputFile.path] for more information.")
         }
     }
 
-    private List<Dependency> searchForNotAllowedDependencies(
-        List<Dependency> dependencies, List<AllowedLicense> allowedLicenses) {
-        return dependencies.findAll { !isDependencyHasAllowedLicense(it, allowedLicenses) }
+    default List<AllowedLicense> parseAllowedLicenseFile(Object allowedLicenseFile) {
+        return LicenseCheckerFileReader.importAllowedLicenses(allowedLicenseFile)
     }
 
-    private void generateNotPassedDependenciesFile(
-        List<Dependency> notPassedDependencies, File notPassedDependenciesOutputFile) {
-        notPassedDependenciesOutputFile.text =
-            JsonOutput.prettyPrint(JsonOutput.toJson(
-                ["dependenciesWithoutAllowedLicenses": notPassedDependencies.collect { toAllowedLicenseList(it) }.flatten()]))
+    default List<Dependency> getProjectDependencies(File depenenciesFile) {
+        return LicenseCheckerFileReader.importDependencies(depenenciesFile)
     }
 
-    private boolean isDependencyHasAllowedLicense(Dependency dependency, List<AllowedLicense> allowedLicenses) {
-        for(allowedLicense in allowedLicenses) {
-            if (isDependencyMatchesAllowedLicense(dependency, allowedLicense)) return true
-        }
-        return false
+
+    default void generateNotPassedDependenciesFile(List<Tuple2<Dependency, List<ModuleLicense>>> notPassedDependencies, File notPassedDependenciesOutputFile) {
+        notPassedDependenciesOutputFile.text = JsonOutput.prettyPrint(
+                JsonOutput.toJson([
+                        "dependenciesWithoutAllowedLicenses": notPassedDependencies.collect {
+                            toAllowedLicenseList(it.getV1(), it.getV2())
+                        }.flatten()
+                ]))
     }
 
-    private boolean isDependencyMatchesAllowedLicense(Dependency dependency, AllowedLicense allowedLicense) {
-        return isDependencyNameMatchesAllowedLicense(dependency, allowedLicense) &&
-            isDependencyLicenseMatchesAllowedLicense(dependency, allowedLicense) &&
-            isDependencyVersionMatchesAllowedLicense(dependency, allowedLicense)
-    }
-
-    private boolean isDependencyNameMatchesAllowedLicense(Dependency dependency, AllowedLicense allowedLicense) {
-        return dependency.moduleName ==~ allowedLicense.moduleName || allowedLicense.moduleName == null ||
-            dependency.moduleName == allowedLicense.moduleName
-    }
-
-    private boolean isDependencyVersionMatchesAllowedLicense(Dependency dependency, AllowedLicense allowedLicense) {
-        return dependency.moduleVersion ==~ allowedLicense.moduleVersion || allowedLicense.moduleVersion == null ||
-            dependency.moduleVersion == allowedLicense.moduleVersion
-    }
-
-    private boolean isDependencyLicenseMatchesAllowedLicense(Dependency dependency, AllowedLicense allowedLicense) {
-        if (allowedLicense.moduleLicense == null || allowedLicense.moduleLicense == ".*") return true
-
-        for (moduleLicenses in dependency.moduleLicenses)
-            if (moduleLicenses.moduleLicense ==~ allowedLicense.moduleLicense ||
-                moduleLicenses.moduleLicense == allowedLicense.moduleLicense) return true
-        return false
-    }
-
-    private List<AllowedLicense> toAllowedLicenseList(Dependency dependency) {
-        if (dependency.moduleLicenses.isEmpty()) {
-            return [ new AllowedLicense(dependency.moduleName, dependency.moduleVersion, null) ]
+    default List<AllowedLicense> toAllowedLicenseList(Dependency dependency, List<ModuleLicense> moduleLicenses) {
+        if (moduleLicenses.isEmpty()) {
+            return [new AllowedLicense(dependency.moduleName, dependency.moduleVersion, null)]
         } else {
-            return dependency.moduleLicenses.collect { new AllowedLicense(dependency.moduleName, dependency.moduleVersion, it.moduleLicense) }
+            return moduleLicenses.findAll { it }.collect { new AllowedLicense(dependency.moduleName, dependency.moduleVersion, it.moduleLicense) }
         }
     }
 }
