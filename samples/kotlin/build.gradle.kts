@@ -6,7 +6,7 @@ import com.github.jk1.license.filter.LicenseBundleNormalizer
 import com.github.jk1.license.filter.ExcludeDependenciesWithoutArtifactsFilter
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "3.0.2-SNAPSHOT"  // x-release-please-version
+    id("com.github.jk1.dependency-license-report") version "3.1.0"  // x-release-please-version
     id("java")
 }
 
