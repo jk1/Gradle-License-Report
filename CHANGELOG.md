@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.1.1 (2026-02-17)
+
+## What's Changed
+* docs: update documentation for modern Gradle usage & clarity by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/369
+* fix: allow specifying an allowed license rule that matches dependencies with no known license by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/370
+* fix: remove warnings from mismatched transformation rules on default bundles by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/372
+* fix: improve defualt normalization bundle matching for EPL 1.0 license URLs by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/374
+* fix: correct Gradle module metadata for published plugin by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/375
+* chore(master): release 3.1.1-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/371
+
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.1.0...v3.1.1
+
 ## 3.1.0 (2026-02-12)
 
 ## What's Changed
