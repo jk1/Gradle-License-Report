@@ -3,7 +3,7 @@ import com.github.jk1.license.filter.*
 import com.github.jk1.license.importer.*
 
 plugins {
-    id("com.github.jk1.dependency-license-report") version "3.1.0"  // x-release-please-version
+    id("com.github.jk1.dependency-license-report") version "3.1.1-SNAPSHOT"  // x-release-please-version
     id("groovy")
 }
 
