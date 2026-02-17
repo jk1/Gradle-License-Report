@@ -1,7 +1,7 @@
 # Gradle License Report
 
-[![Build Status](https://travis-ci.org/jk1/Gradle-License-Report.svg?branch=master)](https://travis-ci.org/jk1/Gradle-License-Report)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://github.com/jk1/Gradle-License-Report/actions/workflows/test.yml/badge.svg)](https://github.com/jk1/Gradle-License-Report/actions/workflows/test.yml?query=branch%3Amaster)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/license/apache-2-0)
 
 A plugin for generating reports about the licenses of the dependencies for your Gradle project.
 
@@ -12,25 +12,53 @@ to automatically generate a report that you can hand to corporate IP lawyers in 
 
 Add this to your `build.gradle` file for Gradle 7+:
 
+Groovy:
 ```groovy
 plugins {
     id 'com.github.jk1.dependency-license-report' version '3.1.0'  // x-release-please-version
 }
 ```
 
-Please note, for Gradle 9+ it is necessary to specify `--no-parallel` for the moment, to avoid errors like:
-
-> Resolution of the configuration ':<something>:runtimeClasspath' was attempted without an exclusive lock. This is unsafe and not allowed
-
-For Gradle 6.X stick to 1.X plugin versions:
-
-```groovy
+Kotlin:
+```kotlin
 plugins {
-    id 'com.github.jk1.dependency-license-report' version '1.17'
+    id("com.github.jk1.dependency-license-report") version "3.1.0"  // x-release-please-version
 }
 ```
 
-Then run `gradle generateLicenseReport` to generate your report in `build/reports/dependency-license`.
+Then run `./gradlew generateLicenseReport` to generate your report in `build/reports/dependency-license`.
+
+## Compatibility
+
+| Series  | Status                 | Supported Gradle Versions  | Supported Java Versions |
+|---------|------------------------|----------------------------|-------------------------|
+| **3.x** | Maintained             | 7.x → 9.x [*](#gradle-9)   | 8+ [*][1]               |
+| **2.x** | EOL @ `version "2.9"`  | 7.x → 9.x [*](#gradle-9)   | 8+ [*][1]               |
+| **1.x** | EOL @ `version "1.17"` | 3.x → 6.x [*](#gradle-678) | 8+ [*][1]               |
+
+Notes:
+- [Gradle configuration cache][2] is not currently supported correctly.
+- [Gradle build cache][3] has limited support during report tasks only; with some known issues - so use with care (or run Gradle with `--no-build-cache --rerun-tasks` to override)
+
+[1]: https://docs.gradle.org/current/userguide/compatibility.html#java_runtime
+[2]: https://docs.gradle.org/current/userguide/configuration_cache.html
+[3]: https://docs.gradle.org/current/userguide/build_cache.html
+
+### Gradle 9
+Please note, for multi-project setups it is necessary to specify `--no-parallel` for the moment, to avoid errors like:
+> Resolution of the configuration ':<something>:runtimeClasspath' was attempted without an exclusive lock. This is unsafe and not allowed
+
+Depending on your usage, you may also be able to support parallel execution using [more complex workarounds noted here](https://github.com/jk1/Gradle-License-Report/issues/337#issuecomment-3241442179). 
+
+
+### Gradle 6/7/8
+Due to similar reasons as [Gradle 9](#gradle-9) you may get warnings (but not outright failures) such as:
+> Resolution of the configuration :<something>:runtimeClasspath was attempted from a context different than the project context.
+
+or 
+> The configuration :<something>:runtimeClasspath was resolved without accessing the project in a safe manner. This may happen when a configuration is resolved from a different project.
+
+Similar workarounds are possible as for [Gradle 9](#gradle-9).
 
 ## Configuration
 
@@ -49,8 +77,8 @@ licenseReport {
     unionParentPomLicenses = false
 
     // Set output directory for the report data.
-    // Defaults to ${project.buildDir}/reports/dependency-license.
-    outputDir = project.layout.buildDirectory.dir("licenses").get().asFile.path
+    // Defaults to layout.buildDirectory.dir("reports/dependency-license").get().asFile
+    outputDir = layout.buildDirectory.dir("licenses").get().asFile
 
     // Select projects to examine for dependencies.
     // Defaults to current project and all its subprojects
@@ -77,8 +105,8 @@ licenseReport {
     // Don't include artifacts of project's own group into the report
     excludeOwnGroup = true
 
-    // Don't exclude bom dependencies.
-    // If set to true, then all boms will be excluded from the report
+    // Exclude bom dependencies from report
+    // If set to true, then all boms (artifacts ending with `-bom` suffix) will be excluded from the report
     excludeBoms = false
 
     // Set custom report renderer, implementing ReportRenderer.
@@ -91,18 +119,9 @@ licenseReport {
 
     // This is for the allowed-licenses-file in checkLicense Task
     // Accepts File, URL or String path to local or remote file
-    allowedLicensesFile = project.layout.projectDirectory.file("config/allowed-licenses.json").asFile
+    allowedLicensesFile = layout.projectDirectory.file("config/allowed-licenses.json")
 }
 ```
-
-## My report is empty or contains wrong dependencies. Is it a plugin bug?
-
-The plugin discovers project dependencies from certain [Gradle configurations](https://docs.gradle.org/current/userguide/declaring_dependencies.html).
-To put it (overly) simple, a configuration is a set of dependencies used for a particular purpose: compilation, testing, runtime, you name it.
-The plugin lets you configure which configurations you'd like to report dependencies from. Although it assumes reasonable defaults, for complex builds they may not always suffice.
-Custom configurations may come from the other plugins, build flavors and dimensions. One can even define their own configurations right in the build script.
-
-If unsure, check out `gradlew dependencies` task output to see what configurations you project has.
 
 ## Kotlin script support
 
@@ -110,21 +129,23 @@ Plugin is compatible with build scripts written in kotlin. Configuration syntax 
 Consider the following sample:
 
 ```kotlin
-import com.github.jk1.license.render.ReportRenderer
-import com.github.jk1.license.render.InventoryHtmlReportRenderer
-import com.github.jk1.license.filter.DependencyFilter
-import com.github.jk1.license.filter.LicenseBundleNormalizer
-
-plugins {
-    id("com.github.jk1.dependency-license-report") version "2.0"
-}
+import com.github.jk1.license.render.*
+import com.github.jk1.license.filter.*
 
 licenseReport {
     renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer("report.html", "Backend"))
     filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 }
-
 ```
+
+## My report is empty or contains wrong dependencies. Is it a plugin bug?
+
+The plugin discovers project dependencies from certain [Gradle configurations](https://docs.gradle.org/current/userguide/declaring_dependencies.html).
+To put it (overly) simply, a configuration is a set of dependencies used for a particular purpose: compilation, testing, runtime, you name it.
+The plugin lets you configure which configurations you'd like to report dependencies from. Although it assumes reasonable defaults, for complex builds they may not always suffice.
+Custom configurations may come from the other plugins, build flavors and dimensions. One can even define their own configurations right in the build script.
+
+If unsure, check out `./gradlew dependencies` task output to see what configurations you project has.
 
 ## Renderers
 
@@ -186,7 +207,7 @@ an overrides file:
 import com.github.jk1.license.render.*
 
 licenseReport {
-    renderers = [new InventoryHtmlReportRenderer('index.html', 'Some Title', new File(projectDir, '../unknown-license-details.txt'))]
+    renderers = [new InventoryHtmlReportRenderer('index.html', 'Some Title', layout.projectDirectory.file('../unknown-license-details.txt').asFile)]
 }
 ```
 
@@ -205,7 +226,7 @@ import com.github.jk1.license.importer.*
 
 licenseReport {
     // integrate javascript frontend dependencies into our report
-    importers = [new XmlReportImporter('Front End', new File(projectDir, 'src/main/webapp/vendor/front_end.xml'))]
+    importers = [new XmlReportImporter('Front End', layout.projectDirectory.file('src/main/webapp/vendor/front_end.xml').asFile)]
 }
 ```
 
@@ -255,9 +276,7 @@ licenseReport {
 }
 ```
 
-### License data grouping
-
-This feature was contributed by [Günther Grill](https://github.com/guenhter)
+### License data grouping / normalization
 
 When multiple dependencies are analysed and displayed in a report, often
 e.g. two licenses like the following one appears:
@@ -270,8 +289,8 @@ Apache License, Version 2.0
 This can be avoided by providing an accurate normalisation file which contains rules
 to unify such entries. The configuration file has two sections:
 
-- license-bundles: Defines the actual licenses with their correct name and their correct url
-- transformation-rules: A rule defines a reference to one license-bundle and a pattern for
+- **bundles**: Defines the actual licenses with their correct name and their correct url
+- **transformationRules**: A rule defines a reference to one license-bundle and a pattern for
   a malformed name or url. When a pattern matches the license of a dependency, the
   output license-information for that dependency will be updated with the referenced license-bundle.
 
@@ -281,17 +300,17 @@ to unify such entries. The configuration file has two sections:
     {
       "bundleName": "apache1",
       "licenseName": "Apache Software License, Version 1.1",
-      "licenseUrl": "http://www.apache.org/licenses/LICENSE-1.1"
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-1.1"
     },
     {
       "bundleName": "apache2",
       "licenseName": "Apache License, Version 2.0",
-      "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0"
+      "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
     },
     {
       "bundleName": "cddl1",
       "licenseName": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE Version 1.0 (CDDL-1.0)",
-      "licenseUrl": "http://opensource.org/licenses/CDDL-1.0"
+      "licenseUrl": "https://opensource.org/licenses/CDDL-1.0"
     }
   ],
   "transformationRules": [
@@ -302,7 +321,7 @@ to unify such entries. The configuration file has two sections:
     { "bundleName": "apache2", "licenseNamePattern": "Apache 2" },
     {
       "bundleName": "apache2",
-      "licenseUrlPattern": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+      "licenseUrlPattern": "https://www.apache.org/licenses/LICENSE-2.0.txt"
     },
     {
       "bundleName": "apache2",
@@ -321,23 +340,36 @@ to unify such entries. The configuration file has two sections:
 So dependencies with license-name `The Apache Software License, Version 2.0` / `Apache 2` or license-url `http://www.apache.org/licenses/LICENSE-2.0.txt`
 are changed to license-name `Apache License, Version 2.0` and license-url `http://www.apache.org/licenses/LICENSE-2.0`
 
-The normalizer can be enabled via a filter.
+The normalizer can be enabled via a filter:
 
-```groovy
-import com.github.jk1.license.filter.*
+1. If a `bundlePath` is specified, your custom rules are merged with the [the default rules](src/main/resources/default-license-normalizer-bundle.json).
+    ```groovy
+    import com.github.jk1.license.filter.*
+    
+    licenseReport {
+        filters = [new LicenseBundleNormalizer(bundlePath: layout.projectDirectory.file("config/license-normalizer-bundle.json").asFile.path)]
+    }
+    ```
+2. If no `bundlePath` is specified, [the default rules](src/main/resources/default-license-normalizer-bundle.json) are used.
+    ```groovy
+    licenseReport {
+       filters = [new LicenseBundleNormalizer()]
+    }
+    ```
+3. To disable the default rules and use **only** use your custom rules:
+    ```groovy
+    licenseReport {
+        filters = [new LicenseBundleNormalizer(bundlePath: pathToCustomRules, createDefaultTransformationRules: false)]
+    }
+    ```
 
-licenseReport {
-    // LicenseBundleNormalizer also accepts bundle stream as a parameter
-    filters = [new LicenseBundleNormalizer(bundlePath: "$projectDir/config/license-normalizer-bundle.json")]
-}
-```
+You are encouraged to create your own bundle file and contribute back useful rules.
 
-If no bundle-file is specified, a default file is used containing some common rules. You are encouraged to create your own bundle-file
-and contribute back useful rules.
+#### SPDX support
 
-### SPDX support
+Normalizers are also capable of mapping licenses to [SPDX IDs](https://spdx.org/licenses/).
 
-Normalizers are also capable of mapping licenses to SPDX identifiers. The code
+The below uses [these default rules](src/main/resources/spdx-license-normalizer-bundle.json).
 
 ```groovy
 import com.github.jk1.license.filter.*
@@ -346,8 +378,6 @@ licenseReport {
     filters = [new SpdxLicenseBundleNormalizer()]
 }
 ```
-
-replaces string license names in the report with the corresponding [SPDX IDs](https://spdx.org/licenses/)
 
 ## Writing custom renderers, importers and filters
 
@@ -362,11 +392,9 @@ import com.github.jk1.license.importer.DependencyDataImporter;
 import java.util.Collection;
 
 public class CustomImporter implements DependencyDataImporter {
-
     public String getImporterName() {
         return "Custom importer";
     }
-
 
     public Collection<ImportedModuleBundle> doImport() {
         throw new UnsupportedOperationException("Not implemented yet");
@@ -377,18 +405,17 @@ public class CustomImporter implements DependencyDataImporter {
 with `buildSrc/build.gradle` defined as follows to get all the imports resolved:
 
 ```groovy
-apply plugin: 'java'
+plugins {
+  id 'java'
+}
 
 repositories {
-    maven {
-        url 'https://plugins.gradle.org/m2/'
-    }
+    gradlePluginPortal()
 }
 
 dependencies {
-    compile 'com.github.jk1:gradle-license-report:2.0'
+    implementation 'com.github.jk1:gradle-license-report:3.1.0'  // x-release-please-version
 }
-
 ```
 
 Now you can use your custom importer in the main build:
@@ -412,7 +439,7 @@ This task is for checking dependencies/imported modules if their licenses are al
 ./gradlew checkLicense
 ```
 
-If there are not allowed licenses, the task will fail and a report like the following
+If there are licenses which are not allowed, the task will fail and a report like the following
 will be generated under `$outputDir` which you specified in the configuration:
 
 ```json
@@ -432,33 +459,47 @@ will be generated under `$outputDir` which you specified in the configuration:
 }
 ```
 
+A dependency must declare AT LEAST ONE license that matches a rule in the allowed licenses list. 
+In other words, multiple licenses are currently assumed to be "dual/triple/etc licensing" situations
+where the user can choose to use under one of the licenses.
+
+This means that when a dependency appears in `dependenciesWithoutAllowedLicenses` with multiple
+licenses, and you think it should be allowed, you only need to declare an `allowedLicenses` rule 
+(or `transformationRules` entry) that will cause a match to ONE of the declared licenses.
+
 ### Allowed licenses file
 
-Defines which licenses are allowed to be used:
+Defines which licenses are allowed to be used.
+
+- All fields are matched as either an exact text match, or a "whole string" regular expression match
+- Missing or `null` rules for a given field are the same as matching "all", or `.*`, for that field.
+
+Some individual examples (don't all make sense together, presented here for demonstration purposes):
 
 ```json
 {
   "allowedLicenses": [
+    // Allow any dependency with MIT License
+    { "moduleLicense": "MIT License" },
+
+    // Allow MIT license only for any dependency starting woth org.jetbrains
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": "org.jetbrains.*"
+    },
+    
+    // Allow MIT license only for any dependency starting woth org.jetbrains (same as above)
+    {
+      "moduleLicense": "MIT License",
+      "moduleName": "org.jetbrains.*",
+      "moduleVersion": ".*"
+    },
+    
+    // Allow apache license only for specific module and version
     {
       "moduleLicense": "Apache License, Version 2.0",
       "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
       "moduleVersion": "1.2.60"
-    },
-    {
-      "moduleLicense": "Apache License, Version 2.0",
-      "moduleName": "org.jetbrains.kotlin*",
-      "moduleVersion": ".*"
-    },
-    {
-      "moduleLicense": "MIT License",
-      "moduleName": ".*"
-    },
-    {
-      "moduleLicense": "MIT License"
-    },
-    {
-      "moduleLicense": "MIT License",
-      "moduleName": ""
     }
   ]
 }
@@ -468,7 +509,7 @@ Also specify the allowed license file in the configuration:
 
 ```groovy
 licenseReport {
-    allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
+    allowedLicensesFile = layout.projectDirectory.file('config/allowed-licenses.json')
 }
 ```
 

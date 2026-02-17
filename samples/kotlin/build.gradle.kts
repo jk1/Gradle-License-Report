@@ -1,13 +1,10 @@
-import com.github.jk1.license.render.ReportRenderer
-import com.github.jk1.license.render.InventoryHtmlReportRenderer
-import com.github.jk1.license.render.JsonReportRenderer
-import com.github.jk1.license.filter.DependencyFilter
-import com.github.jk1.license.filter.LicenseBundleNormalizer
-import com.github.jk1.license.filter.ExcludeDependenciesWithoutArtifactsFilter
+import com.github.jk1.license.render.*
+import com.github.jk1.license.filter.*
+import com.github.jk1.license.importer.*
 
 plugins {
     id("com.github.jk1.dependency-license-report") version "3.1.0"  // x-release-please-version
-    id("java")
+    id("groovy")
 }
 
 repositories {
@@ -24,11 +21,33 @@ dependencies {
 
 licenseReport {
     renderers = arrayOf<ReportRenderer>(
-        InventoryHtmlReportRenderer("report.html","Backend"),
+        InventoryHtmlReportRenderer("report.html", "Backend"),
         JsonReportRenderer("report.json", true),
-        )
+    )
     filters = arrayOf<DependencyFilter>(
         LicenseBundleNormalizer(),
         ExcludeDependenciesWithoutArtifactsFilter(),
     )
+    importers = arrayOf<DependencyDataImporter>(
+        XmlReportImporter("Front End", layout.projectDirectory.file("../configs/externalDependencies.xml").asFile)
+    )
+
+    allowedLicensesFile = layout.projectDirectory.file("../configs/allow-mit-sample.json")
+}
+
+tasks.register("printDependencies") {
+    doLast {
+        configurations.implementation.get().allDependencies.forEach { dep ->
+            println("${dep.javaClass.simpleName}${dep.javaClass.interfaces.map { it.simpleName }} group[${dep.group}] name[${dep.name}] $dep")
+        }
+    }
+}
+
+tasks.register("printResolvedFiles") {
+    doLast {
+        configurations.runtimeClasspath.get()
+            .resolvedConfiguration
+            .resolvedArtifacts
+            .forEach { println("${it.name} - ${it.classifier} - ${it.type}: ${it.file}") }
+    }
 }

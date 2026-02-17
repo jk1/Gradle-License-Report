@@ -2,19 +2,14 @@ import com.github.jk1.license.render.InventoryHtmlReportRenderer
 import com.github.jk1.license.importer.XmlReportImporter
 import com.github.jk1.license.filter.LicenseBundleNormalizer
 
-buildscript {
-    repositories {
-        mavenLocal()
-    }
-    dependencies {
-        classpath 'com.github.jk1.dependency-license-report:com.github.jk1.dependency-license-report.gradle.plugin:3.1.0'  // x-release-please-version
-    }
+plugins {
+    id 'com.github.jk1.dependency-license-report' version '3.1.0'  // x-release-please-version
+    id 'groovy'
 }
 
-apply plugin: 'java'
-apply plugin: 'com.github.jk1.dependency-license-report'
-
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     implementation 'org.springframework:spring-tx:3.2.3.RELEASE'
@@ -26,23 +21,24 @@ dependencies {
 licenseReport {
     renderers = [new InventoryHtmlReportRenderer('report.html', 'Backend')]
     filters = [new LicenseBundleNormalizer()]
-    importers = [new XmlReportImporter('Front End', new File(project.projectDir, 'externalDependencies.xml'))]
-    configurations = ALL
+    importers = [new XmlReportImporter('Front End', layout.projectDirectory.file('../configs/externalDependencies.xml').asFile)]
+
+    allowedLicensesFile = layout.projectDirectory.file('../configs/allow-mit-sample.json')
 }
 
-task printDependencies {
+tasks.register("printDependencies") {
     doLast {
-        configurations.compile.allDependencies*.each { Dependency dep ->
-            println "${dep.getClass().simpleName}[${dep.getClass().interfaces*.simpleName.join(', ')}] group[$dep.group] name[$dep.name] $dep"
+        configurations.implementation.allDependencies*.each { Dependency dep ->
+            println "${dep.class.simpleName}[${dep.class.interfaces*.simpleName.join(', ')}] group[$dep.group] name[$dep.name] $dep"
         }
     }
 }
 
-task printResolvedFiles {
+tasks.register("printResolvedFiles") {
     doLast {
-        def resolved = configurations.compile.resolvedConfiguration
-        resolved.firstLevelModuleDependencies.each { ResolvedDependency resolvedDep ->
-            resolvedDep.moduleArtifacts.each { println "$it.name - $it.classifier - $it.type: $it.file" }
-        }
+        configurations.runtimeClasspath
+                .resolvedConfiguration
+                .resolvedArtifacts
+                .each { println "$it.name - $it.classifier - $it.type: $it.file" }
     }
 }
