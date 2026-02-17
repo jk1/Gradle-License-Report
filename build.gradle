@@ -19,11 +19,14 @@ java {
     }
 }
 
-tasks.withType(GroovyCompile).configureEach {
+tasks.withType(AbstractCompile).configureEach {
     // Groovy compiler does not support -release flags and ignores it
     // see https://github.com/gradle/gradle/issues/15703 and https://issues.apache.org/jira/browse/GROOVY-11105
     sourceCompatibility = targetJdkVersion
     targetCompatibility = targetJdkVersion
+
+    // Despite being a Groovy plugin, this is needed to ensure correct java module metadata is generated
+    options.release = targetJdkVersion.toInteger()
 }
 
 /**
@@ -103,7 +106,7 @@ gradlePlugin {
     website = 'https://github.com/jk1/Gradle-License-Report'
     vcsUrl = 'https://github.com/jk1/Gradle-License-Report'
     plugins {
-        licenseReportPlugin {
+        register('licenseReportPlugin') {
             id = 'com.github.jk1.dependency-license-report'
             displayName = 'Gradle dependency license report plugin'
             description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
