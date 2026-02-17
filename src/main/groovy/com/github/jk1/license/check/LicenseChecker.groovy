@@ -19,6 +19,7 @@ import groovy.json.JsonOutput
 import org.gradle.api.GradleException
 
 class LicenseChecker {
+    private static final String NO_LICENSE_FOUND = ""
 
     void checkAllDependencyLicensesAreAllowed(
         Object allowedLicensesFile, File projectLicensesDataFile, File notPassedDependenciesOutputFile) {
@@ -71,6 +72,9 @@ class LicenseChecker {
     private boolean isDependencyLicenseMatchesAllowedLicense(Dependency dependency, AllowedLicense allowedLicense) {
         if (allowedLicense.moduleLicense == null || allowedLicense.moduleLicense == ".*") return true
 
+        // Allow matching to modules with no known licenses via a blank rule
+        if (!dependency.moduleLicenses && allowedLicense.moduleLicense == NO_LICENSE_FOUND) return true
+
         for (moduleLicenses in dependency.moduleLicenses)
             if (moduleLicenses.moduleLicense ==~ allowedLicense.moduleLicense ||
                 moduleLicenses.moduleLicense == allowedLicense.moduleLicense) return true
@@ -79,7 +83,7 @@ class LicenseChecker {
 
     private List<AllowedLicense> toAllowedLicenseList(Dependency dependency) {
         if (dependency.moduleLicenses.isEmpty()) {
-            return [ new AllowedLicense(dependency.moduleName, dependency.moduleVersion, null) ]
+            return [ new AllowedLicense(dependency.moduleName, dependency.moduleVersion, NO_LICENSE_FOUND) ]
         } else {
             return dependency.moduleLicenses.collect { new AllowedLicense(dependency.moduleName, dependency.moduleVersion, it.moduleLicense) }
         }

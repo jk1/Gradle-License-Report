@@ -21,6 +21,13 @@
       "moduleLicense": "Apache License, Version 2.0",
       "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
       "moduleVersion": "1.2.60"
+    },
+
+    // Allow legacy.project:has-no-license-declared if it has no license found at all.
+    // Use with caution and scope it carefully to names/versions. This is usually not what you want.
+    {
+      "moduleLicense": "", // "no license found"
+      "moduleName": "legacy.project:has-no-license-declared"
     }
   ]
 }

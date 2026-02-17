@@ -140,6 +140,9 @@ class PluginSpec extends Specification {
                 }
             ]
         }
+    ],
+    "importedModules": [
+        
     ]
 }"""
 
