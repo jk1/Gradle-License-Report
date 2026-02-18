@@ -42,7 +42,7 @@ jobs:
       - name: Build with Gradle
         env:
           TEST_JAVA_VERSION: ${{ matrix.test-java-version }}
-        run: ./gradlew build
+        run: ./gradlew build publishToMavenLocal
 
       - name: Problems Report
         uses: actions/upload-artifact@v5
@@ -58,3 +58,15 @@ jobs:
         with:
           name: unit-tests-results-${{ matrix.test-java-version }}
           path: build/reports/tests/test
+
+      - name: Sanity check samples
+        working-directory: samples
+        env:
+          # Gradle 8.x does not have support for Java 25 on Kotlin due to a Kotlin 2.2 bug https://github.com/gradle/gradle/issues/35111
+          # Can run for Java 25 on Kotlin once we upgrade samples to Gradle v9 which would drop Java 8/11 testing.
+          SAMPLES: ${{ matrix.test-java-version != '25' && 'groovy kotlin' || 'groovy' }}
+        run: |
+          export JAVA_HOME=$JAVA_HOME_${{ matrix.test-java-version }}_X64
+          for sample in $SAMPLES; do
+            echo "Checking $sample sample" && cd "$sample" && ./gradlew generateLicenseReport && cd -
+          done
