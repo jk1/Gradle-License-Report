@@ -63,7 +63,7 @@ idea {
 }
 
 license {
-    header = rootProject.file("NOTICE.txt") 
+    header = rootProject.file("NOTICE.txt")
     includes(["**/*.groovy"])
 }
 
@@ -80,7 +80,7 @@ test {
 
     outputs.upToDateWhen { false }
     reports.html.required = true
-    reports.junitXml.required = System.getenv("CI") != null ? true : false
+    reports.junitXml.required = System.getenv("CI") != null
 
     javaLauncher = javaToolchains.launcherFor {
         languageVersion = JavaLanguageVersion.of(System.getenv("TEST_JAVA_VERSION") ?: defaultToolchainJdkVersion)
@@ -90,21 +90,10 @@ test {
     }
 }
 
-// local maven publishing to ease development
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = 'com.github.jk1.dependency-license-report'
-            artifactId = 'com.github.jk1.dependency-license-report.gradle.plugin'
-            from components.java
-        }
-    }
-}
-
 // release publishing to gradle plugin repo
 gradlePlugin {
     website = 'https://github.com/jk1/Gradle-License-Report'
-    vcsUrl = 'https://github.com/jk1/Gradle-License-Report'
+    vcsUrl = 'https://github.com/jk1/Gradle-License-Report.git'
     plugins {
         register('licenseReportPlugin') {
             id = 'com.github.jk1.dependency-license-report'
@@ -112,6 +101,45 @@ gradlePlugin {
             description = 'A plugin for generating reports about the licenses of the dependencies for your Gradle project'
             tags.set(['dependency-management', 'license', 'reporting'])
             implementationClass = 'com.github.jk1.license.LicenseReportPlugin'
+        }
+    }
+}
+
+publishing {
+    // customise POM metadata for both the main plugin and the marker artifact based on the basic Gradle plugin metadata
+    publications.withType(MavenPublication).configureEach {
+        def plugin = gradlePlugin.plugins.named('licenseReportPlugin').get()
+        pom {
+            name = plugin.displayName
+            description = plugin.description
+            url = gradlePlugin.website
+            licenses {
+                license {
+                    name = 'Apache-2.0'
+                    comments = 'Apache License, Version 2.0'
+                    url = 'https://www.apache.org/licenses/LICENSE-2.0'
+                }
+            }
+            scm {
+                connection = "scm:git:${gradlePlugin.vcsUrl.get()}"
+                developerConnection = "scm:git:${gradlePlugin.vcsUrl.get()}"
+                url = gradlePlugin.website
+            }
+            issueManagement {
+                system = 'GitHub'
+                url = "${gradlePlugin.website.get()}/issues"
+            }
+            ciManagement {
+                system = 'GitHub Actions'
+                url = "${gradlePlugin.website.get()}/actions"
+            }
+            developers {
+                developer {
+                    id = 'jk1'
+                    name = 'Evgeny Naumenko'
+                    email = 'jk.vc@mail.ru'
+                }
+            }
         }
     }
 }
