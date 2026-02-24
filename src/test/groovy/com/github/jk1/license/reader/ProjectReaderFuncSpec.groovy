@@ -17,6 +17,7 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.IgnoreIf
 import spock.lang.Unroll
 
 class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
@@ -25,7 +26,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
         buildFile << """
             plugins {
                 id 'com.github.jk1.dependency-license-report'
-                id 'org.openjfx.javafxplugin' version '0.1.0'
             }
             configurations {
                 forTesting
@@ -269,14 +269,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 forTesting "org.springframework:spring-tx:3.2.3.RELEASE"
                 forTesting "org.ehcache:ehcache:3.3.1"
                 forTesting "org.apache.commons:commons-lang3:3.7"
-                forTesting("org.openjfx:javafx-base:22.0.1") {
-                    attributes {
-                        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
-                        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
-                        attribute(OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE, objects.named(OperatingSystemFamily, OperatingSystemFamily.LINUX))
-                        attribute(MachineArchitecture.ARCHITECTURE_ATTRIBUTE, objects.named(MachineArchitecture, MachineArchitecture.X86_64))
-                    }
-               }
             }
         """
 
@@ -490,43 +482,6 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "name": "ehcache"
             },
             {
-                "group": "org.openjfx",
-                "manifests": [
-                    {
-                        "licenseUrl": null,
-                        "vendor": null,
-                        "hasPackagedLicense": false,
-                        "version": null,
-                        "license": null,
-                        "description": null,
-                        "url": null,
-                        "name": null
-                    }
-                ],
-                "hasArtifactFile": true,
-                "version": "22.0.1",
-                "poms": [
-                    {
-                        "inceptionYear": "",
-                        "projectUrl": "",
-                        "description": "",
-                        "name": "",
-                        "organization": null,
-                        "licenses": [
-                            {
-                                "url": "https://openjdk.java.net/legal/gplv2+ce.html",
-                                "name": "GPLv2+CE"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    
-                ],
-                "empty": false,
-                "name": "javafx-base"
-            },
-            {
                 "group": "org.slf4j",
                 "manifests": [
                     {
@@ -732,6 +687,96 @@ class ProjectReaderFuncSpec extends AbstractGradleRunnerFunctionalSpec {
            configurationsString == expected
     }
 
+    @IgnoreIf(value = { !jvm.isJavaVersionCompatible(11) }, reason = "openjfx under test requires Java 11")
+    def "it reads dependencies with variants correctly"() {
+        buildFile.delete()
+        buildFile << """
+            plugins {
+                id 'com.github.jk1.dependency-license-report'
+                id 'org.openjfx.javafxplugin' version '0.1.0'
+            }
+            configurations {
+                forTesting
+            }
+            repositories {
+                mavenCentral()
+            }
+
+            import com.github.jk1.license.render.*
+            licenseReport {
+                outputDir = "${fixPathForBuildFile(outputDir.absolutePath)}"
+                renderers = [new com.github.jk1.license.render.RawProjectDataJsonRenderer()]
+                configurations = ['forTesting']
+            }
+
+            dependencies {
+                forTesting("org.openjfx:javafx-base:22.0.1") {
+                    attributes {
+                        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+                        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+                        attribute(OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE, objects.named(OperatingSystemFamily, OperatingSystemFamily.LINUX))
+                        attribute(MachineArchitecture.ARCHITECTURE_ATTRIBUTE, objects.named(MachineArchitecture, MachineArchitecture.X86_64))
+                    }
+               }
+            }
+        """
+
+        when:
+        def runResult = runGradleBuild()
+        def resultFileGPath = jsonSlurper.parse(rawJsonFile)
+        removeDevelopers(resultFileGPath)
+        def configurationsGPath = resultFileGPath.configurations
+        def configurationsString = prettyPrintJson(configurationsGPath)
+
+        then:
+        runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
+
+        def expected = prettyPrintJson(jsonSlurper.parse("""[
+    {
+        "dependencies": [
+            {
+                "group": "org.openjfx",
+                "manifests": [
+                    {
+                        "licenseUrl": null,
+                        "vendor": null,
+                        "hasPackagedLicense": false,
+                        "version": null,
+                        "license": null,
+                        "description": null,
+                        "url": null,
+                        "name": null
+                    }
+                ],
+                "hasArtifactFile": true,
+                "version": "22.0.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "",
+                        "description": "",
+                        "name": "",
+                        "organization": null,
+                        "licenses": [
+                            {
+                                "url": "https://openjdk.java.net/legal/gplv2+ce.html",
+                                "name": "GPLv2+CE"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    
+                ],
+                "empty": false,
+                "name": "javafx-base"
+            }
+        ],
+        "name": "forTesting"
+    }
+]""".toCharArray()))
+        configurationsString == expected
+    }
 
     static void removeDevelopers(Map rawFile) {
         rawFile.configurations*.dependencies.flatten().poms.flatten().each { it.remove("developers") }
