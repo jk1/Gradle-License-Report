@@ -1,0 +1,44 @@
+[
+    {
+        "dependencies": [
+            {
+                "group": "org.openjfx",
+                "manifests": [
+                    {
+                        "licenseUrl": null,
+                        "vendor": null,
+                        "hasPackagedLicense": false,
+                        "version": null,
+                        "license": null,
+                        "description": null,
+                        "url": null,
+                        "name": null
+                    }
+                ],
+                "hasArtifactFile": true,
+                "version": "22.0.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "",
+                        "description": "",
+                        "name": "",
+                        "organization": null,
+                        "licenses": [
+                            {
+                                "url": "https://openjdk.java.net/legal/gplv2+ce.html",
+                                "name": "GPLv2+CE"
+                            }
+                        ]
+                    }
+                ],
+                "licenseFiles": [
+                    
+                ],
+                "empty": false,
+                "name": "javafx-base"
+            }
+        ],
+        "name": "forTesting"
+    }
+]

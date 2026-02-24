@@ -1,0 +1,78 @@
+[
+    {
+        "dependencies": [
+            {
+                "group": "org.apache.commons",
+                "manifests": [
+                    {
+                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "vendor": "The Apache Software Foundation",
+                        "hasPackagedLicense": false,
+                        "version": "3.7.0",
+                        "license": null,
+                        "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
+                        "url": "http://commons.apache.org/proper/commons-lang/",
+                        "name": "Apache Commons Lang"
+                    }
+                ],
+                "hasArtifactFile": true,
+                "version": "3.7",
+                "poms": [
+                    {
+                        "inceptionYear": "2001",
+                        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
+                        "description": "\n  Apache Commons Lang, a package of Java utility classes for the\n  classes that are in java.lang's hierarchy, or are considered to be so\n  standard as to justify existence in java.lang.\n  ",
+                        "name": "Apache Commons Lang",
+                        "organization": {
+                            "url": "https://www.apache.org/",
+                            "name": "The Apache Software Foundation"
+                        },
+                        "licenses": [
+                            {
+                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": "Apache License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "empty": false,
+                "name": "commons-lang3"
+            },
+            {
+                "group": "org.jetbrains",
+                "manifests": [
+                    {
+                        "licenseUrl": null,
+                        "vendor": null,
+                        "hasPackagedLicense": false,
+                        "version": null,
+                        "license": null,
+                        "description": null,
+                        "url": null,
+                        "name": null
+                    }
+                ],
+                "hasArtifactFile": true,
+                "version": "16.0.1",
+                "poms": [
+                    {
+                        "inceptionYear": "",
+                        "projectUrl": "https://github.com/JetBrains/java-annotations",
+                        "description": "A set of annotations used for code inspection support and code documentation.",
+                        "name": "JetBrains Java Annotations",
+                        "organization": null,
+                        "licenses": [
+                            {
+                                "url": "http://www.apache.org/license/LICENSE-2.0.txt",
+                                "name": "The Apache Software License, Version 2.0"
+                            }
+                        ]
+                    }
+                ],
+                "empty": false,
+                "name": "annotations"
+            }
+        ],
+        "name": "mainConfig"
+    }
+]

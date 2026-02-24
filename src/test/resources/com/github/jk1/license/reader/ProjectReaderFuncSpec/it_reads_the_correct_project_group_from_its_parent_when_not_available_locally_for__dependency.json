@@ -1,0 +1,18 @@
+[
+    {
+        "inceptionYear": "2001",
+        "projectUrl": "http://commons.apache.org/proper/commons-lang/",
+        "description": "\n  Apache Commons Lang, a package of Java utility classes for the\n  classes that are in java.lang's hierarchy, or are considered to be so\n  standard as to justify existence in java.lang.\n  ",
+        "name": "Apache Commons Lang",
+        "organization": {
+            "url": "https://www.apache.org/",
+            "name": "The Apache Software Foundation"
+        },
+        "licenses": [
+            {
+                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                "name": "Apache License, Version 2.0"
+            }
+        ]
+    }
+]

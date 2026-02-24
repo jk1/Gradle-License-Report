@@ -18,8 +18,6 @@ package com.github.jk1.license.render
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
-import spock.lang.Snapshot
-import spock.lang.Snapshotter
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -27,8 +25,6 @@ import static com.github.jk1.license.ProjectDataFixture.*
 
 class AbstractInventoryReportRendererSpec extends Specification {
 
-    @Snapshot
-    Snapshotter snapshotter
     @TempDir
     File testProjectDir
     File outputFile

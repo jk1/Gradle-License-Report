@@ -1,0 +1,34 @@
+[
+    {
+        "inceptionYear": "",
+        "projectUrl": "http://ehcache.org",
+        "description": "End-user ehcache3 jar artifact",
+        "name": "Ehcache",
+        "organization": {
+            "url": "http://terracotta.org",
+            "name": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc."
+        },
+        "licenses": [
+            {
+                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                "name": "The Apache Software License, Version 2.0"
+            }
+        ]
+    },
+    {
+        "inceptionYear": "",
+        "projectUrl": "http://www.slf4j.org",
+        "description": "The slf4j API",
+        "name": "SLF4J API Module",
+        "organization": {
+            "url": "http://www.qos.ch",
+            "name": "QOS.ch"
+        },
+        "licenses": [
+            {
+                "url": "http://www.opensource.org/licenses/mit-license.php",
+                "name": "MIT License"
+            }
+        ]
+    }
+]

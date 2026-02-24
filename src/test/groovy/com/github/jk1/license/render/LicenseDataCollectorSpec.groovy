@@ -18,12 +18,16 @@ package com.github.jk1.license.render
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectBuilder
 import com.github.jk1.license.ProjectData
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
 import spock.lang.Specification
 
 import static com.github.jk1.license.ProjectBuilder.json
 import static com.github.jk1.license.ProjectDataFixture.APACHE2_LICENSE
 
 class LicenseDataCollectorSpec extends Specification {
+    @Snapshot(extension = 'json')
+    Snapshotter snapshotter
 
     ProjectBuilder builder = new ProjectBuilder()
 
@@ -117,26 +121,7 @@ class LicenseDataCollectorSpec extends Specification {
         def result = LicenseDataCollector.multiModuleLicenseInfo(moduleData)
 
         then:
-        json(result) == """{
-    "moduleUrls": [
-        "http://dummy-mani-url",
-        "http://dummy-pom-project-url"
-    ],
-    "licenses": [
-        {
-            "url": "https://someUrl",
-            "name": null
-        },
-        {
-            "url": null,
-            "name": "Apache 2.0"
-        },
-        {
-            "url": "https://www.apache.org/licenses/LICENSE-2.0",
-            "name": "Apache License, Version 2.0"
-        }
-    ]
-}"""
+        snapshotter.assertThat(json(result)).matchesSnapshot()
     }
 
     def "remove manifest-license when name/url matches a existing licenses name or url"() {
@@ -163,18 +148,7 @@ class LicenseDataCollectorSpec extends Specification {
         def result = LicenseDataCollector.multiModuleLicenseInfo(moduleData)
 
         then:
-        json(result) == """{
-    "moduleUrls": [
-        "http://dummy-mani-url",
-        "http://dummy-pom-project-url"
-    ],
-    "licenses": [
-        {
-            "url": "https://www.apache.org/licenses/LICENSE-2.0",
-            "name": "Apache License, Version 2.0"
-        }
-    ]
-}"""
+        snapshotter.assertThat(json(result)).matchesSnapshot()
     }
 
     def "keep license-file-license when name not matches a existing licenses name or url"() {
@@ -197,21 +171,7 @@ class LicenseDataCollectorSpec extends Specification {
         def result = LicenseDataCollector.multiModuleLicenseInfo(moduleData)
 
         then:
-        json(result) == """{
-    "moduleUrls": [
-        "http://dummy-pom-project-url"
-    ],
-    "licenses": [
-        {
-            "url": "https://www.apache.org/licenses/LICENSE-2.0",
-            "name": "Apache 2.0"
-        },
-        {
-            "url": "https://www.apache.org/licenses/LICENSE-2.0",
-            "name": "Apache License, Version 2.0"
-        }
-    ]
-}"""
+        snapshotter.assertThat(json(result)).matchesSnapshot()
     }
 
     def "remove license-file-license when name matches a existing licenses name or url"() {
@@ -235,16 +195,6 @@ class LicenseDataCollectorSpec extends Specification {
         def result = LicenseDataCollector.multiModuleLicenseInfo(moduleData)
 
         then:
-        json(result) == """{
-    "moduleUrls": [
-        "http://dummy-pom-project-url"
-    ],
-    "licenses": [
-        {
-            "url": "https://www.apache.org/licenses/LICENSE-2.0",
-            "name": "Apache License, Version 2.0"
-        }
-    ]
-}"""
+        snapshotter.assertThat(json(result)).matchesSnapshot()
     }
 }

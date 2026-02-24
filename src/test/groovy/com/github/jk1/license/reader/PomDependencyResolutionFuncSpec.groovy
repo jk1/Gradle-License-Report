@@ -17,12 +17,16 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.AbstractGradleRunnerFunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
 
 /**
  * Dependencies, which are just available as .pom (usually "-bom"-modules) require a slightly different strategy, because
  * gradle will not put the artifacts inside ResolvedDependency.
  */
 class PomDependencyResolutionFuncSpec extends AbstractGradleRunnerFunctionalSpec {
+    @Snapshot(extension = 'json')
+    Snapshotter snapshotter
 
     def setup() {
         settingsGradle = new File(testProjectDir, "settings.gradle")
@@ -57,48 +61,7 @@ class PomDependencyResolutionFuncSpec extends AbstractGradleRunnerFunctionalSpec
         then:
         runResult.task(":generateLicenseReport").outcome == TaskOutcome.SUCCESS
         // 2 licenses because it also resolves jackson-parent, which has its own license
-        configurationsString == """[
-    {
-        "dependencies": [
-            {
-                "group": "com.fasterxml.jackson",
-                "manifests": [
-                    
-                ],
-                "hasArtifactFile": false,
-                "version": "2.12.3",
-                "poms": [
-                    {
-                        "inceptionYear": "",
-                        "projectUrl": "https://github.com/FasterXML/jackson-bom",
-                        "description": "Bill of Materials pom for getting full, complete set of compatible versions\\nof Jackson components maintained by FasterXML.com\\n  ",
-                        "name": "Jackson BOM",
-                        "organization": {
-                            "url": "http://fasterxml.com/",
-                            "name": "FasterXML"
-                        },
-                        "licenses": [
-                            {
-                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
-                                "name": "Apache License, Version 2.0"
-                            },
-                            {
-                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
-                                "name": "The Apache Software License, Version 2.0"
-                            }
-                        ]
-                    }
-                ],
-                "licenseFiles": [
-                    
-                ],
-                "empty": false,
-                "name": "jackson-bom"
-            }
-        ],
-        "name": "runtimeClasspath"
-    }
-]"""
+        snapshotter.assertThat(configurationsString).matchesSnapshot()
     }
 
     private def generateBuildWith(String dependencies) {
