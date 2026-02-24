@@ -179,9 +179,9 @@ class PomReader {
         LOGGER.debug("Processing parent POM: ${rootPomGPath.parent.children()*.name()}")
         GPathResult parentContent = rootPomGPath.parent
 
-        String groupId = parentContent.groupId.text()
-        String artifactId = parentContent.artifactId.text()
-        String version = parentContent.version.text()
+        String groupId = parentContent.groupId.text().trim()
+        String artifactId = parentContent.artifactId.text().trim()
+        String version = parentContent.version.text().trim()
 
         Collection<File> parentArtifacts = fetchRemoteArtifactPoms(groupId, artifactId, version)
 
@@ -288,6 +288,6 @@ class PomReader {
     }
 
     private static String tryReadGroupId(GPathResult pom) {
-        pom.groupId?.text() ?: pom.parent?.groupId?.text()
+        pom.groupId?.text()?.trim() ?: pom.parent?.groupId?.text()?.trim()
     }
 }
