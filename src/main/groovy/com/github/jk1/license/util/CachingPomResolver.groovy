@@ -17,6 +17,7 @@ package com.github.jk1.license.util
 
 import com.github.jk1.license.GradleProject
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
+import org.gradle.api.artifacts.result.UnresolvedArtifactResult
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import org.gradle.maven.MavenModule
@@ -43,19 +44,22 @@ class CachingPomResolver {
 
     private Collection<ResolvedArtifactResult> doResolveArtifact(String group, String name, String version) {
         try {
-            return project
-                  .dependencies
-                  .createArtifactResolutionQuery()
-                  .forModule(group, name, version)
-                  .withArtifacts(MavenModule, MavenPomArtifact)
-                  .execute()
-                  .resolvedComponents
-                  .collectMany { it.getArtifacts(MavenPomArtifact)
-                          .findAll { it instanceof ResolvedArtifactResult }
-                          .collect { (ResolvedArtifactResult) it }
-                  }
+            def results = project
+                    .dependencies
+                    .createArtifactResolutionQuery()
+                    .forModule(group, name, version)
+                    .withArtifacts(MavenModule, MavenPomArtifact)
+                    .execute()
+                    .resolvedComponents
+                    .collectMany { it.getArtifacts(MavenPomArtifact) }
+
+            results.findResults { it instanceof UnresolvedArtifactResult ? it : null }
+                    .each { LOGGER.info("Component $it.id unresolved while resolving POM for $group:$name:$version due to ${it.failure}. It will be skipped.") }
+
+            return results
+                    .findResults { it instanceof ResolvedArtifactResult ? it : null }
         } catch (Exception e) {
-            LOGGER.info("Could not resolve $group:$name:$version due to $e. It will be skipped.")
+            LOGGER.info("Could not resolve POM for $group:$name:$version due to $e. It will be skipped.")
             return []
         }
     }
