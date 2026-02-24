@@ -19,15 +19,12 @@ import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.task.ReportTask
-import org.gradle.api.Project
+import com.github.jk1.license.util.CachingPomResolver
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
-import org.gradle.api.internal.artifacts.query.DefaultArtifactResolutionQuery
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-import org.gradle.maven.MavenModule
-import org.gradle.maven.MavenPomArtifact
 
 interface ModuleReader {
     ModuleData read(GradleProject project, ResolvedDependency dependency)
@@ -50,11 +47,12 @@ class ModuleReaderImpl implements ModuleReader {
 
     ModuleData read(GradleProject project, ResolvedDependency dependency) {
         ModuleData moduleData = new ModuleData(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
+        CachingPomResolver pomResolver = new CachingPomResolver(project)
         dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
             LOGGER.info("Processing artifact: $artifact ($artifact.file)")
             moduleData.hasArtifactFile = artifact.file.exists()
             if (moduleData.hasArtifactFile) {
-                def pom = pomReader.readPomData(project, artifact)
+                def pom = pomReader.withResolver(pomResolver).readPomData(artifact)
                 def manifest = manifestReader.readManifestData(artifact)
                 def licenseFile = filesReader.read(artifact)
 
@@ -66,11 +64,11 @@ class ModuleReaderImpl implements ModuleReader {
             }
         }
         if (dependency.moduleArtifacts.isEmpty()) {
-            def extraPomResults = resolvePom(project, dependency)
+            def extraPomResults = pomResolver.resolveArtifacts(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
             extraPomResults.each { ResolvedArtifactResult artifact ->
                 LOGGER.info("Processing artifact: $artifact ($artifact.file)")
                 if (artifact.file.exists()) {
-                    def pom = pomReader.readPomData(project, artifact)
+                    def pom = pomReader.withResolver(pomResolver).readPomData(artifact)
                     if (pom) moduleData.poms << pom
                 } else {
                     LOGGER.info("Skipping artifact file $artifact.file as it does not exist")
@@ -80,24 +78,6 @@ class ModuleReaderImpl implements ModuleReader {
         return moduleData
     }
 
-    private static Collection<ResolvedArtifactResult> resolvePom(GradleProject project, ResolvedDependency dependency) {
-        try {
-            DefaultArtifactResolutionQuery resolutionQuery = (DefaultArtifactResolutionQuery) project.dependencies.createArtifactResolutionQuery()
-            return resolutionQuery
-                    .forModule(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
-                    .withArtifacts(MavenModule, MavenPomArtifact)
-                    .execute()
-                    .resolvedComponents
-                    .collectMany {
-                        it.getArtifacts(MavenPomArtifact)
-                                .findAll { it instanceof ResolvedArtifactResult }
-                                .collect { (ResolvedArtifactResult) it }
-                    }
-        } catch (Exception e) {
-            project.logger.info("Failed to resolve the pom artifact", e)
-            return[]
-        }
-    }
 }
 
 class CachedModuleReader implements ModuleReader {
