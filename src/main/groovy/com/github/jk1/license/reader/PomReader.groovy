@@ -15,18 +15,16 @@
  */
 package com.github.jk1.license.reader
 
-import com.github.jk1.license.GradleProject
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.PomData
 import com.github.jk1.license.PomDeveloper
 import com.github.jk1.license.PomOrganization
 import com.github.jk1.license.task.ReportTask
-import com.github.jk1.license.util.CachingArtifactResolver
+import com.github.jk1.license.util.CachingPomResolver
 import com.github.jk1.license.util.Files
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
-import org.gradle.api.Project
 import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
 import org.gradle.api.logging.Logger
@@ -40,14 +38,18 @@ class PomReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     private LicenseReportExtension config
-    private CachingArtifactResolver resolver
+    private CachingPomResolver pomResolver
 
     PomReader(LicenseReportExtension config) {
         this.config = config
     }
 
-    PomData readPomData(GradleProject project, ResolvedArtifact artifact) {
-        resolver = new CachingArtifactResolver(project)
+    PomReader withResolver(CachingPomResolver resolver) {
+        this.pomResolver = resolver
+        return this
+    }
+
+    PomData readPomData(ResolvedArtifact artifact) {
         GPathResult pomContent = findAndSlurpPom(artifact.file, artifact)
         boolean pomHasLicense = true
 
@@ -67,8 +69,7 @@ class PomReader {
         }
     }
 
-    PomData readPomData(GradleProject project, ResolvedArtifactResult artifact) {
-        resolver = new CachingArtifactResolver(project)
+    PomData readPomData(ResolvedArtifactResult artifact) {
         GPathResult pomContent = findAndSlurpPom(artifact.file, null)
         return readPomFile(pomContent)
     }
@@ -134,7 +135,7 @@ class PomReader {
     }
 
     private GPathResult fetchRemoteArtifactPom(ResolvedArtifact artifact) {
-        Collection<ResolvedArtifact> artifacts = fetchRemoteArtifactPoms(artifact.moduleVersion.id.group,
+        Collection<ResolvedArtifactResult> artifacts = pomResolver.resolveArtifacts(artifact.moduleVersion.id.group,
             artifact.moduleVersion.id.name, artifact.moduleVersion.id.version)
 
         return artifacts.collect {
@@ -146,17 +147,6 @@ class PomReader {
             }
         }.find {
             it != null
-        }
-    }
-
-    private Collection<ResolvedArtifact> fetchRemoteArtifactPoms(String group, String name, String version) {
-        String pomId = "${group.trim()}:${name.trim()}:${version.trim()}@pom"
-        LOGGER.debug("Fetch: $pomId")
-        try {
-            resolver.resolveArtifacts(pomId)
-        } catch (Exception e) {
-            LOGGER.warn("Failed to retrieve artifacts for " + pomId, e)
-            Collections.emptyList()
         }
     }
 
@@ -174,16 +164,16 @@ class PomReader {
         LOGGER.debug("Processing parent POM: ${rootPomGPath.parent.children()*.name()}")
         GPathResult parentContent = rootPomGPath.parent
 
-        String groupId = parentContent.groupId.text()
-        String artifactId = parentContent.artifactId.text()
-        String version = parentContent.version.text()
+        String groupId = parentContent.groupId.text().trim()
+        String artifactId = parentContent.artifactId.text().trim()
+        String version = parentContent.version.text().trim()
 
-        Collection<ResolvedArtifact> parentArtifacts = fetchRemoteArtifactPoms(groupId, artifactId, version)
+        Collection<ResolvedArtifactResult> parentArtifacts = pomResolver.resolveArtifacts(groupId, artifactId, version)
 
         if (parentArtifacts) {
-            (parentArtifacts*.file as Set).each { File file ->
-                LOGGER.debug("Processing parent POM file: $file")
-                GPathResult childPomGPath = slurpPomItself(file)
+            parentArtifacts.each { result ->
+                LOGGER.debug("Processing parent POM file: $result.file")
+                GPathResult childPomGPath = slurpPomItself(result.file)
 
                 if (childPomGPath) {
                     results += childPomGPath
@@ -283,6 +273,6 @@ class PomReader {
     }
 
     private static String tryReadGroupId(GPathResult pom) {
-        pom.groupId?.text() ?: pom.parent?.groupId?.text()
+        pom.groupId?.text()?.trim() ?: pom.parent?.groupId?.text()?.trim()
     }
 }
