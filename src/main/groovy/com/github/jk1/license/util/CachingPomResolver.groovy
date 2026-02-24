@@ -53,6 +53,9 @@ class CachingPomResolver {
                     .resolvedComponents
                     .collectMany { it.getArtifacts(MavenPomArtifact) }
 
+            results.findResults { ((it !instanceof UnresolvedArtifactResult) && (it !instanceof ResolvedArtifactResult)) ? it : null }
+                    .each { throw new AssertionError("Unexpected artifact result type: ${it.getClass().getName()}") }
+
             results.findResults { it instanceof UnresolvedArtifactResult ? it : null }
                     .each { LOGGER.info("Component $it.id unresolved while resolving POM for $group:$name:$version due to ${it.failure}. It will be skipped.") }
 
