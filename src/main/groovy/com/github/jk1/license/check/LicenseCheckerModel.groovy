@@ -15,19 +15,14 @@
  */
 package com.github.jk1.license.check
 
-import groovy.transform.EqualsAndHashCode
+import groovy.transform.Canonical
 
-@EqualsAndHashCode
+@Canonical
 class AllowedLicense {
-    String  moduleName, moduleLicense, moduleVersion
-
-    AllowedLicense(String moduleName, String moduleVersion, String moduleLicense) {
-        this.moduleName = moduleName
-        this.moduleVersion = moduleVersion
-        this.moduleLicense = moduleLicense
-    }
+    String moduleName, moduleVersion, moduleLicense
 }
 
+@Canonical
 class Dependency {
     String moduleName, moduleVersion
     List<ModuleLicense> moduleLicenses
@@ -35,20 +30,27 @@ class Dependency {
     Dependency(String moduleName, String moduleVersion, List moduleLicenses) {
         this.moduleName = moduleName
         this.moduleVersion = moduleVersion
-        this.moduleLicenses = moduleLicenses.collect { new ModuleLicense(it.moduleLicense) }
+        this.moduleLicenses = moduleLicenses.collect { new ModuleLicense(it.moduleLicense as String) }
     }
 
-    Dependency(Map dependencies) {
+    Dependency(Map<String, String> dependencies) {
         this.moduleName = dependencies.moduleName
         this.moduleVersion = dependencies.moduleVersion
         this.moduleLicenses = [ new ModuleLicense(dependencies.moduleLicense) ]
     }
+
+    @Override
+    String toString() {
+        return "${moduleName}${moduleVersion ? ':' + moduleVersion : ''} - ${moduleLicenses.sort {it.moduleLicense }}"
+    }
 }
 
+@Canonical
 class ModuleLicense {
     String moduleLicense
 
-    ModuleLicense(String moduleLicense) {
-        this.moduleLicense = moduleLicense
+    @Override
+    String toString() {
+        return moduleLicense
     }
 }

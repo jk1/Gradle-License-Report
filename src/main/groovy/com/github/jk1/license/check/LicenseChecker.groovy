@@ -29,8 +29,16 @@ class LicenseChecker {
         generateNotPassedDependenciesFile(notPassedDependencies, notPassedDependenciesOutputFile)
 
         if (!notPassedDependencies.isEmpty()) {
-            throw new GradleException("Some library licenses are not allowed.\n" +
-                "Read [$notPassedDependenciesOutputFile.path] for more information.")
+            def messages = [
+                    "Some libraries do not declare at least one allowed license:",
+                    "",
+                    *notPassedDependencies.collect {it.toString() }.sort(),
+                    "",
+                    "You may want to review your normalization/transformation bundles or your allowed license rules:",
+                    "- Detailed dependency information available for matching or normalization: [$projectLicensesDataFile]",
+                    "- Possible additional allowed license rules: [$notPassedDependenciesOutputFile]"
+            ]
+            throw new GradleException(messages.join(System.lineSeparator()))
         }
     }
 
@@ -75,9 +83,9 @@ class LicenseChecker {
         // Allow matching to modules with no known licenses via a blank rule
         if (!dependency.moduleLicenses && allowedLicense.moduleLicense == NO_LICENSE_FOUND) return true
 
-        for (moduleLicenses in dependency.moduleLicenses)
-            if (moduleLicenses.moduleLicense ==~ allowedLicense.moduleLicense ||
-                moduleLicenses.moduleLicense == allowedLicense.moduleLicense) return true
+        for (moduleLicense in dependency.moduleLicenses)
+            if (moduleLicense.moduleLicense ==~ allowedLicense.moduleLicense ||
+                moduleLicense.moduleLicense == allowedLicense.moduleLicense) return true
         return false
     }
 
