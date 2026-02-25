@@ -166,11 +166,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod1 - [some-other-license]"
 
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod1"]
         notPassedDependencies.moduleLicense == ["some-other-license"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains only allowed moduleName will pass."() {
@@ -235,10 +236,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod2 - [Apache License, Version 2.0]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod2"]
         notPassedDependencies.moduleLicense == ["Apache License, Version 2.0"]
-        thrown GradleException
     }
 
     def "check when ProjectData only contains allowed moduleName will pass."() {
@@ -346,10 +349,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod2 - [MIT License]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod2"]
         notPassedDependencies.moduleLicense == ["MIT License"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains moduleVersion and allowedLicense has the same will pass."() {
@@ -419,11 +424,13 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod2:1.0 - [MIT License]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod2"]
         notPassedDependencies.moduleLicense == ["MIT License"]
         notPassedDependencies.moduleVersion == ["1.0"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains moduleVersion and allowedLicense with no moduleVersion will pass."() {
@@ -461,7 +468,7 @@ class LicenseCheckerSpec extends Specification {
         noExceptionThrown()
     }
 
-    def "Check when ProjectData contains no license but same moduleName will pass."() {
+    def "check when ProjectData contains no license but same moduleName will pass."() {
 
         allowedLicenseFile << """
         {
@@ -491,7 +498,7 @@ class LicenseCheckerSpec extends Specification {
         noExceptionThrown()
     }
 
-    def "Check when allowedLicenses contains .* in moduleLicense and projectData contain same moduleName will pass."() {
+    def "check when allowedLicenses contains .* in moduleLicense and projectData contain same moduleName will pass."() {
 
         allowedLicenseFile << """
         {
@@ -554,10 +561,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod2 - [Apache License, Version 2.0]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod2"]
         notPassedDependencies.moduleLicense == ["Apache License, Version 2.0"]
-        thrown GradleException
     }
     def "check when ProjectData contains same license and same moduleName will pass."() {
 
@@ -625,10 +634,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod1 - [GNU LESSER GENERAL PUBLIC LICENSE, Version 3]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod1"]
         notPassedDependencies.moduleLicense == ["GNU LESSER GENERAL PUBLIC LICENSE, Version 3"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains different moduleName will fail as expected."() {
@@ -662,10 +673,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod1 - [GNU LESSER GENERAL PUBLIC LICENSE, Version 3]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod1"]
         notPassedDependencies.moduleLicense == ["GNU LESSER GENERAL PUBLIC LICENSE, Version 3"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains same moduleName will pass."() {
@@ -735,10 +748,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod1 - [some-other-license]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod1"]
         notPassedDependencies.moduleLicense == ["some-other-license"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains one different value(moduleName) will fail as expected."() {
@@ -773,10 +788,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod2 - [Apache License, Version 2.0]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod2"]
         notPassedDependencies.moduleLicense == ["Apache License, Version 2.0"]
-        thrown GradleException
     }
 
     def "check when there is nothing in allowedLicenses it will fail as expected."() {
@@ -807,10 +824,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod1 - [Apache License, Version 2.0]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod1"]
         notPassedDependencies.moduleLicense == ["Apache License, Version 2.0"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains multiple licenses and match with one allowed license will pass."() {
@@ -886,10 +905,12 @@ class LicenseCheckerSpec extends Specification {
             allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
+        def e = thrown GradleException
+        e.message.readLines().contains "dummy-group:mod1 - [License1, License2, License3]"
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["dummy-group:mod1", "dummy-group:mod1", "dummy-group:mod1"]
         notPassedDependencies.moduleLicense == ["License1", "License2", "License3"]
-        thrown GradleException
     }
 
     def "check when ProjectData contains no licenses it is treated as allowed with empty license name rule"() {
@@ -944,7 +965,12 @@ class LicenseCheckerSpec extends Specification {
                 allowedLicenseFile, projectDataFile, notPassedDependenciesFile)
 
         then:
-        thrown GradleException
+        def e = thrown GradleException
+        with(e.message.readLines()) {
+            contains "notallowed-group:mod - []"
+            contains "dummy-group:notallowed1 - [some-other-license]"
+        }
+
         def notPassedDependencies = importNotPassedDependencies(notPassedDependenciesFile)
         notPassedDependencies.moduleName == ["notallowed-group:mod", "dummy-group:notallowed1"]
         notPassedDependencies.moduleLicense == ["", "some-other-license"]
