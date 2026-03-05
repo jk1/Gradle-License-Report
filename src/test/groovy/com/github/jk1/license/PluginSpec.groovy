@@ -34,7 +34,7 @@ class PluginSpec extends Specification {
     private final static def supportedVersions = [
             new GradleTestVersion(version: '7.6.6',  minJdk: 8,  maxJdk: 19),
             new GradleTestVersion(version: '8.14.4', minJdk: 8,  maxJdk: 24),
-            new GradleTestVersion(version: '9.3.1',  minJdk: 17, maxJdk: 25),
+            new GradleTestVersion(version: '9.4.1',  minJdk: 17, maxJdk: 26),
     ]
 
     private final static def unsupportedVersions = [
