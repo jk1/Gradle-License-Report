@@ -15,7 +15,12 @@
  */
 package com.github.jk1.license.render
 
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
+
 class InventoryHtmlReportRendererSpec extends AbstractInventoryReportRendererSpec {
+    @Snapshot(extension = 'html')
+    Snapshotter snapshotter
 
     def "check the correct generation of html"() {
         def renderer = new InventoryHtmlReportRenderer(outputFile.name, "name", overrides)

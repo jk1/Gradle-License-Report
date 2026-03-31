@@ -15,7 +15,12 @@
  */
 package com.github.jk1.license.render
 
+import spock.lang.Snapshot
+import spock.lang.Snapshotter
+
 class InventoryMarkdownReportRendererSpec extends AbstractInventoryReportRendererSpec {
+    @Snapshot(extension = 'md')
+    Snapshotter snapshotter
 
     def "check the correct generation of markdown"() {
         def renderer = new InventoryMarkdownReportRenderer(outputFile.name, "name", overrides)
