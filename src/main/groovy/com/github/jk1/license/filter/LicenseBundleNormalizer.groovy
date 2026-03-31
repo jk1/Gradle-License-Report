@@ -168,7 +168,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         String module = dependency.group + ':' + dependency.name + ':' + dependency.version
         LOGGER.debug("Checking module {} (normalize pom)", module)
         dependency.poms.forEach { pom ->
-            List<License> normalizedLicense = pom.licenses.collect { normalizePomLicense(transformationRuleMatchers, it, module) }.flatten()
+            List<License> normalizedLicense = pom.licenses.collectMany { normalizePomLicense(transformationRuleMatchers, it, module) }
             pom.licenses.clear()
             pom.licenses.addAll(normalizedLicense)
         }
@@ -177,9 +177,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
                                   ModuleData dependency) {
         String module = dependency.group + ':' + dependency.name + ':' + dependency.version
         LOGGER.debug("Checking module {} (normalize manifest)", module)
-        List<ManifestData> normalizedManifests = dependency.manifests.collect {
-            normalizeManifestLicense(transformationRuleMatchers, it, module)
-        }.flatten()
+        List<ManifestData> normalizedManifests = dependency.manifests.collectMany {normalizeManifestLicense(transformationRuleMatchers, it, module) }
         dependency.manifests.clear()
         dependency.manifests.addAll(normalizedManifests)
     }
@@ -188,8 +186,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
         String module = dependency.group + ':' + dependency.name + ':' + dependency.version
         LOGGER.debug("Checking module {} (normalize license file details)", module)
         dependency.licenseFiles.forEach { licenseFile ->
-            List<LicenseFileDetails> normalizedDetails =
-                licenseFile.fileDetails.collect { normalizeLicenseFileDetailsLicense(transformationRuleMatchers, it, module) }.flatten()
+            List<LicenseFileDetails> normalizedDetails = licenseFile.fileDetails.collectMany { normalizeLicenseFileDetailsLicense(transformationRuleMatchers, it, module) }
             licenseFile.fileDetails.clear()
             licenseFile.fileDetails.addAll(normalizedDetails)
         }
@@ -197,9 +194,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     protected def normalizeImportedModuleBundle(List<NormalizerTransformationRuleMatcher> transformationRuleMatchers,
                                               ImportedModuleBundle importedModuleBundle) {
-        List<ModuleData> normalizedModuleData = importedModuleBundle.modules.collect {
-            normalizeModuleData(transformationRuleMatchers, it)
-        }.flatten()
+        List<ImportedModuleData> normalizedModuleData = importedModuleBundle.modules.collectMany {normalizeModuleData(transformationRuleMatchers, it) }
         importedModuleBundle.modules.clear()
         importedModuleBundle.modules.addAll(normalizedModuleData)
     }
