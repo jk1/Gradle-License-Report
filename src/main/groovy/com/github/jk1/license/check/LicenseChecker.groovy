@@ -41,9 +41,9 @@ class LicenseChecker {
 
     private void generateNotPassedDependenciesFile(
         List<Dependency> notPassedDependencies, File notPassedDependenciesOutputFile) {
-        notPassedDependenciesOutputFile.text =
-            JsonOutput.prettyPrint(JsonOutput.toJson(
-                ["dependenciesWithoutAllowedLicenses": notPassedDependencies.collect { toAllowedLicenseList(it) }.flatten()]))
+        notPassedDependenciesOutputFile.text = JsonOutput.prettyPrint(JsonOutput.toJson([
+                "dependenciesWithoutAllowedLicenses": notPassedDependencies.collectMany { toAllowedLicenseList(it) }
+        ]))
     }
 
     private boolean isDependencyHasAllowedLicense(Dependency dependency, List<AllowedLicense> allowedLicenses) {
