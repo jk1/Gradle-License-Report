@@ -20,6 +20,7 @@ import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.task.ReportTask
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.logging.Logger
@@ -53,31 +54,27 @@ class ProjectReader {
         return data
     }
 
-    private Set<Configuration> findConfigurationsToScan(GradleProject project) {
-        Set<Configuration> toScan
+    private NamedDomainObjectSet<Configuration> findConfigurationsToScan(GradleProject project) {
         if (configurations == null) {
             LOGGER.info("No configurations defined, falling back to the default ones")
             configurations = project.getPlugins().hasPlugin('com.android.application') ? ['releaseRuntimeClasspath'] : ['runtimeClasspath']
         }
+        Set<Configuration> toScan
         if (configurations.length == 0) {
             LOGGER.info("Using all resolvable configurations")
-            toScan = findResolvableConfigurations(project)
+            toScan = project.configurations.matching { it.canBeResolved }
         } else {
-            toScan = findConfiguredConfigurations(project)
-            Set<Configuration> unresolvable = findUnresolvable(toScan)
-            if (unresolvable) {
+            toScan = project.configurations.matching { it -> it.name in configurations }
+            Set<Configuration> unresolvable = toScan.matching { !it.canBeResolved }
+            if (!unresolvable.empty) {
                 throw new UnresolvableConfigurationException("Unable to resolve configurations: $unresolvable")
             }
         }
         toScan
     }
 
-    private static Set<Configuration> findResolvableConfigurations(GradleProject project) {
-        project.configurations.findAll { config -> isResolvable(config) }
-    }
-
-    private static Set<Configuration> getAllExtendedConfigurations(Collection<Configuration> configurationsToScan) {
-        configurationsToScan.collect { it.extendsFrom }.flatten().findAll { config -> isResolvable(config) }.toSet()
+    private static Set<Configuration> withExtendsFrom(NamedDomainObjectSet<Configuration> configurationsToScan) {
+        configurationsToScan + configurationsToScan.collectMany { it.extendsFrom.findAll { it.canBeResolved } }.toSet()
     }
 
     private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, GradleProject project) {
@@ -88,21 +85,12 @@ class ProjectReader {
     }
 
     private List<ConfigurationData> readProjects(GradleProject[] projectsToScan) {
-        List<ConfigurationData> readConfigurations = projectsToScan.collect { subProject ->
-            Set<Configuration> configurationsToScan = findConfigurationsToScan(subProject)
-            configurationsToScan.addAll(getAllExtendedConfigurations(configurationsToScan))
+        List<ConfigurationData> readConfigurations = projectsToScan.collectMany { subProject ->
+            Set<Configuration> configurationsToScan = withExtendsFrom(findConfigurationsToScan(subProject))
             LOGGER.info("Configurations(${subProject.name}): ${configurationsToScan.join(',')}")
             readConfigurationData(configurationsToScan, subProject)
-        }.flatten()
+        }
         mergeConfigurationDataWithSameName(readConfigurations)
-    }
-
-    private Set<Configuration> findConfiguredConfigurations(GradleProject project) {
-        project.configurations.findAll { config -> config.name in configurations }
-    }
-
-    private static Set<Configuration> findUnresolvable(Set<Configuration> toScan) {
-        toScan.findAll { config -> !isResolvable(config) }
     }
 
     private static List<ConfigurationData> mergeConfigurationDataWithSameName(Collection<ConfigurationData> configData) {
@@ -121,9 +109,5 @@ class ProjectReader {
             merged.dependencies.addAll(it.dependencies)
         }
         merged
-    }
-
-    static boolean isResolvable(Configuration config) {
-        config.hasProperty("canBeResolved") && config.canBeResolved
     }
 }

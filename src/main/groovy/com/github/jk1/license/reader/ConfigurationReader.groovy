@@ -42,7 +42,7 @@ class ConfigurationReader {
         ConfigurationData data = new ConfigurationData()
         data.name = configuration.name
 
-        if (!isResolvable(configuration)) {
+        if (!configuration.canBeResolved) {
             LOGGER.info("Skipping configuration [$configuration] as it can't be resolved")
             return data
         }
