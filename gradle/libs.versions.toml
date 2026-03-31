@@ -1,6 +1,6 @@
 [versions]
 gradlePluginPublish = "2.1.1"
-licensePlugin = "0.16.1"
+spotlessPlugin = "8.4.0"
 junit = "5.14.3"
 spock = "2.4-groovy-3.0"
 
@@ -15,4 +15,4 @@ spock-core = { module = "org.spockframework:spock-core" }
 
 [plugins]
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradlePluginPublish" }
-license = { id = "com.github.hierynomus.license", version.ref = "licensePlugin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotlessPlugin" }
