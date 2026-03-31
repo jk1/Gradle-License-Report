@@ -1,7 +1,7 @@
 [versions]
-gradlePluginPublish = "2.0.0"
+gradlePluginPublish = "2.1.1"
 licensePlugin = "0.16.1"
-junit = "5.14.2"
+junit = "5.14.3"
 spock = "2.4-groovy-3.0"
 
 [libraries]
