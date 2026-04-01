@@ -1,7 +1,7 @@
 [versions]
 gradlePluginPublish = "2.1.1"
 spotlessPlugin = "8.4.0"
-junit = "5.14.3"
+junit = "6.0.3"
 spock = "2.4-groovy-3.0"
 
 [libraries]
