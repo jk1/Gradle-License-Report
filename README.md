@@ -34,7 +34,7 @@ Then run `./gradlew generateLicenseReport` to generate your report in `build/rep
 |---------|------------------------|----------------------------|-------------------------|
 | **3.x** | Maintained             | 7.x → 9.x [*](#gradle-9)   | 8+ [*][1]               |
 | **2.x** | EOL @ `version "2.9"`  | 7.x → 9.x [*](#gradle-9)   | 8+ [*][1]               |
-| **1.x** | EOL @ `version "1.17"` | 3.x → 6.x [*](#gradle-678) | 8+ [*][1]               |
+| **1.x** | EOL @ `version "1.19"` | 3.x → 6.x [*](#gradle-678) | 8+ [*][1]               |
 
 Notes:
 - [Gradle configuration cache][2] is not currently supported correctly.
