@@ -10,23 +10,31 @@ group = 'com.github.jk1'
 version = '3.1.2-SNAPSHOT'  // x-release-please-version
 ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
-def targetJdkVersion = '8'
-def defaultToolchainJdkVersion = '17'
+def targetJdkVersion = 8
+def defaultToolchainJdkVersion = JavaLanguageVersion.of(17)
+def testToolchainJdkVersion = providers.gradleProperty("testToolchainJdkVersion")
+        .map(JavaLanguageVersion::of)
+        .orElse(defaultToolchainJdkVersion)
+
+logger.lifecycle("Build targets JDK $targetJdkVersion using JDK $defaultToolchainJdkVersion for compile (testing with JDK ${testToolchainJdkVersion.get()})")
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(defaultToolchainJdkVersion)
+        languageVersion = defaultToolchainJdkVersion
     }
 }
 
-tasks.withType(AbstractCompile).configureEach {
+tasks.withType(GroovyCompile).configureEach {
     // Groovy compiler does not support -release flags and ignores it
     // see https://github.com/gradle/gradle/issues/15703 and https://issues.apache.org/jira/browse/GROOVY-11105
     sourceCompatibility = targetJdkVersion
     targetCompatibility = targetJdkVersion
+    options.release = targetJdkVersion
+}
 
+tasks.withType(JavaCompile).configureEach {
     // Despite being a Groovy plugin, this is needed to ensure correct java module metadata is generated
-    options.release = targetJdkVersion.toInteger()
+    options.release = targetJdkVersion
 }
 
 /**
@@ -89,10 +97,9 @@ test {
 
     outputs.upToDateWhen { false }
     reports.html.required = true
-    reports.junitXml.required = System.getenv("CI") != null
 
     javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(System.getenv("TEST_JAVA_VERSION") ?: defaultToolchainJdkVersion)
+        languageVersion = testToolchainJdkVersion
     }
     doFirst {
         logger.lifecycle("Testing with Java version: " + javaLauncher.get().metadata.languageVersion)
