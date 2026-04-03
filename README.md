@@ -1,5 +1,6 @@
 # Gradle License Report
 
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/com.github.jk1.dependency-license-report)](https://plugins.gradle.org/plugin/com.github.jk1.dependency-license-report)
 [![Build Status](https://github.com/jk1/Gradle-License-Report/actions/workflows/test.yml/badge.svg)](https://github.com/jk1/Gradle-License-Report/actions/workflows/test.yml?query=branch%3Amaster)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/license/apache-2-0)
 
