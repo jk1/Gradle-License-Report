@@ -40,9 +40,7 @@ jobs:
         uses: gradle/actions/setup-gradle@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v6.0.1
 
       - name: Build with Gradle
-        env:
-          TEST_JAVA_VERSION: ${{ matrix.test-java-version }}
-        run: ./gradlew build publishToMavenLocal
+        run: ./gradlew -PtestToolchainJdkVersion=${{ matrix.test-java-version }} build publishToMavenLocal
 
       - name: Problems Report
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

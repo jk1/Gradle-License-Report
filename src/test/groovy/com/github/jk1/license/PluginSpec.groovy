@@ -15,7 +15,6 @@
  */
 package com.github.jk1.license
 
-import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -25,33 +24,12 @@ import spock.lang.Snapshot
 import spock.lang.Snapshotter
 import spock.lang.Specification
 import spock.lang.TempDir
-import spock.lang.Unroll
-import spock.util.environment.Jvm
 
 import static com.github.jk1.license.AbstractGradleRunnerFunctionalSpec.fixPathForBuildFile
 
 class PluginSpec extends Specification {
     @Snapshot(extension = 'json')
     Snapshotter snapshotter
-
-    // See https://endoflife.date/gradle and/or https://docs.gradle.org/current/userguide/compatibility.html
-    private final static def supportedVersions = [
-            new GradleTestVersion(version: '7.6.6',  minJdk: 8,  maxJdk: 19),
-            new GradleTestVersion(version: '8.14.4', minJdk: 8,  maxJdk: 24),
-            new GradleTestVersion(version: '9.4.1',  minJdk: 17, maxJdk: 26),
-    ]
-
-    private final static def unsupportedVersions = [
-            new GradleTestVersion(version: '5.6.4',  minJdk: 8, maxJdk: 12),
-            new GradleTestVersion(version: '6.9.4',  minJdk: 8, maxJdk: 16),
-    ]
-
-    static class GradleTestVersion {
-        String version
-        int minJdk
-        int maxJdk
-        def jdkNotInSupportedRange(Jvm jvm) { !(minJdk..maxJdk).contains(JavaVersion.toVersion(jvm.javaSpecificationVersion).majorVersion.toInteger()) }
-    }
 
     @TempDir
     File testProjectDir
@@ -101,8 +79,6 @@ class PluginSpec extends Specification {
         project.licenseReport
     }
 
-    @Unroll
-    @IgnoreIf(value = { (data.gradle as GradleTestVersion).jdkNotInSupportedRange(jvm) }, reason = "Java version is not supported by gradle version")
     def "run plugin with gradle #gradle.version"(GradleTestVersion gradle) {
         when:
         def runResult = runGradle(gradle.version)
@@ -114,11 +90,10 @@ class PluginSpec extends Specification {
         snapshotter.assertThat(licenseResultJsonFile.text).matchesSnapshot()
 
         where:
-        gradle << supportedVersions
+        gradle << GradleTestVersion.supportedVersionsForCurrentJvm
     }
 
-    @Unroll
-    @IgnoreIf(value = { (data.gradle as GradleTestVersion).jdkNotInSupportedRange(jvm) }, reason = "Java version is not supported by gradle version")
+    @IgnoreIf(value = { GradleTestVersion.unsupportedVersionsForCurrentJvm.empty }, reason = "Java version has no testable unsupported Gradle versions")
     def "the plugin doesn't start if the required gradle-version is not met (#gradle.version)"(GradleTestVersion gradle) {
         when:
         runGradle(gradle.version)
@@ -128,7 +103,7 @@ class PluginSpec extends Specification {
         ex.message.contains("License Report Plugin requires Gradle")
 
         where:
-        gradle << unsupportedVersions
+        gradle << GradleTestVersion.unsupportedVersionsForCurrentJvm
     }
 
     private def runGradle(String gradleVersion) {
