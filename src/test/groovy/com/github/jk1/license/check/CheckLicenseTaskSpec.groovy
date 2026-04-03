@@ -680,7 +680,6 @@ class CheckLicenseTaskSpec extends Specification {
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
     }
 
-    @PendingFeature(reason = "configuration cache not yet supported correctly due to https://github.com/jk1/Gradle-License-Report/issues/255")
     def "using it with configuration cache should not cause the build to fail"() {
         given:
         buildFile << """
@@ -697,6 +696,7 @@ class CheckLicenseTaskSpec extends Specification {
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
+        buildResult.output.contains("3 problems were found storing the configuration cache")
     }
 
     def "loading allowed licenses from remote URI TextResource should be possible"() {

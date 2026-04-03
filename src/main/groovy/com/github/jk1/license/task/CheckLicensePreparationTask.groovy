@@ -26,6 +26,7 @@ class CheckLicensePreparationTask extends DefaultTask {
     CheckLicensePreparationTask() {
         group = "CheckingPreparation"
         description = "Prepare for checkLicense"
+        notCompatibleWithConfigurationCache("com.github.jk1:gradle-license-report is not configuration-cache compatible")
     }
 
     @Nested
