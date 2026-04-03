@@ -71,11 +71,6 @@ spotless {
         licenseHeader(prefixNotice("/*\n", " * ", "\n */\n"))
     }
 
-    format 'json', {
-        target 'src/**/*.json'
-        licenseHeader(prefixNotice("/**\n", " * ", "\n */\n"), /^\s*\{/)
-    }
-
     format 'xml', {
         target 'src/**/*.xml'
         licenseHeader(prefixNotice("<!--\n\n", "    ", "\n\n-->\n"), /^\s*<[a-zA-Z]/).skipLinesMatching(/^\s*<\?xml/)
