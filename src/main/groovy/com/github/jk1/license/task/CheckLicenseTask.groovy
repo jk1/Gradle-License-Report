@@ -40,6 +40,7 @@ class CheckLicenseTask extends DefaultTask {
     CheckLicenseTask() {
         group = 'Checking'
         description = 'Check if License could be used'
+        notCompatibleWithConfigurationCache("com.github.jk1:gradle-license-report is not configuration-cache compatible")
     }
 
     @Nested
