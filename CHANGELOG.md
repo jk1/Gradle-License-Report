@@ -1,5 +1,24 @@
 # Changelog
 
+## 3.1.2 (2026-04-03)
+
+## What's Changed
+* #313 Use Artifact Resolution Query to retrieve POM files by @Vampire in https://github.com/jk1/Gradle-License-Report/pull/314
+* chore: improve Maven metadata during plugin publishing by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/379
+* test: sanity check built plugin via existing sample projects by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/378
+* Improve snapshot testing by @Vampire in https://github.com/jk1/Gradle-License-Report/pull/380
+* build: bump & pin GitHub actions for improved security posture by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/385
+* test: test with Gradle 9.4.1 by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/382
+* chore(master): release 3.1.2-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/377
+* fix: correct gradle 9 deprecations on use of NamedDomainObjectSet.findAll by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/384
+* fix: improve checkLicense failure message to include reasons by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/381
+* chore: fix spotless json file copyright notice complaints by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/388
+* build: simplify and use Gradle property to specify the test JDK version by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/389
+* chore: mark CheckLicense tasks as not CC compatible by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/390
+
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.1.1...v3.1.2
+
 ## 3.1.1 (2026-02-17)
 
 ## What's Changed
