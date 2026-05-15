@@ -37,7 +37,7 @@ class GradleTestVersion {
      */
     private final static def unsupportedVersions = [
             new GradleTestVersion(version: '5.6.4', minJdk: 8, maxJdk: 12),
-            new GradleTestVersion(version: '6.9.4', minJdk: 8, maxJdk: 16),
+            new GradleTestVersion(version: '6.9.4', minJdk: 8, maxJdk: 15),
     ]
 
     final static def supportedVersionsForCurrentJvm =
