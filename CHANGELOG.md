@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.1.3 (2026-05-15)
+
+## What's Changed
+* chore(master): release 3.1.3-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/391
+* test: test against Gradle 9.5.0 by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/395
+* build(deps): bump the actions-deps group with 3 updates by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/397
+* build(deps): bump com.gradle.develocity from 4.4.0 to 4.4.1 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/396
+* build(deps): bump gradle to 8.14.5 by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/398
+
+## New Contributors
+* @dependabot[bot] made their first contribution in https://github.com/jk1/Gradle-License-Report/pull/397
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.1.2...v3.1.3
+
 ## 3.1.2 (2026-04-03)
 
 ## What's Changed
