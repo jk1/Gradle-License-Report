@@ -729,8 +729,6 @@ class LicenseBundleNormalizerSpec extends Specification {
                     module("mod1") {
                         manifest("mani1") {
                             license(name: "MIT License", url: "https://opensource.org/licenses/MIT")
-                        }
-                        manifest("mani1") {
                             license(name: "Apache License, Version 2.0", url: "https://www.apache.org/licenses/LICENSE-2.0")
                         }
                     }

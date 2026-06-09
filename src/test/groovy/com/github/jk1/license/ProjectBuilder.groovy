@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license
 
+import com.github.jk1.license.render.RawProjectDataJsonRenderer
 import com.github.jk1.license.util.Files
 import groovy.json.JsonBuilder
 
@@ -151,7 +152,6 @@ class ProjectBuilder extends BuilderSupport {
             version: "dummy-mani-version",
             description: "dummy-mani-desc",
             vendor: "dummy-mani-vendor",
-            license: "Apache 2.0",
             url: url
         )
 
@@ -183,11 +183,8 @@ class ProjectBuilder extends BuilderSupport {
         } else if (current instanceof ManifestData) {
             if (license != null)
                 addManifestLicense(license)
-            else {
-                if (map['name'])
-                    current.license = map['name']
-                if (map['url'])
-                    current.licenseUrl = map['url']
+            else if (map['name'] || map['url']) {
+                ((ManifestData)current).licenses << new License(name: map['name'], url: map['url'])
             }
         } else {
             throw new IllegalAccessException("current must be PomData or ManifestData not $current")
@@ -220,22 +217,15 @@ class ProjectBuilder extends BuilderSupport {
     }
     
     private String addManifestLicense(Object license) {
-        ManifestData manifest = (ManifestData)current
-        String licenseText
-
+        def manifest = current as ManifestData
         if (license instanceof License) {
-            licenseText = ((License)license).name
+            manifest.licenses << license
+        } else if (license instanceof String && Files.maybeLicenseUrl(license)) {
+            manifest.licenses << new License(url: license)
         } else if (license instanceof String) {
-            licenseText = license.toString()
+            manifest.licenses << new License(name: license)
         } else {
             throw new IllegalArgumentException("license must be a License or a String but is $license")
-        }
-        if (Files.maybeLicenseUrl(licenseText)) {
-            manifest.license = null // initialized to "Apache 2.0" above
-            manifest.licenseUrl = licenseText
-        }
-        else {
-            manifest.license = licenseText
         }
     }
 
@@ -243,7 +233,6 @@ class ProjectBuilder extends BuilderSupport {
         license.name = map.name ?: license.name
         license.url = map.url ?: license.url
     }
-
 
     static License cloneLicense(License license) {
         new License(
@@ -253,8 +242,8 @@ class ProjectBuilder extends BuilderSupport {
     }
 
     static String json(ProjectData data) {
-        def configurationsString = new JsonBuilder(data.configurations).toPrettyString()
-        def importedModulesString = new JsonBuilder(data.importedModules).toPrettyString()
+        def configurationsString = new JsonBuilder(data.configurations, RawProjectDataJsonRenderer.GENERATOR).toPrettyString()
+        def importedModulesString = new JsonBuilder(data.importedModules, RawProjectDataJsonRenderer.GENERATOR).toPrettyString()
 
         """{
 "configurations": [
@@ -267,6 +256,6 @@ $configurationsString
     }
 
     static String json(Object data) {
-        new JsonBuilder(data).toPrettyString()
+        new JsonBuilder(data, RawProjectDataJsonRenderer.GENERATOR).toPrettyString()
     }
 }

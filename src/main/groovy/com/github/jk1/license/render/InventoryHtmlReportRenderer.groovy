@@ -17,8 +17,6 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
 class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
@@ -273,13 +271,12 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
         if (manifest.url && !projectUrlDone) {
             output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
         }
-        if (manifest.license) {
-            if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
-                output << section("Manifest License", "${manifest.license} - ${Files.maybeLicenseUrl(manifest.licenseUrl) ? link(manifest.licenseUrl, manifest.licenseUrl) : section("License", manifest.licenseUrl)}")
-            } else if (manifest.hasPackagedLicense) {
-                output << sectionLink("Packaged License File", manifest.license, manifest.url)
+        manifest.licenses.each { License license ->
+            if (!license.name) return
+            if (Files.isPackagedLicenseFile(config.absoluteOutputDir, license.url)) {
+                output << sectionLink("Packaged License File", license.name, license.url)
             } else {
-                output << section("Manifest License", "${manifest.license} (Not Packaged)")
+                output << section("Manifest License", license.name + (Files.maybeLicenseUrl(license.url) ? " - " + link(license.url, license.url) : ""))
             }
         }
     }
@@ -324,9 +321,4 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
     private GString sectionLink(String label, String name, String url) {
         section(label, link(name, url))
     }
-
-    private String safeGet(String[] arr, int index) {
-        arr.length > index ? arr[index] : null
-    }
-
 }

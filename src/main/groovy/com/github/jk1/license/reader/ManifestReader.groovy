@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.reader
 
+import com.github.jk1.license.License
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.task.ReportTask
@@ -56,12 +57,16 @@ class ManifestReader {
                 Manifest mf = lookupManifest(artifact.file)
                 if (mf) {
                     ManifestData data = manifestToData(mf)
-                    def path = findLicenseFile(artifact.file, data.license)
-                    if (path != null){
-                        data.hasPackagedLicense = true
-                        File dest = new File(config.absoluteOutputDir, "${artifact.file.name}/${data.license}.html")
-                        data.url="${artifact.file.name}/${data.license}.html"
-                        writeLicenseFile(artifact.file, path, dest)
+                    data.licenses.each { License license ->
+                        if (!license.name) return
+                        def path = findLicenseFile(artifact.file, license.name)
+                        if (path != null) {
+                            data.hasPackagedLicense = true
+                            String relativeUrl = "${artifact.file.name}/${license.name}.html"
+                            data.licenses.remove(license)
+                            data.licenses << new License(name: license.name, url: relativeUrl)
+                            writeLicenseFile(artifact.file, path, new File(config.absoluteOutputDir, relativeUrl))
+                        }
                     }
                     return data
                 }
@@ -71,11 +76,11 @@ class ManifestReader {
         return null
     }
 
-    private Manifest lookupManifest(File file) {
-        try {
-            return new JarFile(file).manifest
+    private Manifest lookupManifest(File artifactFile) {
+        try (JarFile jarFile = new JarFile(artifactFile)) {
+            return jarFile.manifest
         } catch (Exception e) {
-            LOGGER.info("No manifest found for file: $file", e)
+            LOGGER.info("No manifest found for file: $artifactFile", e)
             return null
         }
     }
@@ -89,29 +94,71 @@ class ManifestReader {
         data.name = attr.getValue('Bundle-Name') ?: attr.getValue('Implementation-Title') ?: attr.getValue('Bundle-SymbolicName')
         data.version = attr.getValue('Bundle-Version') ?: attr.getValue('Implementation-Version') ?: attr.getValue('Specification-Version')
         data.description = attr.getValue('Bundle-Description')
-        String bundleLicense = attr.getValue('Bundle-License')
         data.vendor = attr.getValue('Bundle-Vendor') ?: attr.getValue('Implementation-Vendor')
         data.url = attr.getValue('Bundle-DocURL')
-        if (Files.maybeLicenseUrl(bundleLicense)) {
-			def allLicenseParts = bundleLicense.split(';')
-            data.licenseUrl = allLicenseParts[0]
-			allLicenseParts.each {
-				def additionalParameter = it.split('=')
-
-				if (additionalParameter[0] == 'description')
-					data.license = additionalParameter[1]
-			}
-        }
-        else {
-            data.license = bundleLicense
-        }
+        data.licenses += bundleLicenses(attr.getValue('Bundle-License'))
         LOGGER.info("Returning manifest data: " + data.dump())
         return data
     }
 
-    private String findLicenseFile(File artifactFile, String licenseFileName) {
+    /**
+     * Parses the OSGi `Bundle-License` header, which may contain multiple licenses.
+     *
+     *   Bundle-License ::= '<<EXTERNAL>>' |
+     *                         ( license ( ',' license ) * )
+     *   license        ::= license-identifier ( ';' license-attr ) *
+     *   license-attr   ::= description | link
+     *   description    ::= 'description' '=' string
+     *   link           ::= 'link' '=' <url>
+     */
+    private List<License> bundleLicenses(String bundleLicenseHeader) {
+        if (!bundleLicenseHeader) return []
+
         try {
-            ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
+            def licenses = OsgiHeader.parse(bundleLicenseHeader)
+                    .collect { clauseToLicense(it) }
+                    .findAll()
+
+            return licenseDidntParseCleanly(bundleLicenseHeader, licenses)
+                    ? [new License(name: bundleLicenseHeader)]
+                    : licenses
+        } catch (Exception e) {
+            LOGGER.warn("Failed to parse Bundle-License header: $bundleLicenseHeader", e)
+            return []
+        }
+    }
+
+    private static License clauseToLicense(OsgiHeader.Clause clause) {
+        String name = clause.names.find()
+        String link = clause.attributes.link
+        String description = clause.attributes.description
+
+        // only use description as a fallback name
+        def license = new License(name: Files.maybeLicenseUrl(name) ? description : name)
+
+        // Prefer url from any link attribute; else check the name
+        if (Files.maybeLicenseUrl(link)) {
+            license.url = link
+        } else if (Files.maybeLicenseUrl(name)) {
+            license.url = name
+        }
+
+        license.name == null && license.url == null ? null : license
+    }
+
+    /**
+     * If the license header had a comma-space, but none of the licenses appear to represent URLs; conclude
+     * that something is probably not strictly compliant with the spec, and a raw license name value is
+     * probably present. This will fail to parse a header like `Apache-2.0, MIT` as two separate licenses,
+     * so may need to be re-evaluated if this becomes more common. An example license that fails to parse
+     * sensibly from its `Bundle-License` with strict parsing was `org.freemarker:freemarker:2.3.34`.
+     */
+    private static licenseDidntParseCleanly(String bundleLicenseHeader, List<License> licenses) {
+        bundleLicenseHeader.contains(", ") && licenses.every { !it.url }
+    }
+
+    private String findLicenseFile(File artifactFile, String licenseFileName) {
+        try (ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)) {
             return [
                     "/$licenseFileName",
                     "/META-INF/$licenseFileName",
@@ -128,8 +175,7 @@ class ManifestReader {
     }
 
     private void writeLicenseFile(File artifactFile, String licenseFileName, File destinationFile) {
-        try {
-            ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)
+        try (ZipFile file = new ZipFile(artifactFile, ZipFile.OPEN_READ)) {
             ZipEntry entry = file.getEntry(licenseFileName)
             destinationFile.parentFile.mkdirs()
             destinationFile.text = file.getInputStream(entry).text

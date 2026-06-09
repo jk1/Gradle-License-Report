@@ -86,9 +86,11 @@ class InventoryReportRenderer implements ReportRenderer {
             boolean anyLicense = false
 
             for (ManifestData manifestData : module.manifests) {
-                if (manifestData.license && Files.maybeLicenseUrl(manifestData.licenseUrl)) {
-                    anyLicense = true
-                    addModule(inventory, manifestData.license, module)
+                for (License license : manifestData.licenses) {
+                    if (license.name && Files.maybeLicenseUrl(license.url)) {
+                        anyLicense = true
+                        addModule(inventory, license.name, module)
+                    }
                 }
             }
 
@@ -212,13 +214,12 @@ class InventoryReportRenderer implements ReportRenderer {
         if (manifest.url && !projectUrlDone) {
             output << "  - Manifest Project URL:\n    - ${manifest.url}\n"
         }
-        if (manifest.license) {
-            if (manifest.license.startsWith("http")) {
-                output << "  - Manifest license URL:\n    - ${manifest.license}\n"
-            } else if (manifest.hasPackagedLicense) {
-                output << "  - Packaged License File:\n    - ${manifest.license}\n"
+        manifest.licenses.each { License license ->
+            if (!license.name) return
+            if (Files.isPackagedLicenseFile(config.absoluteOutputDir, license.url)) {
+                output << "  - Packaged License File:\n    - ${license.name}\n"
             } else {
-                output << "  - Manifest License:\n    - ${manifest.license} (Not Packaged)\n"
+                output << "  - Manifest License:\n    - ${Files.maybeLicenseUrl(license.url) ? license.url : license.name}\n"
             }
         }
     }
@@ -252,7 +253,8 @@ class InventoryReportRenderer implements ReportRenderer {
         output << "\n\n"
     }
 
-    private String safeGet(String[] arr, int index) {
+    @SuppressWarnings('GrMethodMayBeStatic')
+    protected String safeGet(String[] arr, int index) {
         arr.length > index ? arr[index] : null
     }
 

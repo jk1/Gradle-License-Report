@@ -46,7 +46,7 @@ class ProjectData {
     Set<ConfigurationData> configurations = new TreeSet<ConfigurationData>()
     List<ImportedModuleBundle> importedModules = new ArrayList<ImportedModuleBundle>()
     Set<ModuleData> getAllDependencies() {
-        new TreeSet<ModuleData>(configurations*.dependencies.flatten())
+        new TreeSet<ModuleData>(configurations*.dependencies.flatten() as List<ModuleData>)
     }
 }
 
@@ -69,11 +69,17 @@ class ModuleData {
     boolean isEmpty() { manifests.isEmpty() && poms.isEmpty() && licenseFiles.isEmpty() }
 }
 
-@Sortable
+@Sortable(includes = ["name", "version"])
 @Canonical
 class ManifestData {
-    String name, version, description, vendor, url, license, licenseUrl
+    String name, version, description, vendor, url
+    Set<License> licenses = new TreeSet<License>()
     boolean hasPackagedLicense
+
+    /** @deprecated Since 3.1.0, for removal. Use {@link #licenses} instead. Returns the name of the first license for backward compatibility. */
+    @Deprecated String getLicense() { licenses.find { true }?.name }
+    /** @deprecated Since 3.1.0, for removal. Use {@link #licenses} instead. Returns the URL of the first license for backward compatibility. */
+    @Deprecated String getLicenseUrl() { licenses.find { true }?.url }
 }
 
 @Canonical

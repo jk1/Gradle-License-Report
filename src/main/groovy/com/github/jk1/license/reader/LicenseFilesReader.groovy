@@ -46,7 +46,7 @@ class LicenseFilesReader {
         switch (fileExtension) {
             case "zip":
             case "jar":
-                Collection<String> files = readLicenseFiles(artifact, new ZipFile(artifact.file, ZipFile.OPEN_READ))
+                Collection<String> files = readLicenseFiles(artifact.file)
                 if (files.isEmpty()) return null
 
                 def data = new LicenseFileData()
@@ -60,32 +60,34 @@ class LicenseFilesReader {
         }
     }
 
-    private Collection<String> readLicenseFiles(ResolvedArtifact artifact, ZipFile zipFile) {
-        Set<String> licenseFileBaseNames = [
-                "license",
-                "readme",
-                "notice",
-                "copying",
-                "copying.lesser",
-                "about"
-        ]
-        Set<ZipEntry> entryNames = zipFile.entries().toList().findAll { ZipEntry entry ->
-            String name = entry.getName()
-            String baseName = substringAfterLast(name, "/") ?: name
-            String fileExtension = Files.getExtension(baseName)
-            if (fileExtension?.equalsIgnoreCase("class")) return null // Skip class files
-            if (fileExtension) baseName -= ".$fileExtension"
-            return licenseFileBaseNames.find { it.equalsIgnoreCase(baseName) }
-        }
-        if (!entryNames) return Collections.emptyList()
-        return entryNames.collect { ZipEntry entry ->
-            String entryName = entry.name
-            if (!entryName.startsWith("/")) entryName = "/$entryName"
-            String path = "${artifact.file.name}${entryName}"
-            File file = new File(config.absoluteOutputDir, path)
-            file.parentFile.mkdirs()
-            file.text = zipFile.getInputStream(entry).text
-            return path
+    private Collection<String> readLicenseFiles(File file) {
+        try (ZipFile zipFile = new ZipFile(file, ZipFile.OPEN_READ)) {
+            Set<String> licenseFileBaseNames = [
+                    "license",
+                    "readme",
+                    "notice",
+                    "copying",
+                    "copying.lesser",
+                    "about"
+            ]
+            Set<ZipEntry> entryNames = zipFile.entries().toList().findAll { ZipEntry entry ->
+                String name = entry.getName()
+                String baseName = substringAfterLast(name, "/") ?: name
+                String fileExtension = Files.getExtension(baseName)
+                if (fileExtension?.equalsIgnoreCase("class")) return null // Skip class files
+                if (fileExtension) baseName -= ".$fileExtension"
+                return licenseFileBaseNames.find { it.equalsIgnoreCase(baseName) }
+            }
+            if (!entryNames) return Collections.emptyList()
+            return entryNames.collect { ZipEntry entry ->
+                String entryName = entry.name
+                if (!entryName.startsWith("/")) entryName = "/$entryName"
+                String path = "${file.name}${entryName}"
+                File dest = new File(config.absoluteOutputDir, path)
+                dest.parentFile.mkdirs()
+                dest.text = zipFile.getInputStream(entry).text
+                return path
+            }
         }
     }
 

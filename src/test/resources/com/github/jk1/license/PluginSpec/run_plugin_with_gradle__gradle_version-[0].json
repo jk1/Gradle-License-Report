@@ -4,7 +4,6 @@
             "moduleName": "org.ehcache:ehcache",
             "moduleVersion": "3.3.1",
             "moduleUrls": [
-                "ehcache-3.3.1.jar/LICENSE.html",
                 "http://ehcache.org"
             ],
             "moduleLicenses": [
@@ -14,7 +13,7 @@
                 },
                 {
                     "moduleLicense": "LICENSE",
-                    "moduleLicenseUrl": null
+                    "moduleLicenseUrl": "ehcache-3.3.1.jar/LICENSE.html"
                 }
             ]
         },

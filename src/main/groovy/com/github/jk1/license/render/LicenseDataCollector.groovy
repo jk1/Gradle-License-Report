@@ -47,17 +47,17 @@ class LicenseDataCollector {
             if (manifest.url) {
                 info.moduleUrls << manifest.url
             }
-            if (manifest.license || manifest.licenseUrl) {
-                // merge manifest.license into info.licenses
-                License existing = info.licenses.find { it.name == manifest.license || it.url == manifest.licenseUrl }
-                if (existing &&
-                        (existing.name && (!manifest.license || existing.name == manifest.license)) &&
-                        (existing.url && (!manifest.licenseUrl || existing.url == manifest.licenseUrl))) {
-                    info.licenses.remove(existing)
+            manifest.licenses.each { manifestLicense ->
+                if (manifestLicense.name || manifestLicense.url) {
+                    License existing = info.licenses.find { it.name == manifestLicense.name || it.url == manifestLicense.url }
+                    if (existing &&
+                            (existing.name && (!manifestLicense.name || existing.name == manifestLicense.name)) &&
+                            (existing.url && (!manifestLicense.url || existing.url == manifestLicense.url))) {
+                        info.licenses.remove(existing)
+                    }
+                    info.licenses.add(
+                            new License(name: manifestLicense.name ?: existing?.name, url: manifestLicense.url ?: existing?.url))
                 }
-                info.licenses.add(
-                        new License(name: manifest.license ? manifest.license : (existing ? existing.name : null),
-                                url: manifest.licenseUrl ? manifest.licenseUrl : (existing ? existing.url : null)))
             }
         }
 

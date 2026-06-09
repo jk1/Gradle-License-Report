@@ -6,7 +6,7 @@ DATE
 
 **1** **Group:** `dummy-group` **Name:** `mod1` **Version:** `0.0.1` 
 > - **Manifest Project URL**: [http://dummy-mani-url](http://dummy-mani-url)
-> - **Manifest License**: Apache 2.0 (Not Packaged)
+> - **Manifest License**: Apache 2.0
 > - **POM Project URL**: [http://dummy-pom-project-url](http://dummy-pom-project-url)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 > - **Embedded license files**: [apache2.license](apache2.license)
@@ -17,7 +17,7 @@ DATE
 
 **3** **Group:** `dummy-group` **Name:** `mod4` **Version:** `0.0.1` 
 > - **Manifest Project URL**: [http://dummy-mani-url](http://dummy-mani-url)
-> - **Manifest License**: Apache 2.0 (Not Packaged)
+> - **Manifest License**: Apache 2.0
 > - **POM Project URL**: [http://dummy-pom-project-url](http://dummy-pom-project-url)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 > - **Embedded license files**: [apache2.license](apache2.license)
@@ -26,7 +26,7 @@ DATE
 
 **4** **Group:** `dummy-group` **Name:** `mod4` **Version:** `0.0.1` 
 > - **Manifest Project URL**: [http://dummy-mani-url](http://dummy-mani-url)
-> - **Manifest License**: Apache 2.0 (Not Packaged)
+> - **Manifest License**: Apache 2.0
 > - **POM Project URL**: [http://dummy-pom-project-url](http://dummy-pom-project-url)
 > - **POM License**: Apache License, Version 2.0 - [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 > - **Embedded license files**: [apache2.license](apache2.license)

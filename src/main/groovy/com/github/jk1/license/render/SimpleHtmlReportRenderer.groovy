@@ -134,27 +134,28 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
                     "\n            </code>" +
                     "\n        </p>"
             }
-            if (manifest.license) {
-                if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
-                    output << "" +
-                        "\n        <p>" +
-                        "\n            <strong>Manifest license URL:</strong>" +
-                        "\n            <a href=\"$manifest.licenseUrl\">" +
-                        "\n                $manifest.license" +
-                        "\n            </a>" +
-                        "\n        </p>"
-                } else if (manifest.hasPackagedLicense) {
+            manifest.licenses.each { License license ->
+                if (!license.name) return
+                if (Files.isPackagedLicenseFile(config.absoluteOutputDir, license.url)) {
                     output << "" +
                         "\n        <p>" +
                         "\n            <strong>Packaged License File:</strong>" +
-                        "\n            <a href=\"$manifest.url\">" +
-                        "\n                $manifest.license" +
+                        "\n            <a href=\"$license.url\">" +
+                        "\n                $license.name" +
+                        "\n            </a>" +
+                        "\n        </p>"
+                } else if (Files.maybeLicenseUrl(license.url)) {
+                    output << "" +
+                        "\n        <p>" +
+                        "\n            <strong>Manifest License:</strong>" +
+                        "\n            <a href=\"$license.url\">" +
+                        "\n                $license.name" +
                         "\n            </a>" +
                         "\n        </p>"
                 } else {
                     output << "" +
                         "\n        <p>" +
-                        "\n            <strong>Manifest License:</strong> $manifest.license (Not packaged)" +
+                        "\n            <strong>Manifest License:</strong> $license.name" +
                         "\n        </p>"
                 }
             }
