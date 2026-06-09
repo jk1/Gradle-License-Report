@@ -16,14 +16,14 @@ Add this to your `build.gradle` file for Gradle 7+:
 Groovy:
 ```groovy
 plugins {
-    id 'com.github.jk1.dependency-license-report' version '3.1.3-SNAPSHOT'  // x-release-please-version
+    id 'com.github.jk1.dependency-license-report' version '3.1.3'  // x-release-please-version
 }
 ```
 
 Kotlin:
 ```kotlin
 plugins {
-    id("com.github.jk1.dependency-license-report") version "3.1.3-SNAPSHOT"  // x-release-please-version
+    id("com.github.jk1.dependency-license-report") version "3.1.3"  // x-release-please-version
 }
 ```
 
@@ -415,7 +415,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.jk1:gradle-license-report:3.1.3-SNAPSHOT'  // x-release-please-version
+    implementation 'com.github.jk1:gradle-license-report:3.1.3'  // x-release-please-version
 }
 ```
 
