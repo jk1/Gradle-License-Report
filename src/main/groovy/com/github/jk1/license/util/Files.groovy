@@ -27,4 +27,8 @@ class Files {
     static boolean maybeLicenseUrl(String url) {
         return url != null && (url.startsWith("http:") || url.startsWith("https:"))
     }
+
+    static boolean isPackagedLicenseFile(String outputDir, String relativePath) {
+        return outputDir != null && relativePath != null && new File(outputDir, relativePath).isFile()
+    }
 }

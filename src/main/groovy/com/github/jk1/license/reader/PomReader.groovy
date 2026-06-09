@@ -101,34 +101,35 @@ class PomReader {
 
     private GPathResult slurpBestMatchPomFromZip(ResolvedArtifact artifact) {
         File archiveToSearch = artifact.file
-        ZipFile archive = new ZipFile(archiveToSearch, ZipFile.OPEN_READ)
-        List<ZipEntry> pomEntries = archive.entries().toList().<ZipEntry>findAll { ZipEntry entry ->
-            entry.name.endsWith("pom.xml") || entry.name.endsWith(".pom")
-        }
-        LOGGER.debug("Searching for POM file in $archiveToSearch -- found ${pomEntries?.size()}")
-        if (!pomEntries) return null
-        try {
-            if (1 == pomEntries.size()) {
-                LOGGER.debug("Only one POM file was found in $archiveToSearch")
-                return createParser().parse(archive.getInputStream(pomEntries.first()))
+        try (ZipFile archive = new ZipFile(archiveToSearch, ZipFile.OPEN_READ)) {
+            List<ZipEntry> pomEntries = archive.entries().toList().<ZipEntry> findAll { ZipEntry entry ->
+                entry.name.endsWith("pom.xml") || entry.name.endsWith(".pom")
             }
-
-            for (final ZipEntry zipEntry in pomEntries) {
-                final GPathResult pom = createParser().parse(archive.getInputStream(zipEntry))
-
-                if (areArtifactAndPomGroupAndArtifactIdEqual(artifact, pom)) {
-                    LOGGER.debug("POM file in $archiveToSearch matched the artifact.")
-                    return pom
-                } else {
-                    LOGGER.debug("POM file in $archiveToSearch does not match the artifact, trying another one.")
+            LOGGER.debug("Searching for POM file in $archiveToSearch -- found ${pomEntries?.size()}")
+            if (!pomEntries) return null
+            try {
+                if (1 == pomEntries.size()) {
+                    LOGGER.debug("Only one POM file was found in $archiveToSearch")
+                    return createParser().parse(archive.getInputStream(pomEntries.first()))
                 }
+
+                for (final ZipEntry zipEntry in pomEntries) {
+                    final GPathResult pom = createParser().parse(archive.getInputStream(zipEntry))
+
+                    if (areArtifactAndPomGroupAndArtifactIdEqual(artifact, pom)) {
+                        LOGGER.debug("POM file in $archiveToSearch matched the artifact.")
+                        return pom
+                    } else {
+                        LOGGER.debug("POM file in $archiveToSearch does not match the artifact, trying another one.")
+                    }
+                }
+            } catch (SAXException e) {
+                LOGGER.warn("Error parsing $pomEntries.name in $archiveToSearch", e)
+                return null
+            } catch (IOException e) {
+                LOGGER.warn("Error reading $pomEntries.name in $archiveToSearch", e)
+                return null
             }
-        } catch (SAXException e) {
-            LOGGER.warn("Error parsing $pomEntries.name in $archiveToSearch", e)
-            return null
-        } catch (IOException e) {
-            LOGGER.warn("Error reading $pomEntries.name in $archiveToSearch", e)
-            return null
         }
 
         return null

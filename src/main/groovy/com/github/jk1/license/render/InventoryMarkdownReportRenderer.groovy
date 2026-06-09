@@ -22,6 +22,7 @@ import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.util.Files
 
 class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
     private Boolean includeTimestamp
@@ -125,13 +126,14 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         if (manifest.url && !projectUrlDone) {
             output << sectionLink("Manifest Project URL", manifest.url, manifest.url)
         }
-        if (manifest.license) {
-            if (manifest.license.startsWith("http")) {
-                output << sectionLink("Manifest license URL", manifest.license, manifest.license)
-            } else if (manifest.hasPackagedLicense) {
-                output << sectionLink("Packaged License File", manifest.license, manifest.url)
+        manifest.licenses.each { License license ->
+            if (!license.name) return
+            if (Files.isPackagedLicenseFile(config.absoluteOutputDir, license.url)) {
+                output << sectionLink("Packaged License File", license.name, license.url)
+            } else if (Files.maybeLicenseUrl(license.url)) {
+                output << sectionLink("Manifest License", license.name, license.url)
             } else {
-                output << section("Manifest License", "${manifest.license} (Not Packaged)")
+                output << section("Manifest License", license.name)
             }
         }
     }
@@ -176,10 +178,6 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
 
     private GString sectionLink(String label, String name, String url) {
         section(label, link(name, url))
-    }
-
-    private String safeGet(String[] arr, int index) {
-        arr.length > index ? arr[index] : null
     }
 
 }

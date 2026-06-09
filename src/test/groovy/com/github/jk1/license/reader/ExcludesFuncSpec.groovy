@@ -197,11 +197,12 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "javax.activation",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": "Sun Microsystems, Inc.",
                         "hasPackagedLicense": false,
                         "version": "1.1.1",
-                        "license": null,
                         "description": null,
                         "url": null,
                         "name": "Sun Java System Application Server"
@@ -250,11 +251,15 @@ class ExcludesFuncSpec extends AbstractGradleRunnerFunctionalSpec {
                 "group": "com.fasterxml.jackson.core",
                 "manifests": [
                     {
-                        "licenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "licenses": [
+                            {
+                                "url": "http://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": null
+                            }
+                        ],
                         "vendor": "FasterXML",
                         "hasPackagedLicense": false,
                         "version": "2.12.3",
-                        "license": null,
                         "description": "Core Jackson processing abstractions (aka Streaming API), implementation for JSON",
                         "url": "https://github.com/FasterXML/jackson-core",
                         "name": "Jackson-core"

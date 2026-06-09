@@ -5,11 +5,12 @@
                 "group": "aopalliance",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": null,
-                        "license": null,
                         "description": null,
                         "url": null,
                         "name": null
@@ -42,11 +43,12 @@
                 "group": "commons-logging",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": "Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "1.1.1",
-                        "license": null,
                         "description": null,
                         "url": null,
                         "name": "Jakarta Commons Logging"
@@ -95,11 +97,15 @@
                 "group": "org.apache.commons",
                 "manifests": [
                     {
-                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "licenses": [
+                            {
+                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": null
+                            }
+                        ],
                         "vendor": "The Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "3.7.0",
-                        "license": null,
                         "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
                         "url": "http://commons.apache.org/proper/commons-lang/",
                         "name": "Apache Commons Lang"
@@ -148,13 +154,17 @@
                 "group": "org.ehcache",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            {
+                                "url": "ehcache-3.3.1.jar/LICENSE.html",
+                                "name": "LICENSE"
+                            }
+                        ],
                         "vendor": "Terracotta Inc., a wholly-owned subsidiary of Software AG USA, Inc.",
                         "hasPackagedLicense": true,
                         "version": "3.3.1",
-                        "license": "LICENSE",
                         "description": "Ehcache is an open-source caching library, compliant with the JSR-107 standard.",
-                        "url": "ehcache-3.3.1.jar/LICENSE.html",
+                        "url": "http://ehcache.org",
                         "name": "ehcache 3"
                     }
                 ],
@@ -201,11 +211,12 @@
                 "group": "org.slf4j",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": "SLF4J.ORG",
                         "hasPackagedLicense": false,
                         "version": "1.7.7",
-                        "license": null,
                         "description": "The slf4j API",
                         "url": null,
                         "name": "slf4j-api"
@@ -241,11 +252,12 @@
                 "group": "org.springframework",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": "3.2.3.RELEASE",
-                        "license": null,
                         "description": null,
                         "url": null,
                         "name": "spring-beans"
@@ -294,11 +306,12 @@
                 "group": "org.springframework",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": "3.2.3.RELEASE",
-                        "license": null,
                         "description": null,
                         "url": null,
                         "name": "spring-core"
@@ -347,11 +360,12 @@
                 "group": "org.springframework",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": "3.2.3.RELEASE",
-                        "license": null,
                         "description": null,
                         "url": null,
                         "name": "spring-tx"

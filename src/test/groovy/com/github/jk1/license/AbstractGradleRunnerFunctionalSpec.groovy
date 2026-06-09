@@ -68,7 +68,7 @@ abstract class AbstractGradleRunnerFunctionalSpec extends Specification {
     }
 
     static String prettyPrintJson(Object obj) {
-        new JsonBuilder(obj).toPrettyString()
+        new JsonBuilder(obj, RawProjectDataJsonRenderer.GENERATOR).toPrettyString()
     }
 
     static List<File> buildPluginClasspathWithTestClasspath() {

@@ -5,11 +5,15 @@
                 "group": "org.apache.commons",
                 "manifests": [
                     {
-                        "licenseUrl": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                        "licenses": [
+                            {
+                                "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+                                "name": null
+                            }
+                        ],
                         "vendor": "The Apache Software Foundation",
                         "hasPackagedLicense": false,
                         "version": "3.7.0",
-                        "license": null,
                         "description": "Apache Commons Lang, a package of Java utility classes for the  classes that are in java.lang's hierarchy, or are considered to be so  standard as to justify existence in java.lang.",
                         "url": "http://commons.apache.org/proper/commons-lang/",
                         "name": "Apache Commons Lang"

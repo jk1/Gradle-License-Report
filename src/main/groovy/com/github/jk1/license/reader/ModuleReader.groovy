@@ -50,8 +50,8 @@ class ModuleReaderImpl implements ModuleReader {
         CachingPomResolver pomResolver = new CachingPomResolver(project)
         dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
             LOGGER.info("Processing artifact: $artifact ($artifact.file)")
-            moduleData.hasArtifactFile = artifact.file.exists()
-            if (moduleData.hasArtifactFile) {
+            if (artifact.file.exists()) {
+                moduleData.hasArtifactFile = true
                 def pom = pomReader.withResolver(pomResolver).readPomData(artifact)
                 def manifest = manifestReader.readManifestData(artifact)
                 def licenseFile = filesReader.read(artifact)

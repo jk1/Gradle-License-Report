@@ -16,11 +16,32 @@
 package com.github.jk1.license.render
 
 import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ProjectData
 import groovy.json.JsonBuilder
+import groovy.json.JsonGenerator
 
 class RawProjectDataJsonRenderer implements ReportRenderer {
     static final String RAW_PROJECT_JSON_NAME = "raw-project-data.json"
+
+    /**
+     * Type-aware generator that omits the deprecated {@code license}/{@code licenseUrl} read-only
+     * views from {@link ManifestData} when serializing to JSON. The same fields on
+     * {@code LicenseFileDetails} are unaffected because the converter is scoped to ManifestData.
+     */
+    static final JsonGenerator GENERATOR = new JsonGenerator.Options()
+            .addConverter(ManifestData) { ManifestData m, String key ->
+                [
+                    licenses          : m.licenses,
+                    vendor            : m.vendor,
+                    hasPackagedLicense: m.hasPackagedLicense,
+                    version           : m.version,
+                    description       : m.description,
+                    url               : m.url,
+                    name              : m.name,
+                ]
+            }
+            .build()
 
     @Override
     void render(ProjectData data) {
@@ -31,7 +52,7 @@ class RawProjectDataJsonRenderer implements ReportRenderer {
         def project = data.project
         data.project = null
 
-        def json = new JsonBuilder(data).toPrettyString()
+        def json = new JsonBuilder(data, GENERATOR).toPrettyString()
         outputFile << json
 
         data.project = project

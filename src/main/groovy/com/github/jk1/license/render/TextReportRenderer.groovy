@@ -26,7 +26,7 @@ import com.github.jk1.license.util.Files
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 
-class TextReportRenderer implements ReportRenderer{
+class TextReportRenderer implements ReportRenderer {
 
     private Project project
     private LicenseReportExtension config
@@ -91,13 +91,12 @@ This report was generated at ${new Date()}.
             if (manifest.url && !projectUrlDone) {
                 output << "Manifest Project URL: $manifest.url\n\n"
             }
-            if (manifest.license) {
-                if (Files.maybeLicenseUrl(manifest.licenseUrl)) {
-                    output << "Manifest license URL: $manifest.licenseUrl\n\n"
-                } else if (manifest.hasPackagedLicense) {
-                    output << "Packaged License File: $manifest.license\n\n"
+            manifest.licenses.each { License license ->
+                if (!license.name) return
+                if (Files.isPackagedLicenseFile(config.absoluteOutputDir, license.url)) {
+                    output << "Packaged License File: $license.name\n\n"
                 } else {
-                    output << "Manifest License: $manifest.license (Not packaged)\n\n"
+                    output << "Manifest License: ${license.name + (Files.maybeLicenseUrl(license.url) ? " - " + license.url : "")}\n\n"
                 }
             }
         }

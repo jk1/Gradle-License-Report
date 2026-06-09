@@ -5,11 +5,12 @@
                 "group": "org.openjfx",
                 "manifests": [
                     {
-                        "licenseUrl": null,
+                        "licenses": [
+                            
+                        ],
                         "vendor": null,
                         "hasPackagedLicense": false,
                         "version": null,
-                        "license": null,
                         "description": null,
                         "url": null,
                         "name": null
