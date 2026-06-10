@@ -45,7 +45,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     protected String filterConfig = ""
     protected ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
     protected LicenseReportExtension config
-    protected  LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
+    protected LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
         bundles: new ArrayList<NormalizerLicenseBundle>(),
         transformationRules: new ArrayList<NormalizerTransformationRule>()
     )
@@ -93,8 +93,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     private def applyBundleFrom(String text) {
         filterConfig += "normalizerText = $text\n"
         LOGGER.debug("Using supplied normalizer bundle: {}", text)
-        def config = toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(text.chars))
-        mergeConfigIntoGlobalConfig(config)
+        mergeConfigIntoGlobalConfig(toConfig(new JsonSlurper().setType(JsonParserType.LAX).parse(text.chars)))
     }
 
     @Input
@@ -104,7 +103,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     ProjectData filter(ProjectData data) {
         init()
         LOGGER.debug("Performing module license normalization")
-        config = data.project.licenseReport
+        config = data.extension
 
         List<NormalizerTransformationRuleMatcher> transformationRuleMatchers = makeNormalizerTransformationRuleMatchers(normalizerConfig.transformationRules)
 
@@ -317,10 +316,10 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     protected static def toConfig(Object slurpResult) {
-        def config = new LicenseBundleNormalizerConfig()
-        config.bundles = slurpResult.bundles.collect { new NormalizerLicenseBundle(it) }
-        config.transformationRules = slurpResult.transformationRules.collect { new NormalizerTransformationRule(it) }
-        config
+        def normalizerConfig = new LicenseBundleNormalizerConfig()
+        normalizerConfig.bundles = slurpResult.bundles.collect { new NormalizerLicenseBundle(it) }
+        normalizerConfig.transformationRules = slurpResult.transformationRules.collect { new NormalizerTransformationRule(it) }
+        normalizerConfig
     }
 
     /**

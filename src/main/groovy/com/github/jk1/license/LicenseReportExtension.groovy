@@ -30,7 +30,6 @@ class LicenseReportExtension {
 
     public static final String[] ALL = []
 
-    public boolean unionParentPomLicenses
     public String outputDir
     public Project[] projects
     public Project[] buildScriptProjects
@@ -42,6 +41,7 @@ class LicenseReportExtension {
     public boolean excludeBoms
     public String[] excludeGroups
     public String[] excludes
+    public boolean unionParentPomLicenses
     public Object allowedLicensesFile
 
     LicenseReportExtension(Project project) {
@@ -97,17 +97,19 @@ class LicenseReportExtension {
         snapshot << 'filters'
         snapshot += filters.collect { it.class.name }
         snapshot << 'configurations '
-        snapshot += configurations
+        snapshot += configurations?.collect()
         snapshot << 'excludeOwnGroup'
-        snapshot += excludeOwnGroup
+        snapshot += String.valueOf(excludeOwnGroup)
         snapshot << 'excludeBoms'
-        snapshot += excludeBoms
+        snapshot += String.valueOf(excludeBoms)
         snapshot << 'exclude'
-        snapshot += excludeGroups
+        snapshot += excludeGroups?.collect()
         snapshot << 'excludes'
-        snapshot += excludes
+        snapshot += excludes?.collect()
         snapshot << 'unionParentPomLicenses'
-        snapshot += unionParentPomLicenses
+        snapshot += String.valueOf(unionParentPomLicenses)
+        snapshot << 'allowedLicensesFile'
+        snapshot += String.valueOf(allowedLicensesFile)
         snapshot.join("!")
     }
 

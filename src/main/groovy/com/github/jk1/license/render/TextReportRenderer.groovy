@@ -43,7 +43,7 @@ class TextReportRenderer implements ReportRenderer {
 
     void render(ProjectData data) {
         project = data.project
-        config = project.licenseReport
+        config = data.extension
         output = new File(config.absoluteOutputDir, fileName)
         output.text = """
 Dependency License Report for $project.name ${if (!'unspecified'.equals(project.version)) project.version else ''}

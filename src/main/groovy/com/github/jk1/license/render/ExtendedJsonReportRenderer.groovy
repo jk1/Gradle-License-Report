@@ -112,7 +112,7 @@ class ExtendedJsonReportRenderer implements ReportRenderer {
 
     void render(ProjectData data) {
         project = data.project
-        config = project.licenseReport
+        config = data.extension
         output = new File(config.absoluteOutputDir, fileName)
 
         def jsonReport = [:]
