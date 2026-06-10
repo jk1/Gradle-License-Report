@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.1.4 (2026-06-10)
+
+## What's Changed
+* chore(master): release 3.1.4-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/403
+* fix: improve performance of ReportTask/CheckLicense on projects with many modules by @chadlwilson in https://github.com/jk1/Gradle-License-Report/pull/405
+
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.1.3...v3.1.4
+
 ## 3.1.3 (2026-06-09)
 
 ## What's Changed
