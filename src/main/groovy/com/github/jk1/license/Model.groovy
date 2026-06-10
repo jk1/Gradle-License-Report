@@ -20,7 +20,6 @@ import groovy.transform.Sortable
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ConfigurationContainer
 import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.api.initialization.dsl.ScriptHandler
 import org.gradle.api.plugins.PluginContainer
 
 @Canonical
@@ -47,6 +46,9 @@ class ProjectData {
     List<ImportedModuleBundle> importedModules = new ArrayList<ImportedModuleBundle>()
     Set<ModuleData> getAllDependencies() {
         new TreeSet<ModuleData>(configurations*.dependencies.flatten() as List<ModuleData>)
+    }
+    def getExtension() {
+        project.getExtensions().findByType(LicenseReportExtension)
     }
 }
 

@@ -18,6 +18,7 @@ package com.github.jk1.license.reader
 import com.github.jk1.license.ConfigurationData
 import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.task.ReportTask
 import org.gradle.api.NamedDomainObjectSet
@@ -29,6 +30,7 @@ import org.gradle.api.logging.Logging
 class ProjectReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
+    Project root
     private GradleProject[] projects
     private GradleProject[] buildScriptProjects
     private String[] configurations
@@ -36,22 +38,50 @@ class ProjectReader {
     private ConfigurationReader configurationReader
 
     ProjectReader(LicenseReportExtension config) {
+        this.root = config.projects.first()
         this.projects = config.projects.collect { GradleProject.ofProject(it) }
         this.buildScriptProjects = config.buildScriptProjects.collect { GradleProject.ofScript(it) }
         this.configurations = config.configurations
         this.configurationReader = new ConfigurationReader(config, new CachedModuleReader(config))
     }
 
-    ProjectData read(Project project) {
-        ProjectData data = new ProjectData()
-        data.project = project
+    /**
+     * Reads every configured project and buildScript project, merging configurations
+     * with the same name within each group. The returned data's {@code project} field
+     * is set to {@code owner}; the configurations span all configured projects.
+     */
+    ProjectData readAllProjects() {
+        LOGGER.info("Processing dependencies for project ${root.name}")
+        ProjectData data = new ProjectData(project: root)
 
         LOGGER.info("Configured projects: ${projects.join(',')}")
-        data.configurations.addAll(readProjects(projects))
         LOGGER.info("Configured buildScript projects: ${buildScriptProjects.join(',')}")
-        data.configurations.addAll(readProjects(buildScriptProjects))
+
+        def configurationData = (projects.toList() + buildScriptProjects.toList())
+                .collectMany { GradleProject p -> readGradleProject(p) { Configuration c -> configurationReader.read(p, c) } }
+
+        data.configurations.addAll(mergeConfigurationsByName(configurationData))
 
         return data
+    }
+
+    /**
+     * Walks the same scanned configurations as {@link #readAllProjects()} but collects
+     * only resolved dependency coordinates ("group:name:version"), skipping POM,
+     * manifest, and license-file resolution. Suitable for cache-key fingerprinting,
+     * where the full {@link ModuleData} is unnecessary.
+     */
+    SortedSet<String> readAllDependencyKeysOnly() {
+        (projects.toList() + buildScriptProjects.toList())
+                .collectMany { readGradleProject(it) { Configuration c -> configurationReader.readDependenciesOnly(c) } }
+                .flatten()
+                .collect { "${it.moduleGroup}:${it.moduleName}:${it.moduleVersion}" } as TreeSet
+    }
+
+    private <T> List<T> readGradleProject(GradleProject project, Closure<T> configHandler) {
+        Set<Configuration> configurationsToScan = withExtendsFrom(findConfigurationsToScan(project))
+        LOGGER.info("Configurations(${project.name}): ${configurationsToScan.join(',')}")
+        configurationsToScan.collect(configHandler)
     }
 
     private NamedDomainObjectSet<Configuration> findConfigurationsToScan(GradleProject project) {
@@ -77,37 +107,11 @@ class ProjectReader {
         configurationsToScan + configurationsToScan.collectMany { it.extendsFrom.findAll { it.canBeResolved } }.toSet()
     }
 
-    private List<ConfigurationData> readConfigurationData(Collection<Configuration> configurationsToScan, GradleProject project) {
-        configurationsToScan.collect { config ->
-            LOGGER.info("Reading configuration: " + config)
-            configurationReader.read(project, config)
+    private static List<ConfigurationData> mergeConfigurationsByName(Collection<ConfigurationData> configData) {
+        configData.groupBy { it.name }.collect { name, configs ->
+            new ConfigurationData(name: name).tap {
+                dependencies.addAll(configs*.dependencies.flatten() as List<ModuleData>)
+            }
         }
-    }
-
-    private List<ConfigurationData> readProjects(GradleProject[] projectsToScan) {
-        List<ConfigurationData> readConfigurations = projectsToScan.collectMany { subProject ->
-            Set<Configuration> configurationsToScan = withExtendsFrom(findConfigurationsToScan(subProject))
-            LOGGER.info("Configurations(${subProject.name}): ${configurationsToScan.join(',')}")
-            readConfigurationData(configurationsToScan, subProject)
-        }
-        mergeConfigurationDataWithSameName(readConfigurations)
-    }
-
-    private static List<ConfigurationData> mergeConfigurationDataWithSameName(Collection<ConfigurationData> configData) {
-        def configurationsByName = configData.groupBy { it.name }
-
-        configurationsByName.collect { _, configs ->
-            mergeConfigurations(configs)
-        }
-    }
-
-    private static ConfigurationData mergeConfigurations(Collection<ConfigurationData> configs) {
-        ConfigurationData merged = new ConfigurationData()
-
-        configs.forEach {
-            merged.name = it.name
-            merged.dependencies.addAll(it.dependencies)
-        }
-        merged
     }
 }

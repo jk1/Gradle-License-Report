@@ -16,7 +16,6 @@
 package com.github.jk1.license.render
 
 import com.github.jk1.license.ImportedModuleData
-import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import org.gradle.api.tasks.Input
@@ -68,8 +67,7 @@ class CsvReportRenderer implements ReportRenderer {
 
     @Override
     void render(ProjectData data) {
-        LicenseReportExtension config = data.project.licenseReport
-        File output = new File(config.absoluteOutputDir, filename)
+        File output = new File(data.extension.absoluteOutputDir, filename)
         output.write('')
 
         if (includeHeaderLine) {

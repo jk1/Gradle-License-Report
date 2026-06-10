@@ -67,7 +67,7 @@ class XmlReportRenderer implements ReportRenderer {
 
     void render(ProjectData data) {
         project = data.project
-        config = project.licenseReport
+        config = data.extension
         output = new File(config.absoluteOutputDir, fileName)
         output.text = '<?xml version="1.0" encoding="UTF-8"?>\n'
         output << '<!DOCTYPE topic SYSTEM "' + schemaBaseUrl + 'html-entities.dtd">\n'

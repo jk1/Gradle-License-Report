@@ -19,13 +19,10 @@ import com.github.jk1.license.ConfigurationData
 import com.github.jk1.license.GradleProject
 import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.task.ReportTask
-import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
-
-import static com.github.jk1.license.reader.ProjectReader.isResolvable
 
 class ConfigurationReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
@@ -48,12 +45,7 @@ class ConfigurationReader {
         }
 
         LOGGER.info("Processing configuration [$configuration], configuration will be resolved")
-        configuration.resolvedConfiguration // force configuration resolution
-
-        Set<ResolvedDependency> dependencies = new TreeSet<ResolvedDependency>(new ResolvedDependencyComparator())
-        for (ResolvedDependency dependency : configuration.resolvedConfiguration.lenientConfiguration.getFirstLevelModuleDependencies()) {
-            collectDependencies(dependencies, dependency)
-        }
+        Set<ResolvedDependency> dependencies = readDependenciesOnly(configuration)
 
         LOGGER.info("Processing dependencies for configuration [$configuration]: " + dependencies.join(','))
         for (ResolvedDependency dependency : dependencies) {
@@ -61,6 +53,20 @@ class ConfigurationReader {
             data.dependencies.add(moduleReader.read(project, dependency))
         }
         return data
+    }
+
+    /**
+     * Returns the resolved dependencies in {@code configuration} (transitive, deduped,
+     * exclusion-filtered) — the same set {@link #read} processes. Cheap relative to
+     * {@link #read} because it skips POM, manifest, and license-file work; suitable
+     * for cache-key fingerprinting where the full {@link com.github.jk1.license.ModuleData} is unnecessary.
+     */
+    Set<ResolvedDependency> readDependenciesOnly(Configuration configuration) {
+        Set<ResolvedDependency> accumulator = new TreeSet<ResolvedDependency>(new ResolvedDependencyComparator())
+        for (ResolvedDependency dependency : configuration.resolvedConfiguration.lenientConfiguration.firstLevelModuleDependencies) {
+            collectDependencies(accumulator, dependency)
+        }
+        accumulator
     }
 
     private Set<ResolvedDependency> collectDependencies(Set<ResolvedDependency> accumulator,
