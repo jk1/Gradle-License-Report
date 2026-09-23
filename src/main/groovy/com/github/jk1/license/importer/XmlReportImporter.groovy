@@ -70,7 +70,7 @@ class XmlReportImporter implements DependencyDataImporter {
             } else {
                 throw new GradleException("Dependency data importer: don't know how to parse ${root.name()} root tag")
             }
-        } catch (SAXParseException e) {
+        } catch (SAXParseException ignored) {
             // malformed xml?
             def topic = createParser().parseText("<topic><chunk>${externalReport.call().text}</chunk></topic>")
             return parseTopic(topic)
@@ -78,20 +78,23 @@ class XmlReportImporter implements DependencyDataImporter {
         return bundles
     }
 
-    private Collection<ImportedModuleBundle> parseTopic(GPathResult topic) {
+    private static Collection<ImportedModuleBundle> parseTopic(GPathResult topic) {
         return topic.chunk.chapter.collect {
             parseChapter(it)
         }
     }
 
-    private ImportedModuleBundle parseChapter(GPathResult chapter) {
-        def importedModules = chapter.table.tr.collect {
+    private static ImportedModuleBundle parseChapter(GPathResult chapter) {
+        def importedModules = chapter.table.tr.collect { GPathResult row ->
+            GPathResult cells = row.td as GPathResult
+            GPathResult name = cells[0] as GPathResult
+            GPathResult license = cells[2] as GPathResult
             new ImportedModuleData(
-                    name: it.td[0].a.size() == 0 ? it.td[0].text() : it.td[0].a,
-                    version: it.td[1],
-                    projectUrl: it.td[0].a.@href,
-                    license: it.td[2].a.size() == 0 ? it.td[2].text() : it.td[2].a,
-                    licenseUrl: it.td[2].a.@href
+                    name: name.a.size() == 0 ? name.text() : name.a,
+                    version: cells[1],
+                    projectUrl: name.a.@href,
+                    license: license.a.size() == 0 ? license.text() : license.a,
+                    licenseUrl: license.a.@href
             )
         }
         if (!importedModules.isEmpty()) {
@@ -100,7 +103,7 @@ class XmlReportImporter implements DependencyDataImporter {
         return new ImportedModuleBundle(chapter.@title.toString(), importedModules)
     }
 
-    private XmlSlurper createParser() {
+    private static XmlSlurper createParser() {
         def parser = new XmlSlurper()
         parser.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
         parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)

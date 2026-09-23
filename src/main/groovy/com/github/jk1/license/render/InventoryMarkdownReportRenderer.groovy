@@ -178,15 +178,15 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         output << "\n\n"
     }
 
-    private GString section(String label, String value) {
+    private static GString section(String label, String value) {
         "> - **${label}**: ${value}\n"
     }
 
-    private GString link(String name, String url) {
+    private static GString link(String name, String url) {
         "[${url}](${name})"
     }
 
-    private GString sectionLink(String label, String name, String url) {
+    private static GString sectionLink(String label, String name, String url) {
         section(label, link(name, url))
     }
 

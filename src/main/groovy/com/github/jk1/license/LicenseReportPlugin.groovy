@@ -28,6 +28,8 @@ import org.gradle.api.resources.TextResource
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.util.GradleVersion
 
+// registers the deprecated CheckLicensePreparationTask for backwards compatibility
+@SuppressWarnings('GrDeprecatedAPIUsage')
 class LicenseReportPlugin implements Plugin<Project> {
 
     final def MINIMUM_REQUIRED_GRADLE_VERSION = "7.0"

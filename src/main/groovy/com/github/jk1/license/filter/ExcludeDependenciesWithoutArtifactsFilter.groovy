@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jk1.license.filter;
+package com.github.jk1.license.filter
 
-import com.github.jk1.license.*;
+import com.github.jk1.license.*
 
 /**
  * This class is designed to function as a filter for removing dependencies from a report that are not associated
@@ -31,6 +31,6 @@ class ExcludeDependenciesWithoutArtifactsFilter implements DependencyFilter {
                 }
                 .toSet()
 
-        return new ProjectData(source.project, configurations, source.importedModules);
+        return new ProjectData(source.project, configurations, source.importedModules)
     }
 }

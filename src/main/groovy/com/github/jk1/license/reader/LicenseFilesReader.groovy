@@ -43,8 +43,7 @@ class LicenseFilesReader {
             return null
         }
         switch (fileExtension) {
-            case "zip":
-            case "jar":
+            case ["zip", "jar"]:
                 Collection<String> files = readLicenseFiles(artifact)
                 if (files.isEmpty()) return null
 
@@ -90,7 +89,7 @@ class LicenseFilesReader {
         }
     }
 
-    private String substringAfterLast(String str, String separator) {
+    private static String substringAfterLast(String str, String separator) {
         if (!str || !separator) {
             return ""
         }

@@ -78,7 +78,7 @@ class SimpleHtmlReportRenderer implements ReportRenderer {
             printModuleDependency(it)
         }
         data.importedModules.modules.flatten().sort().each {
-            printImportedModuleDependency(it)
+            printImportedModuleDependency(it as ImportedModuleData)
         }
     }
 

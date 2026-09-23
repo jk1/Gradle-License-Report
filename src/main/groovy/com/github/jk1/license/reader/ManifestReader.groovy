@@ -48,10 +48,10 @@ class ManifestReader {
         switch (fileExtension) {
             case "mf":
                 LOGGER.debug("Processing manifest file: $artifact")
-                Manifest mf = artifact.withInputStream { new Manifest(it) }
-                return manifestToData(mf)
-            case "jar":
-            case "zip":
+                try (InputStream input = artifact.newInputStream()) {
+                    return manifestToData(new Manifest(input))
+                }
+            case ["jar", "zip"]:
                 LOGGER.debug("Processing manifest from archive file: $artifact")
                 Manifest mf = lookupManifest(artifact)
                 if (mf) {

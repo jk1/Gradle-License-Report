@@ -88,7 +88,7 @@ class ConfigurationScanner {
         project.plugins.hasPlugin('com.android.application') ? ['releaseRuntimeClasspath'] : ['runtimeClasspath']
     }
 
-    private Set<Configuration> findConfigurationsToScan(ConfigurationContainer container, String[] configurations) {
+    private static Set<Configuration> findConfigurationsToScan(ConfigurationContainer container, String[] configurations) {
         if (configurations.length == 0) {
             LOGGER.info("Using all resolvable configurations")
             return container.matching { it.canBeResolved }.toSet()

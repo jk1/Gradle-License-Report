@@ -84,8 +84,7 @@ class PomReader {
             case "pom":
                 LOGGER.debug("Slurping pom from *.pom file: $toSlurp")
                 return slurpPomItself(toSlurp)
-            case "zip":
-            case "jar":
+            case ["zip", "jar"]:
                 LOGGER.debug("Processing pom from archive: $toSlurp")
                 return slurpBestMatchPomFromZip(toSlurp, module)
         }

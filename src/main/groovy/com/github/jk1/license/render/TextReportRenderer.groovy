@@ -61,7 +61,7 @@ This report was generated at ${new Date()}.
             printDependency(it)
         }
         data.importedModules.modules.flatten().sort().each {
-            printImportedModuleDependency(it)
+            printImportedModuleDependency(it as ImportedModuleData)
         }
     }
 

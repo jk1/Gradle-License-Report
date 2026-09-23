@@ -34,7 +34,7 @@ import java.util.regex.Pattern
 
 class LicenseBundleNormalizer implements DependencyFilter {
 
-    private static Logger LOGGER = Logging.getLogger(ReportTask.class)
+    private static final Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     protected String bundlePath
     // read eagerly, as streams can't be stored in the configuration cache
@@ -323,8 +323,8 @@ class LicenseBundleNormalizer implements DependencyFilter {
 
     protected static def toConfig(Object slurpResult) {
         def normalizerConfig = new LicenseBundleNormalizerConfig()
-        normalizerConfig.bundles = slurpResult.bundles.collect { new NormalizerLicenseBundle(it) }
-        normalizerConfig.transformationRules = slurpResult.transformationRules.collect { new NormalizerTransformationRule(it) }
+        normalizerConfig.bundles = slurpResult.bundles.collect { Map bundle -> new NormalizerLicenseBundle(bundle) }
+        normalizerConfig.transformationRules = slurpResult.transformationRules.collect { Map rule -> new NormalizerTransformationRule(rule) }
         normalizerConfig
     }
 

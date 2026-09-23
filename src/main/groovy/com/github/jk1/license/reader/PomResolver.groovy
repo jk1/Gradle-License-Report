@@ -52,7 +52,7 @@ class PomResolver {
             Map<String, List<File>> resolved = resolveBatch(pending)
             result.putAll(resolved)
             pending = resolved.values().flatten()
-                .collect { File pom -> parentCoordinates(pom) }
+                .collect { parentCoordinates(it as File) }
                 .findAll { it != null && !result.containsKey(it) } as Set<String>
         }
         result

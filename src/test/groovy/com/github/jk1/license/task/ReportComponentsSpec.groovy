@@ -59,12 +59,12 @@ class ReportComponentsSpec extends Specification {
         expect:
         ReportComponents.isBuiltIn(new JsonReportRenderer())
         ReportComponents.isBuiltIn(new LicenseBundleNormalizer())
-        !ReportComponents.isBuiltIn(CUSTOM_RENDERER.newInstance())
+        !ReportComponents.isBuiltIn(CUSTOM_RENDERER.getDeclaredConstructor().newInstance())
     }
 
     def "custom components are fingerprinted by their type and annotated values only"() {
         when:
-        def inputs = ReportComponents.customInputValues([new JsonReportRenderer(), CUSTOM_RENDERER.newInstance()], toFiles)
+        def inputs = ReportComponents.customInputValues([new JsonReportRenderer(), CUSTOM_RENDERER.getDeclaredConstructor().newInstance()], toFiles)
 
         then:
         inputs == [
@@ -78,7 +78,7 @@ class ReportComponentsSpec extends Specification {
     def "file inputs of custom components are fingerprinted by their content"() {
         given:
         File template = new File(tempDir, 'template.txt')
-        def renderer = CUSTOM_RENDERER.newInstance()
+        def renderer = CUSTOM_RENDERER.getDeclaredConstructor().newInstance()
         renderer.template = template
 
         when:
@@ -137,7 +137,7 @@ class ReportComponentsSpec extends Specification {
     }
 
     private Map<String, String> fingerprints(Class<?> type, File source) {
-        def renderer = type.newInstance()
+        def renderer = type.getDeclaredConstructor().newInstance()
         renderer.source = source
         ReportComponents.customInputValues([renderer], toFiles).tail().collectEntries {
             def (key, value) = it.split('=', 2)
@@ -161,7 +161,7 @@ class ReportComponentsSpec extends Specification {
                 String getSetting() { 'value' }
                 void render(ProjectData data) {}
             }
-        ''').newInstance()
+        ''').getDeclaredConstructor().tap { accessible = true }.newInstance()
 
         expect:
         ReportComponents.customInputValues([renderer], toFiles) == ['org.example.PackagePrivateRenderer', 'org.example.PackagePrivateRenderer.setting=value']
@@ -192,8 +192,8 @@ class ReportComponentsSpec extends Specification {
         ''')
 
         when:
-        def first = ReportComponents.customInputValues([type.newInstance()], toFiles)
-        def second = ReportComponents.customInputValues([type.newInstance()], toFiles)
+        def first = ReportComponents.customInputValues([type.getDeclaredConstructor().newInstance()], toFiles)
+        def second = ReportComponents.customInputValues([type.getDeclaredConstructor().newInstance()], toFiles)
 
         then:
         first == second
@@ -213,7 +213,7 @@ class ReportComponentsSpec extends Specification {
                 String getSomething() { 'something' }
                 void render(ProjectData data) {}
             }
-        ''').newInstance() as ReportRenderer
+        ''').getDeclaredConstructor().newInstance() as ReportRenderer
 
         expect:
         ReportComponents.customInputValues([renderer], toFiles) == [renderer.getClass().name]

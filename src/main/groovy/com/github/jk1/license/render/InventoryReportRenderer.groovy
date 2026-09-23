@@ -119,6 +119,7 @@ class InventoryReportRenderer implements ReportRenderer {
         return inventory
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic') // may be overridden
     protected Map<String, Map<String, List<ImportedModuleData>>> buildExternalInventories(ProjectData data) {
         Map<String, Map<String, List<ImportedModuleData>>> results = [:]
         data.importedModules.each { ImportedModuleBundle module ->

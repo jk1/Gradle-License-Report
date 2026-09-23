@@ -126,6 +126,7 @@ class JsonReportRenderer implements ReportRenderer {
         output.text = new JsonBuilder(trimAndRemoveNullEntries(jsonReport)).toPrettyString()
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic') // may be overridden
     def renderSingleLicensePerModule(Collection<ModuleData> allDependencies) {
         allDependencies.collect {
             String moduleName = "${it.group}:${it.name}"
@@ -139,6 +140,7 @@ class JsonReportRenderer implements ReportRenderer {
         }.sort { it.moduleName }
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic') // may be overridden
     def renderAllLicensesPerModule(Collection<ModuleData> allDependencies) {
         allDependencies.collect {
             String moduleName = "${it.group}:${it.name}"
