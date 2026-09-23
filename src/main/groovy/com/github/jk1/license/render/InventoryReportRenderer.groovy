@@ -17,7 +17,12 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 
 class InventoryReportRenderer implements ReportRenderer {
     protected String name
@@ -36,12 +41,19 @@ class InventoryReportRenderer implements ReportRenderer {
         this.overridesFile = overridesFile
     }
 
-    @InputFile
+    @Input
     String getFileNameCache() { return this.fileName }
 
+    @Input
+    @Optional
+    String getNameCache() { return this.name }
+
     @InputFile
+    @Optional
+    @PathSensitive(PathSensitivity.NONE)
     File getOverridesFileCache() { return this.overridesFile }
 
+    @Internal
     Map<String, Map<String, String>> getOverrides() {
         parseOverrides(overridesFile)
         return _overrides

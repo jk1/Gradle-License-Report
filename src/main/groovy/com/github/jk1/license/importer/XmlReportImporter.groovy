@@ -17,10 +17,12 @@ package com.github.jk1.license.importer
 
 import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.ImportedModuleData
+import com.github.jk1.license.util.Files
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.xml.sax.SAXParseException
 
 
@@ -41,9 +43,19 @@ class XmlReportImporter implements DependencyDataImporter {
     }
 
     @Input
+    @Optional
     @Override
     String getImporterName() {
         return importerName
+    }
+
+    /**
+     * The content of the external report, rather than the file as an {@code @InputFile}: Gradle would then require
+     * the task generating it to be declared as a dependency, failing builds that don't.
+     */
+    @Input
+    String getExternalReportCache() {
+        return Files.contentHash(externalReport.call())
     }
 
     @Override

@@ -57,8 +57,10 @@ class LicenseReportPlugin implements Plugin<Project> {
             task.projectDependenciesData.set(generateLicenseReportTask.flatMap {
                 it.outputDir.file(CheckLicenseTask.PROJECT_JSON_FOR_LICENSE_CHECKING_FILE)
             })
+            // Next to, rather than inside the report directory: tasks must not share output locations to be cacheable
             task.notPassedDependenciesFile.set(project.layout.file(project.provider {
-                new File(extension.absoluteOutputDir, CheckLicenseTask.NOT_PASSED_DEPENDENCIES_FILE)
+                File reportDir = new File(extension.absoluteOutputDir)
+                new File(new File(reportDir.parentFile, "${reportDir.name}-check"), CheckLicenseTask.NOT_PASSED_DEPENDENCIES_FILE)
             }))
         }
 

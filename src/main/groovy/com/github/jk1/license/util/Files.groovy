@@ -15,6 +15,7 @@
  */
 package com.github.jk1.license.util
 
+import java.security.MessageDigest
 
 class Files {
 
@@ -30,5 +31,15 @@ class Files {
 
     static boolean isPackagedLicenseFile(String outputDir, String relativePath) {
         return outputDir != null && relativePath != null && new File(outputDir, relativePath).isFile()
+    }
+
+    /** SHA-256 of the file content, or {@code "missing"} if it is not a file. */
+    static String contentHash(File file) {
+        if (file == null || !file.isFile()) {
+            return "missing"
+        }
+        MessageDigest digest = MessageDigest.getInstance("SHA-256")
+        file.eachByte(8192) { byte[] buffer, int length -> digest.update(buffer, 0, length) }
+        return digest.digest().encodeHex().toString()
     }
 }

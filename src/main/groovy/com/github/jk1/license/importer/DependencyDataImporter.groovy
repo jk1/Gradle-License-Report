@@ -16,9 +16,13 @@
 package com.github.jk1.license.importer
 
 import com.github.jk1.license.ImportedModuleBundle
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 
 interface DependencyDataImporter  {
 
+    @Input
+    @Optional
     String getImporterName()
 
     Collection<ImportedModuleBundle> doImport()

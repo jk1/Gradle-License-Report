@@ -98,7 +98,12 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     @Input
-    String getFilterConfigForCache() { return this.filterConfig }
+    String getFilterConfigForCache() {
+        // the bundle content, rather than filterConfig: this is evaluated before init() runs
+        "bundlePath = $bundlePath\n" +
+            "createDefaultTransformationRules = $createDefaultTransformationRules\n" +
+            "bundle = ${bundlePath != null ? new File(bundlePath).text : bundleText}\n"
+    }
 
     @Override
     ProjectData filter(ProjectData data) {

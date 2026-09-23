@@ -26,6 +26,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 
 /**
  * Use this importer to add Javascript-Dependencies to your Gradle license report.
@@ -49,6 +51,18 @@ class PnpmLicenseImporter implements DependencyDataImporter {
     PnpmLicenseImporter(String moduleTitle, List<String> pathsToCheck) {
         this.title = moduleTitle;
         this.paths = pathsToCheck;
+    }
+
+    @Input
+    @Optional
+    public String getTitleCache() {
+        return title;
+    }
+
+    @Input
+    @Optional
+    public List<String> getPathsCache() {
+        return paths;
     }
 
     public String getImporterName() {

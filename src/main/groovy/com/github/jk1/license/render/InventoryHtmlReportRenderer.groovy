@@ -17,6 +17,7 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
+import org.gradle.api.tasks.Internal
 
 class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
@@ -42,6 +43,7 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 """
     }
 
+    @Internal
     protected GString getHtmlStart() {
         """
 <!DOCTYPE html>

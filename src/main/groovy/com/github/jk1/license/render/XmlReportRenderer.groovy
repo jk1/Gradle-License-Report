@@ -21,6 +21,7 @@ import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.ProjectInfo
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 
 /**
  * Renders dependency report in the following XML notation:
@@ -64,6 +65,10 @@ class XmlReportRenderer implements ReportRenderer {
 
     @Input
     String getChapterNameCache() { return this.chapterName }
+
+    @Input
+    @Optional
+    String getSchemaBaseUrlCache() { return this.schemaBaseUrl }
 
     void render(ProjectData data) {
         project = data.project

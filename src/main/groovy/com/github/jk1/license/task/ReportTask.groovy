@@ -29,9 +29,12 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+
+import javax.inject.Inject
 
 @CacheableTask
 abstract class ReportTask extends DefaultTask {
@@ -70,15 +73,32 @@ abstract class ReportTask extends DefaultTask {
     @Internal
     abstract ListProperty<DependencyFilter> getFilters()
 
-    /**
-     * Only the types of the renderers, importers and filters are part of the cache key, as they always have been:
-     * nesting them would make Gradle require input annotations on every property of custom implementations.
-     */
+    @Nested
+    List<ReportRenderer> getBuiltInRenderers() {
+        ReportComponents.builtIn(renderers.get())
+    }
+
+    @Nested
+    List<DependencyDataImporter> getBuiltInImporters() {
+        ReportComponents.builtIn(importers.get())
+    }
+
+    @Nested
+    List<DependencyFilter> getBuiltInFilters() {
+        ReportComponents.builtIn(filters.get())
+    }
+
+    /** See {@link ReportComponents}: custom renderers, importers and filters are fingerprinted leniently. */
     @Input
-    List<String> getReportComponentTypes() {
-        renderers.get().collect { "renderer:${it.class.name}".toString() } +
-            importers.get().collect { "importer:${it.class.name}".toString() } +
-            filters.get().collect { "filter:${it.class.name}".toString() }
+    List<String> getCustomComponentInputs() {
+        ReportComponents.customInputValues(allComponents()) { Object files -> objects.fileCollection().from(files) }
+    }
+
+    @Inject
+    protected abstract ObjectFactory getObjects()
+
+    private List<Object> allComponents() {
+        (renderers.get() as List<Object>) + importers.get() + filters.get()
     }
 
     @OutputDirectory

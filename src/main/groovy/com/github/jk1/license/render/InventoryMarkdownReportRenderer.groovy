@@ -23,6 +23,8 @@ import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.util.Files
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 
 class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
     private Boolean includeTimestamp
@@ -34,6 +36,14 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         this.includeTimestamp = includeTimestamp
         this.includeCounter = includeCounter
     }
+
+    @Input
+    @Optional
+    Boolean getIncludeTimestampCache() { return this.includeTimestamp }
+
+    @Input
+    @Optional
+    Boolean getIncludeCounterCache() { return this.includeCounter }
 
     @Override
     void render(ProjectData data) {
