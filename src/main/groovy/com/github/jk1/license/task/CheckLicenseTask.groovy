@@ -15,22 +15,24 @@
  */
 package com.github.jk1.license.task
 
-import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.check.LicenseChecker
 import org.gradle.api.DefaultTask
+import org.gradle.api.InvalidUserDataException
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
-class CheckLicenseTask extends DefaultTask {
+abstract class CheckLicenseTask extends DefaultTask {
 
     final static String PROJECT_JSON_FOR_LICENSE_CHECKING_FILE = "project-licenses-for-check-license-task.json"
     final static String NOT_PASSED_DEPENDENCIES_FILE = "dependencies-without-allowed-license.json"
@@ -40,35 +42,40 @@ class CheckLicenseTask extends DefaultTask {
     CheckLicenseTask() {
         group = 'Checking'
         description = 'Check if License could be used'
-        notCompatibleWithConfigurationCache("com.github.jk1:gradle-license-report is not configuration-cache compatible")
     }
 
-    @Nested
-    LicenseReportExtension config
-
+    /** The allowed licenses file, when {@code licenseReport.allowedLicensesFile} refers to a local file. */
+    @Optional
     @InputFile
     @PathSensitive(PathSensitivity.RELATIVE)
-    Object getAllowedLicenseFile() {
-        return config.allowedLicensesFile
-    }
+    abstract RegularFileProperty getAllowedLicenseFile()
+
+    /** The allowed licenses URL, when {@code licenseReport.allowedLicensesFile} refers to a remote file. */
+    @Optional
+    @Input
+    abstract Property<String> getAllowedLicenseUrl()
 
     @InputFile
     @PathSensitive(PathSensitivity.NAME_ONLY)
-    File getProjectDependenciesData() {
-        return new File("${config.absoluteOutputDir}/${PROJECT_JSON_FOR_LICENSE_CHECKING_FILE}")
-    }
+    abstract RegularFileProperty getProjectDependenciesData()
 
     @OutputFile
-    File getNotPassedDependenciesFile() {
-        new File("${config.absoluteOutputDir}/$NOT_PASSED_DEPENDENCIES_FILE")
-    }
+    abstract RegularFileProperty getNotPassedDependenciesFile()
 
     @TaskAction
     void checkLicense() {
-        LOGGER.info("Startup CheckLicense for ${config.projects.first()}")
-        LicenseChecker licenseChecker = new LicenseChecker()
         LOGGER.info("Check licenses if they are allowed to use.")
-        licenseChecker.checkAllDependencyLicensesAreAllowed(
-            getAllowedLicenseFile(), getProjectDependenciesData(), notPassedDependenciesFile)
+        new LicenseChecker().checkAllDependencyLicensesAreAllowed(
+            allowedLicenses(), projectDependenciesData.get().asFile, notPassedDependenciesFile.get().asFile)
+    }
+
+    private Object allowedLicenses() {
+        if (allowedLicenseFile.present) {
+            return allowedLicenseFile.get().asFile
+        }
+        if (allowedLicenseUrl.present) {
+            return new URL(allowedLicenseUrl.get())
+        }
+        throw new InvalidUserDataException("No allowed licenses file configured, please set licenseReport.allowedLicensesFile")
     }
 }

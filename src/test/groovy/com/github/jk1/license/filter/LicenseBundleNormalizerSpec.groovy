@@ -193,7 +193,7 @@ class LicenseBundleNormalizerSpec extends Specification {
               ]
             }"""
 
-        ProjectData projectData = new ProjectData(project: GRADLE_PROJECT(), importedModules:
+        ProjectData projectData = new ProjectData(project: PROJECT_INFO(), importedModules:
             [
                 new ImportedModuleBundle('name', [
                     new ImportedModuleData(
@@ -208,7 +208,7 @@ class LicenseBundleNormalizerSpec extends Specification {
             ]
         )
 
-        ProjectData expected = new ProjectData(project: GRADLE_PROJECT(), importedModules:
+        ProjectData expected = new ProjectData(project: PROJECT_INFO(), importedModules:
             [
                 new ImportedModuleBundle('name', [
                     new ImportedModuleData(

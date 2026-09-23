@@ -27,7 +27,7 @@ class ExcludeDependenciesWithoutArtifactsFilter implements DependencyFilter {
     ProjectData filter(ProjectData source) {
         def configurations = source.configurations
                 .collect { c ->
-                    new ConfigurationData(c.name, c.dependencies.findAll { it.hasArtifactFile })
+                    new ConfigurationData(c.name, c.dependencies.findAll { it.hasArtifactFile }, c.directDependencies)
                 }
                 .toSet()
 

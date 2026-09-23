@@ -19,7 +19,7 @@ import com.github.jk1.license.ImportedModuleBundle
 import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.License
 import com.github.jk1.license.LicenseFileDetails
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.task.ReportTask
@@ -37,14 +37,15 @@ class LicenseBundleNormalizer implements DependencyFilter {
     private static Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     protected String bundlePath
-    protected InputStream bundleStream
+    // read eagerly, as streams can't be stored in the configuration cache
+    protected String bundleText
     protected boolean createDefaultTransformationRules
     protected boolean isInitialized
 
     // following properties will only exist after the class is initialized
     protected String filterConfig = ""
     protected ReduceDuplicateLicensesFilter duplicateFilter = new ReduceDuplicateLicensesFilter()
-    protected LicenseReportExtension config
+    protected LicenseReportSettings config
     protected LicenseBundleNormalizerConfig normalizerConfig = new LicenseBundleNormalizerConfig(
         bundles: new ArrayList<NormalizerLicenseBundle>(),
         transformationRules: new ArrayList<NormalizerTransformationRule>()
@@ -61,7 +62,7 @@ class LicenseBundleNormalizer implements DependencyFilter {
     }
 
     LicenseBundleNormalizer(InputStream bundleStream, boolean createDefaultTransformationRules) {
-        this.bundleStream = bundleStream
+        this.bundleText = bundleStream.text
         this.createDefaultTransformationRules = createDefaultTransformationRules
     }
 
@@ -78,8 +79,8 @@ class LicenseBundleNormalizer implements DependencyFilter {
         if (bundlePath != null) {
             applyBundleFrom(new File(bundlePath).text)
         }
-        if (bundleStream != null) {
-            applyBundleFrom(bundleStream.text)
+        if (bundleText != null) {
+            applyBundleFrom(bundleText)
         }
 
         if (createDefaultTransformationRules) {

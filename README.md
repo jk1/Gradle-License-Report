@@ -38,7 +38,7 @@ Then run `./gradlew generateLicenseReport` to generate your report in `build/rep
 | **1.x** | EOL @ `version "1.19"` | 3.x → 6.x [*](#gradle-678) | 8+ [*][1]               |
 
 Notes:
-- [Gradle configuration cache][2] is not currently supported correctly.
+- [Gradle configuration cache][2] is supported in releases after `3.1.4`.
 - [Gradle build cache][3] has limited support during report tasks only; with some known issues - so use with care (or run Gradle with `--no-build-cache --rerun-tasks` to override)
 
 [1]: https://docs.gradle.org/current/userguide/compatibility.html#java_runtime
@@ -46,14 +46,16 @@ Notes:
 [3]: https://docs.gradle.org/current/userguide/build_cache.html
 
 ### Gradle 9
-Please note, for multi-project setups it is necessary to specify `--no-parallel` for the moment, to avoid errors like:
+Up to version `3.1.4`, multi-project setups need to specify `--no-parallel`, to avoid errors like:
 > Resolution of the configuration ':<something>:runtimeClasspath' was attempted without an exclusive lock. This is unsafe and not allowed
 
 Depending on your usage, you may also be able to support parallel execution using [more complex workarounds noted here](https://github.com/jk1/Gradle-License-Report/issues/337#issuecomment-3241442179). 
 
+Later versions resolve the dependencies of every covered project in that project itself, by a hidden
+`collectLicenseReportDependencies*` task the plugin registers there, so parallel execution is supported.
 
 ### Gradle 6/7/8
-Due to similar reasons as [Gradle 9](#gradle-9) you may get warnings (but not outright failures) such as:
+Due to similar reasons as [Gradle 9](#gradle-9), up to version `3.1.4` you may get warnings (but not outright failures) such as:
 > Resolution of the configuration :<something>:runtimeClasspath was attempted from a context different than the project context.
 
 or 
@@ -431,6 +433,12 @@ licenseReport {
 ```
 
 The same technique can be used to create a filter or a renderer to support custom report formats.
+
+Renderers, importers and filters are stored in the [configuration cache][2] with the report task. Hence:
+- they must not hold references to the Gradle `Project` or other build model types; use plain values (`String`, `File`, ...) instead
+- the `ProjectData` they receive describes the project with a `ProjectInfo` (name, path, group, version and description)
+  instead of the Gradle `Project`, and `ProjectData.getExtension()` returns `LicenseReportSettings`, a snapshot of the
+  `licenseReport` settings which includes the `absoluteOutputDir` to write the report to
 
 ## Check Dependency Licenses
 

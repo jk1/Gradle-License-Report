@@ -15,58 +15,108 @@
  */
 package com.github.jk1.license.task
 
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.ProjectInfo
+import com.github.jk1.license.filter.DependencyFilter
+import com.github.jk1.license.importer.DependencyDataImporter
+import com.github.jk1.license.reader.CollectedDependencies
 import com.github.jk1.license.reader.ProjectReader
+import com.github.jk1.license.render.JsonReportRenderer
+import com.github.jk1.license.render.ReportRenderer
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 
 @CacheableTask
-class ReportTask extends DefaultTask {
+abstract class ReportTask extends DefaultTask {
 
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
     ReportTask() {
         group = 'Reporting'
         description = 'Generates license report for all dependencies of this project and its subprojects'
-        notCompatibleWithConfigurationCache("com.github.jk1:gradle-license-report is not configuration-cache compatible")
     }
 
-    @Nested
-    LicenseReportExtension config
+    /** Dependency data of the covered projects, as written by their {@link CollectDependenciesTask}s. */
+    @Internal
+    abstract ConfigurableFileCollection getDependencyData()
 
-    @OutputDirectory
-    File getOutputFolder() {
-        return new File(config.absoluteOutputDir)
-    }
+    /**
+     * Coordinates of the dependencies of the covered projects. Only these are needed for the cache key, not the
+     * (machine specific) locations of the artifacts: any dependency change the report would surface invalidates it.
+     */
+    @InputFiles
+    @PathSensitive(PathSensitivity.NONE)
+    abstract ConfigurableFileCollection getDependencyCoordinates()
 
     @Input
-    String[] getResolvedDependencies() {
-        // Walks the same scanned configurations as the task action but skips POM,
-        // manifest, and license-file reads — only GAV coordinates are needed for the
-        // cache key. Any dependency change the report would surface invalidates the
-        // cache; everything else is wasted work at fingerprinting time.
-        new ProjectReader(config).readAllDependencyKeysOnly() as String[]
+    abstract Property<ProjectInfo> getProjectInfo()
+
+    @Input
+    abstract Property<LicenseReportSettings> getSettings()
+
+    @Internal
+    abstract ListProperty<ReportRenderer> getRenderers()
+
+    @Internal
+    abstract ListProperty<DependencyDataImporter> getImporters()
+
+    @Internal
+    abstract ListProperty<DependencyFilter> getFilters()
+
+    /**
+     * Only the types of the renderers, importers and filters are part of the cache key, as they always have been:
+     * nesting them would make Gradle require input annotations on every property of custom implementations.
+     */
+    @Input
+    List<String> getReportComponentTypes() {
+        renderers.get().collect { "renderer:${it.class.name}".toString() } +
+            importers.get().collect { "importer:${it.class.name}".toString() } +
+            filters.get().collect { "filter:${it.class.name}".toString() }
+    }
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @Internal
+    File getOutputFolder() {
+        outputDir.get().asFile
     }
 
     @TaskAction
     void generateReport() {
-        new File(config.absoluteOutputDir).mkdirs()
-        ProjectData data = new ProjectReader(config).readAllProjects()
-        LOGGER.info("Importing external dependency data. A total of ${config.importers.length} configured.")
-        config.importers.each {
+        File outputFolder = getOutputFolder()
+        outputFolder.mkdirs()
+        LicenseReportSettings settings = getSettings().get().withOutputDir(outputFolder.absolutePath)
+        ProjectInfo project = getProjectInfo().get().withSettings(settings)
+
+        List<CollectedDependencies> collected = dependencyData.files.collect { CollectedDependencies.fromJson(it) }
+        ProjectData data = new ProjectReader(settings).read(project, collected)
+        List<DependencyDataImporter> importers = getImporters().get()
+        LOGGER.info("Importing external dependency data. A total of ${importers.size()} configured.")
+        importers.each {
             data.importedModules.addAll(it.doImport())
         }
-        LOGGER.info("Applying dependency filters. A total of ${config.filters.length} configured.")
-        config.filters.each {
+        List<DependencyFilter> filters = getFilters().get()
+        LOGGER.info("Applying dependency filters. A total of ${filters.size()} configured.")
+        filters.each {
             data = it.filter(data)
         }
         LOGGER.info("Building report for project ${data.project.name}")
-        config.renderers.each {
+        (getRenderers().get() + checkLicenseDataRenderer()).each {
             it.render(data)
         }
-        LOGGER.info("Dependency license report for project ${data.project.name} created in ${config.absoluteOutputDir}")
+        LOGGER.info("Dependency license report for project ${data.project.name} created in ${outputFolder}")
+    }
+
+    /** Renders the data consumed by {@link CheckLicenseTask}. */
+    private static ReportRenderer checkLicenseDataRenderer() {
+        new JsonReportRenderer(CheckLicenseTask.PROJECT_JSON_FOR_LICENSE_CHECKING_FILE, false)
     }
 }

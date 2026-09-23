@@ -680,7 +680,7 @@ class CheckLicenseTaskSpec extends Specification {
         buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
     }
 
-    def "using it with configuration cache should not cause the build to fail"() {
+    def "it is compatible with the configuration cache"() {
         given:
         buildFile << """
             plugins {
@@ -696,7 +696,15 @@ class CheckLicenseTaskSpec extends Specification {
 
         then:
         buildResult.task(":checkLicense").outcome == TaskOutcome.SUCCESS
-        buildResult.output.contains("3 problems were found storing the configuration cache")
+        buildResult.output.contains("Configuration cache entry stored")
+        !buildResult.output.contains("problems were found storing the configuration cache")
+
+        when:
+        buildResult = result("--configuration-cache", "checkLicense")
+
+        then:
+        buildResult.output.contains("Reusing configuration cache")
+        buildResult.task(":checkLicense").outcome == TaskOutcome.UP_TO_DATE
     }
 
     def "loading allowed licenses from remote URI TextResource should be possible"() {

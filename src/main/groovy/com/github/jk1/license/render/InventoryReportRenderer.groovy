@@ -17,14 +17,13 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
-import org.gradle.api.Project
 import org.gradle.api.tasks.InputFile
 
 class InventoryReportRenderer implements ReportRenderer {
     protected String name
     protected String fileName
-    protected Project project
-    protected LicenseReportExtension config
+    protected ProjectInfo project
+    protected LicenseReportSettings config
     protected File output
     protected int counter
     protected File overridesFile
@@ -52,7 +51,7 @@ class InventoryReportRenderer implements ReportRenderer {
     void render(ProjectData data) {
         project = data.project
         if (name == null) name = project.name
-        config = (LicenseReportExtension) project.extensions.getByName("licenseReport")
+        config = data.extension
         output = new File(config.absoluteOutputDir, fileName)
         output.delete() // clear old output
         def inventory = buildLicenseInventory(data)

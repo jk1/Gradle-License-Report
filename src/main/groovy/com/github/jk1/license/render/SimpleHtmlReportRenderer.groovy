@@ -17,19 +17,19 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.ImportedModuleData
 import com.github.jk1.license.License
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.ProjectInfo
 import com.github.jk1.license.util.Files
-import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 
 class SimpleHtmlReportRenderer implements ReportRenderer {
 
-    private Project project
-    private LicenseReportExtension config
+    private ProjectInfo project
+    private LicenseReportSettings config
     private File output
     private int counter
     private String fileName

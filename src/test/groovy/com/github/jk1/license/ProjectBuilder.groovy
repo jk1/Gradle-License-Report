@@ -19,7 +19,7 @@ import com.github.jk1.license.render.RawProjectDataJsonRenderer
 import com.github.jk1.license.util.Files
 import groovy.json.JsonBuilder
 
-import static com.github.jk1.license.ProjectDataFixture.GRADLE_PROJECT
+import static com.github.jk1.license.ProjectDataFixture.PROJECT_INFO
 
 class ProjectBuilder extends BuilderSupport {
 
@@ -69,7 +69,7 @@ class ProjectBuilder extends BuilderSupport {
 
     private ProjectData createProject() {
         new ProjectData(
-            project: GRADLE_PROJECT()
+            project: PROJECT_INFO()
         )
     }
 

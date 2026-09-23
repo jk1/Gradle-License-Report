@@ -16,10 +16,10 @@
 package com.github.jk1.license.render
 
 import com.github.jk1.license.ImportedModuleData
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
-import org.gradle.api.Project
+import com.github.jk1.license.ProjectInfo
 import org.gradle.api.tasks.Input
 
 /**
@@ -48,8 +48,8 @@ class XmlReportRenderer implements ReportRenderer {
 
     private String fileName
     private String chapterName
-    private Project project
-    private LicenseReportExtension config
+    private ProjectInfo project
+    private LicenseReportSettings config
     private File output
     private String schemaBaseUrl
 
