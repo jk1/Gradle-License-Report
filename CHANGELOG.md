@@ -1,5 +1,24 @@
 # Changelog
 
+## 3.1.5 (2026-10-01)
+
+## What's Changed
+* chore(master): release 3.1.5-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/406
+* build(deps): bump com.diffplug.spotless from 8.6.0 to 8.8.0 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/409
+* build(deps): bump com.gradle.develocity from 4.4.2 to 4.5.0 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/410
+* build(deps): bump the actions-deps group with 3 updates by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/411
+* build(deps): bump the actions-deps group with 2 updates by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/415
+* build(deps): bump com.diffplug.spotless from 8.8.0 to 8.9.0 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/414
+* build(deps): bump the actions-deps group with 2 updates by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/417
+* build(deps): bump com.diffplug.spotless from 8.9.0 to 8.10.1 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/416
+* build(deps): bump the actions-deps group with 2 updates by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/424
+* build(deps): bump com.diffplug.spotless from 8.10.1 to 8.10.3 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/423
+* build(deps): bump com.gradle.develocity from 4.5.0 to 4.6.0 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/421
+* build(deps): bump com.gradle.plugin-publish from 2.1.1 to 2.2.1 by @dependabot[bot] in https://github.com/jk1/Gradle-License-Report/pull/422
+
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.1.4...v3.1.5
+
 ## 3.1.4 (2026-06-10)
 
 ## What's Changed
