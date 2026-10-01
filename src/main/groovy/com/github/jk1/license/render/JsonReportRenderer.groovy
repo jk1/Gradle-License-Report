@@ -16,11 +16,11 @@
 package com.github.jk1.license.render
 
 import com.github.jk1.license.ImportedModuleBundle
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.ProjectInfo
 import groovy.json.JsonBuilder
-import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 
 import static com.github.jk1.license.render.LicenseDataCollector.singleModuleLicenseInfo
@@ -93,8 +93,8 @@ import static com.github.jk1.license.render.LicenseDataCollector.multiModuleLice
 class JsonReportRenderer implements ReportRenderer {
 
     private String fileName
-    private Project project
-    private LicenseReportExtension config
+    private ProjectInfo project
+    private LicenseReportSettings config
     private File output
     private Boolean onlyOneLicensePerModule
 
@@ -126,6 +126,7 @@ class JsonReportRenderer implements ReportRenderer {
         output.text = new JsonBuilder(trimAndRemoveNullEntries(jsonReport)).toPrettyString()
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic') // may be overridden
     def renderSingleLicensePerModule(Collection<ModuleData> allDependencies) {
         allDependencies.collect {
             String moduleName = "${it.group}:${it.name}"
@@ -139,6 +140,7 @@ class JsonReportRenderer implements ReportRenderer {
         }.sort { it.moduleName }
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic') // may be overridden
     def renderAllLicensesPerModule(Collection<ModuleData> allDependencies) {
         allDependencies.collect {
             String moduleName = "${it.group}:${it.name}"

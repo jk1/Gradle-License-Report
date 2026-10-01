@@ -23,6 +23,8 @@ import com.github.jk1.license.ModuleData
 import com.github.jk1.license.PomData
 import com.github.jk1.license.ProjectData
 import com.github.jk1.license.util.Files
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 
 class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
     private Boolean includeTimestamp
@@ -34,6 +36,14 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         this.includeTimestamp = includeTimestamp
         this.includeCounter = includeCounter
     }
+
+    @Input
+    @Optional
+    Boolean getIncludeTimestampCache() { return this.includeTimestamp }
+
+    @Input
+    @Optional
+    Boolean getIncludeCounterCache() { return this.includeCounter }
 
     @Override
     void render(ProjectData data) {
@@ -168,15 +178,15 @@ class InventoryMarkdownReportRenderer extends InventoryReportRenderer {
         output << "\n\n"
     }
 
-    private GString section(String label, String value) {
+    private static GString section(String label, String value) {
         "> - **${label}**: ${value}\n"
     }
 
-    private GString link(String name, String url) {
+    private static GString link(String name, String url) {
         "[${url}](${name})"
     }
 
-    private GString sectionLink(String label, String name, String url) {
+    private static GString sectionLink(String label, String name, String url) {
         section(label, link(name, url))
     }
 

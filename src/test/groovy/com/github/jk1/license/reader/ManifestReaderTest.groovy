@@ -16,7 +16,6 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.ManifestData
-import org.gradle.api.artifacts.ResolvedArtifact
 import spock.lang.Specification
 import spock.lang.TempDir
 
@@ -303,9 +302,7 @@ Bundle-License: Apache License, Version 2.0; see: http://www.apache.or
         return mf
     }
 
-    private ResolvedArtifact artifactWith(File file) {
-        ResolvedArtifact artifact = Mock()
-        artifact.getFile() >> file
-        return artifact
+    private static File artifactWith(File file) {
+        return file
     }
 }

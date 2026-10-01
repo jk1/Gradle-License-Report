@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.jk1.license.importer
+package com.github.jk1.license.reader
 
-import com.github.jk1.license.ImportedModuleBundle
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
+/** POM files resolved by {@link PomResolver}, keyed by {@code group:name:version}. */
+class ResolvedPoms {
+    private final Map<String, List<File>> poms
 
-interface DependencyDataImporter  {
+    ResolvedPoms(Map<String, List<File>> poms) {
+        this.poms = poms
+    }
 
-    @Input
-    @Optional
-    String getImporterName()
-
-    Collection<ImportedModuleBundle> doImport()
-
+    Collection<File> find(String group, String name, String version) {
+        poms.get("${group.trim()}:${name.trim()}:${version.trim()}".toString()) ?: []
+    }
 }

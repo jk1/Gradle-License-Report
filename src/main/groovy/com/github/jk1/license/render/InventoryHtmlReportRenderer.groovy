@@ -17,6 +17,7 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
+import org.gradle.api.tasks.Internal
 
 class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 
@@ -42,6 +43,7 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
 """
     }
 
+    @Internal
     protected GString getHtmlStart() {
         """
 <!DOCTYPE html>
@@ -195,6 +197,7 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
         output << "</div>\n"
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic') // may be overridden
     String sanitize(String... values) {
         values.findAll { it != null }.collect { it.replaceAll(/\s/, '_') }.join('_')
     }
@@ -310,15 +313,15 @@ class InventoryHtmlReportRenderer extends InventoryReportRenderer {
         output << "</div>\n"
     }
 
-    private GString section(String label, String value) {
+    private static GString section(String label, String value) {
         "<label>${label}</label>\n<div class='dependency-value'>${value}</div>\n"
     }
 
-    private GString link(String name, String url) {
+    private static GString link(String name, String url) {
         "<a href='${url}'>${name}</a>"
     }
 
-    private GString sectionLink(String label, String name, String url) {
+    private static GString sectionLink(String label, String name, String url) {
         section(label, link(name, url))
     }
 }

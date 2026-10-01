@@ -17,10 +17,9 @@ package com.github.jk1.license.reader
 
 import com.github.jk1.license.LicenseFileData
 import com.github.jk1.license.LicenseFileDetails
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.Files
-import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -31,22 +30,21 @@ import java.util.zip.ZipFile
 class LicenseFilesReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private LicenseReportExtension config
+    private LicenseReportSettings config
 
-    LicenseFilesReader(LicenseReportExtension config) {
+    LicenseFilesReader(LicenseReportSettings config) {
         this.config = config
     }
 
-    LicenseFileData read(ResolvedArtifact artifact) {
-        String fileExtension = Files.getExtension(artifact.file.name)?.toLowerCase()
+    LicenseFileData read(File artifact) {
+        String fileExtension = Files.getExtension(artifact.name)?.toLowerCase()
         if (!fileExtension) {
-            LOGGER.debug("No file extension found for file: $artifact.file")
+            LOGGER.debug("No file extension found for file: $artifact")
             return null
         }
         switch (fileExtension) {
-            case "zip":
-            case "jar":
-                Collection<String> files = readLicenseFiles(artifact.file)
+            case ["zip", "jar"]:
+                Collection<String> files = readLicenseFiles(artifact)
                 if (files.isEmpty()) return null
 
                 def data = new LicenseFileData()
@@ -91,7 +89,7 @@ class LicenseFilesReader {
         }
     }
 
-    private String substringAfterLast(String str, String separator) {
+    private static String substringAfterLast(String str, String separator) {
         if (!str || !separator) {
             return ""
         }

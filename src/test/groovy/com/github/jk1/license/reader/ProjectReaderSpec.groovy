@@ -15,81 +15,123 @@
  */
 package com.github.jk1.license.reader
 
-import com.github.jk1.license.LicenseReportExtension
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
+import com.github.jk1.license.LicenseReportSettings
+import com.github.jk1.license.ProjectInfo
 import spock.lang.Specification
+import spock.lang.TempDir
 
 class ProjectReaderSpec extends Specification {
 
-    Project root
-    Project subA
-    Project subB
-    LicenseReportExtension config
+    @TempDir
+    File outputDir
+
+    ProjectInfo project = new ProjectInfo(name: "root", path: ":", group: "org.example", version: "1.0")
+    LicenseReportSettings settings
 
     def setup() {
-        root = ProjectBuilder.builder().withName("root").build()
-        subA = ProjectBuilder.builder().withParent(root).withName("subA").build()
-        subB = ProjectBuilder.builder().withParent(root).withName("subB").build()
-
-        subA.configurations.create("cfgA") {
-            it.canBeResolved = true
-            it.canBeConsumed = false
-        }
-        subB.configurations.create("cfgB") {
-            it.canBeResolved = true
-            it.canBeConsumed = false
-        }
-
-        config = new LicenseReportExtension(root)
-        config.projects = [root, subA, subB] as Project[]
-        config.configurations = []
+        settings = new LicenseReportSettings(unionParentPomLicenses: true, absoluteOutputDir: outputDir.absolutePath)
     }
 
-    def "readAllProjects() spans every configured project"() {
+    def "read() keeps the project it reads for"() {
         when:
-        def reader = new ProjectReader(config)
-        def data = reader.readAllProjects()
+        def data = new ProjectReader(settings).read(project, [])
 
         then:
-        data.project == root
-        data.configurations*.name as Set == ["cfgA", "cfgB"] as Set
+        data.project == project
+        data.configurations.isEmpty()
     }
 
-    def "readAllProjects() merges same-name configurations from different projects into one entry"() {
+    def "read() spans the dependencies collected from every project"() {
         given:
-        subA.configurations.create("shared") { it.canBeResolved = true; it.canBeConsumed = false }
-        subB.configurations.create("shared") { it.canBeResolved = true; it.canBeConsumed = false }
-        config.configurations = ["shared"] as String[]
+        def subA = collected(configuration("cfgA", ["org.a:a:1"]))
+        def subB = collected(configuration("cfgB", ["org.b:b:1"]))
 
         when:
-        def reader = new ProjectReader(config)
-        def data = reader.readAllProjects()
+        def data = new ProjectReader(settings).read(project, [subA, subB])
+
+        then:
+        data.configurations*.name == ["cfgA", "cfgB"]
+        data.allDependencies.collect { "$it.group:$it.name:$it.version".toString() } == ["org.a:a:1", "org.b:b:1"]
+    }
+
+    def "read() merges same-name configurations from different projects into one entry"() {
+        given:
+        def subA = collected(configuration("shared", ["org.a:a:1"], ["org.a:a:1"]))
+        def subB = collected(configuration("shared", ["org.b:b:1"], ["org.b:b:1"]))
+
+        when:
+        def data = new ProjectReader(settings).read(project, [subA, subB])
 
         then:
         data.configurations*.name == ["shared"]
+        data.configurations.first().dependencies*.name == ["a", "b"]
+        data.configurations.first().directDependencies as List == ["org.a:a:1", "org.b:b:1"]
     }
 
-    def "resolvedDependencyKeys() returns a sorted set of GAV strings for the scanned configurations"() {
+    def "read() applies the configured exclusions"() {
+        given:
+        settings = new LicenseReportSettings(
+            excludeOwnGroup: true,
+            ownGroups: ["org.example"],
+            excludeGroups: ["org.excluded", "org\\.regex\\..*"],
+            excludes: ["org.other:excluded"],
+            absoluteOutputDir: outputDir.absolutePath
+        )
+        def dependencies = collected(configuration("runtimeClasspath", [
+            "org.example:own:1",
+            "org.excluded:group:1",
+            "org.regex.group:matched:1",
+            "org.other:excluded:1",
+            "org.other:kept:1",
+        ]))
+
         when:
-        def keys = new ProjectReader(config).readAllDependencyKeysOnly()
+        def data = new ProjectReader(settings).read(project, [dependencies])
 
         then:
-        // Empty configurations resolve to empty dependency sets.
-        keys instanceof SortedSet
-        keys.isEmpty()
+        data.allDependencies.collect { "$it.group:$it.name".toString() } == ["org.other:kept"]
     }
 
-    def "resolvedDependencyKeys() walks the same scanned configurations as readAllProjects()"() {
-        // Pins the equivalence relied on for cache-key correctness: any GAV the report
-        // would surface must appear in the cache key, and vice versa.
+    def "read() only excludes BOMs without artifacts when configured to"() {
+        given:
+        def dependencies = collected(configuration("runtimeClasspath", ["org.a:a-bom:1", "org.a:bom:1"]))
+
+        expect:
+        new ProjectReader(settings).read(project, [dependencies]).allDependencies*.name == ["a-bom", "bom"]
+
         when:
-        def reader = new ProjectReader(config)
-        def fromReport = reader.readAllProjects().allDependencies
-                .collect { "${it.group}:${it.name}:${it.version}".toString() } as Set
-        def fromCacheKey = new ProjectReader(config).readAllDependencyKeysOnly() as Set
+        settings = new LicenseReportSettings(excludeBoms: true, absoluteOutputDir: outputDir.absolutePath)
 
         then:
-        fromCacheKey == fromReport
+        new ProjectReader(settings).read(project, [dependencies]).allDependencies.isEmpty()
+    }
+
+    def "collected dependencies survive a round trip through their file"() {
+        given:
+        def file = new File(outputDir, "dependencies.json")
+        def original = collected(configuration("runtimeClasspath", ["org.a:a:1"], ["org.a:a:1"]))
+        original.configurations.first().modules.first().artifacts = ["/some/a-1.jar"]
+        original.poms = ["org.a:a:1": ["/some/a-1.pom"]]
+
+        when:
+        file.text = original.toJson()
+
+        then:
+        CollectedDependencies.fromJson(file) == original
+    }
+
+    private static CollectedDependencies collected(CollectedConfiguration... configurations) {
+        new CollectedDependencies(configurations: configurations.toList())
+    }
+
+    private static CollectedConfiguration configuration(String name, List<String> modules, List<String> direct = []) {
+        new CollectedConfiguration(
+            name: name,
+            directDependencies: direct,
+            modules: modules.collect {
+                def (group, module, version) = it.split(':')
+                new CollectedModule(group: group, name: module, version: version)
+            }
+        )
     }
 }

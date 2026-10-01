@@ -15,44 +15,39 @@
  */
 package com.github.jk1.license.reader
 
-import com.github.jk1.license.GradleProject
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.task.ReportTask
-import com.github.jk1.license.util.CachingPomResolver
-import org.gradle.api.artifacts.ResolvedArtifact
-import org.gradle.api.artifacts.ResolvedDependency
-import org.gradle.api.artifacts.result.ResolvedArtifactResult
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
 interface ModuleReader {
-    ModuleData read(GradleProject project, ResolvedDependency dependency)
+    ModuleData read(CollectedModule module)
 }
 
 class ModuleReaderImpl implements ModuleReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private LicenseReportExtension config
+    private ResolvedPoms poms
     private PomReader pomReader
     private ManifestReader manifestReader
     private LicenseFilesReader filesReader
 
-    ModuleReaderImpl(LicenseReportExtension config) {
-        this.config = config
-        this.pomReader = new PomReader(config)
-        this.manifestReader = new ManifestReader(config)
-        this.filesReader = new LicenseFilesReader(config)
+    ModuleReaderImpl(LicenseReportSettings settings, ResolvedPoms poms) {
+        this.poms = poms
+        this.pomReader = new PomReader(settings, poms)
+        this.manifestReader = new ManifestReader(settings)
+        this.filesReader = new LicenseFilesReader(settings)
     }
 
-    ModuleData read(GradleProject project, ResolvedDependency dependency) {
-        ModuleData moduleData = new ModuleData(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
-        CachingPomResolver pomResolver = new CachingPomResolver(project)
-        dependency.moduleArtifacts.each { ResolvedArtifact artifact ->
-            LOGGER.info("Processing artifact: $artifact ($artifact.file)")
-            if (artifact.file.exists()) {
+    ModuleData read(CollectedModule module) {
+        ModuleData moduleData = new ModuleData(module.group, module.name, module.version)
+        module.artifacts.each { String path ->
+            File artifact = new File(path)
+            LOGGER.info("Processing artifact: ${module.coordinates} ($artifact)")
+            if (artifact.exists()) {
                 moduleData.hasArtifactFile = true
-                def pom = pomReader.withResolver(pomResolver).readPomData(artifact)
+                def pom = pomReader.readPomData(module, artifact)
                 def manifest = manifestReader.readManifestData(artifact)
                 def licenseFile = filesReader.read(artifact)
 
@@ -60,18 +55,17 @@ class ModuleReaderImpl implements ModuleReader {
                 if (manifest) moduleData.manifests << manifest
                 if (licenseFile) moduleData.licenseFiles << licenseFile
             } else {
-                LOGGER.info("Skipping artifact file $artifact.file as it does not exist")
+                LOGGER.info("Skipping artifact file $artifact as it does not exist")
             }
         }
-        if (dependency.moduleArtifacts.isEmpty()) {
-            def extraPomResults = pomResolver.resolveArtifacts(dependency.moduleGroup, dependency.moduleName, dependency.moduleVersion)
-            extraPomResults.each { ResolvedArtifactResult artifact ->
-                LOGGER.info("Processing artifact: $artifact ($artifact.file)")
-                if (artifact.file.exists()) {
-                    def pom = pomReader.withResolver(pomResolver).readPomData(artifact)
+        if (module.artifacts.isEmpty()) {
+            poms.find(module.group, module.name, module.version).each { File pomFile ->
+                LOGGER.info("Processing POM: ${module.coordinates} ($pomFile)")
+                if (pomFile.exists()) {
+                    def pom = pomReader.readPomData(pomFile)
                     if (pom) moduleData.poms << pom
                 } else {
-                    LOGGER.info("Skipping artifact file $artifact.file as it does not exist")
+                    LOGGER.info("Skipping POM file $pomFile as it does not exist")
                 }
             }
         }
@@ -84,14 +78,13 @@ class CachedModuleReader implements ModuleReader {
     private Map<String, ModuleData> moduleDataCache = [:]
     private ModuleReader actualReader
 
-    CachedModuleReader(LicenseReportExtension config) {
-        this.actualReader = new ModuleReaderImpl(config)
+    CachedModuleReader(LicenseReportSettings settings, ResolvedPoms poms) {
+        this.actualReader = new ModuleReaderImpl(settings, poms)
     }
 
-    ModuleData read(GradleProject project, ResolvedDependency dependency) {
-        String dataName = "${dependency.moduleGroup}:${dependency.moduleName}:${dependency.moduleVersion}"
-        return moduleDataCache.computeIfAbsent(dataName) {
-            actualReader.read(project, dependency)
+    ModuleData read(CollectedModule module) {
+        return moduleDataCache.computeIfAbsent(module.coordinates) {
+            actualReader.read(module)
         }
     }
 }

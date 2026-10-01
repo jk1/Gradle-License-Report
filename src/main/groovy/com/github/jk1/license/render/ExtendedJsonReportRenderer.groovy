@@ -16,11 +16,11 @@
 package com.github.jk1.license.render
 
 import com.github.jk1.license.ImportedModuleBundle
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ModuleData
 import com.github.jk1.license.ProjectData
+import com.github.jk1.license.ProjectInfo
 import groovy.json.JsonBuilder
-import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 
 import static com.github.jk1.license.render.LicenseDataCollector.multiModuleLicenseInfo
@@ -94,8 +94,8 @@ import static com.github.jk1.license.render.LicenseDataCollector.singleModuleLic
 class ExtendedJsonReportRenderer implements ReportRenderer {
 
     private String fileName
-    private Project project
-    private LicenseReportExtension config
+    private ProjectInfo project
+    private LicenseReportSettings config
     private File output
     private Boolean onlyOneLicensePerModule
 

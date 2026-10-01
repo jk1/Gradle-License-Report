@@ -38,7 +38,7 @@ Then run `./gradlew generateLicenseReport` to generate your report in `build/rep
 | **1.x** | EOL @ `version "1.19"` | 3.x → 6.x [*](#gradle-678) | 8+ [*][1]               |
 
 Notes:
-- [Gradle configuration cache][2] is not currently supported correctly.
+- [Gradle configuration cache][2] is supported in releases after `3.1.4`.
 - [Gradle build cache][3] has limited support during report tasks only; with some known issues - so use with care (or run Gradle with `--no-build-cache --rerun-tasks` to override)
 
 [1]: https://docs.gradle.org/current/userguide/compatibility.html#java_runtime
@@ -46,14 +46,16 @@ Notes:
 [3]: https://docs.gradle.org/current/userguide/build_cache.html
 
 ### Gradle 9
-Please note, for multi-project setups it is necessary to specify `--no-parallel` for the moment, to avoid errors like:
+Up to version `3.1.4`, multi-project setups need to specify `--no-parallel`, to avoid errors like:
 > Resolution of the configuration ':<something>:runtimeClasspath' was attempted without an exclusive lock. This is unsafe and not allowed
 
 Depending on your usage, you may also be able to support parallel execution using [more complex workarounds noted here](https://github.com/jk1/Gradle-License-Report/issues/337#issuecomment-3241442179). 
 
+Later versions resolve the dependencies of every covered project in that project itself, by a hidden
+`collectLicenseReportDependencies*` task the plugin registers there, so parallel execution is supported.
 
 ### Gradle 6/7/8
-Due to similar reasons as [Gradle 9](#gradle-9) you may get warnings (but not outright failures) such as:
+Due to similar reasons as [Gradle 9](#gradle-9), up to version `3.1.4` you may get warnings (but not outright failures) such as:
 > Resolution of the configuration :<something>:runtimeClasspath was attempted from a context different than the project context.
 
 or 
@@ -260,6 +262,27 @@ The expected input format for `XmlReportImporter` is as follows:
 
 If there is only one chapter, the outer `topic` and `chunk` tags may be omitted.
 
+### Generated input files
+
+The content of the file read by `XmlReportImporter`, and of the file inputs of custom renderers, importers and filters
+(see [Writing custom renderers, importers and filters](#writing-custom-renderers-importers-and-filters)), is part of the
+up-to-date checks and the [build cache][3] key of `generateLicenseReport`. However, Gradle is not told which task
+generates such a file, so if a task of your build does, declare the dependency yourself, or the tasks may run in any order:
+
+```groovy
+tasks.named('generateLicenseReport') {
+    dependsOn('generateFrontendLicenses')
+}
+```
+
+The packages scanned by `NpxLicenseCheckerImporter` and `PnpmLicenseImporter` are not tracked: rerun the report
+(e.g. with `--rerun-tasks`) after changing them.
+
+As these files are tracked by their content rather than as Gradle file inputs, Gradle's file normalization does not
+apply to them, with the exception of `@PathSensitive` on the properties of custom components (defaulting to
+`RELATIVE`). For instance, line endings are not normalized, and jars of `@Classpath` properties are compared byte by byte.
+This errs on the side of regenerating the report more often, rather than reusing a stale one.
+
 ## Filters
 
 Dependency filters transform discovered dependency data before rendering.
@@ -432,6 +455,15 @@ licenseReport {
 
 The same technique can be used to create a filter or a renderer to support custom report formats.
 
+Renderers, importers and filters are stored in the [configuration cache][2] with the report task. Hence:
+- they must not hold references to the Gradle `Project` or other build model types; use plain values (`String`, `File`, ...) instead
+- to have the report regenerated when their settings change, annotate those properties with `@Input`, or with
+  `@InputFile`, `@InputFiles` or `@InputDirectory` for files (unannotated properties are ignored for up-to-date checks and the [build cache][3])
+- files are tracked by their content only, so Gradle does not know which task generates them: see [generated input files](#generated-input-files)
+- the `ProjectData` they receive describes the project with a `ProjectInfo` (name, path, group, version and description)
+  instead of the Gradle `Project`, and `ProjectData.getExtension()` returns `LicenseReportSettings`, a snapshot of the
+  `licenseReport` settings which includes the `absoluteOutputDir` to write the report to
+
 ## Check Dependency Licenses
 
 This task is for checking dependencies/imported modules if their licenses are allowed to be used.
@@ -441,7 +473,8 @@ This task is for checking dependencies/imported modules if their licenses are al
 ```
 
 If there are licenses which are not allowed, the task will fail and a report like the following
-will be generated under `$outputDir` which you specified in the configuration:
+will be generated as `dependencies-without-allowed-license.json` in `<outputDir>-check`, next to the
+report directory (by default `build/reports/dependency-license-check`). Up to version `3.1.4` it was generated inside `outputDir`:
 
 ```json
 {
