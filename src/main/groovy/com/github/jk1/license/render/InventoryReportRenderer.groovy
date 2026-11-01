@@ -17,14 +17,18 @@ package com.github.jk1.license.render
 
 import com.github.jk1.license.*
 import com.github.jk1.license.util.Files
-import org.gradle.api.Project
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 
 class InventoryReportRenderer implements ReportRenderer {
     protected String name
     protected String fileName
-    protected Project project
-    protected LicenseReportExtension config
+    protected ProjectInfo project
+    protected LicenseReportSettings config
     protected File output
     protected int counter
     protected File overridesFile
@@ -37,12 +41,19 @@ class InventoryReportRenderer implements ReportRenderer {
         this.overridesFile = overridesFile
     }
 
-    @InputFile
+    @Input
     String getFileNameCache() { return this.fileName }
 
+    @Input
+    @Optional
+    String getNameCache() { return this.name }
+
     @InputFile
+    @Optional
+    @PathSensitive(PathSensitivity.NONE)
     File getOverridesFileCache() { return this.overridesFile }
 
+    @Internal
     Map<String, Map<String, String>> getOverrides() {
         parseOverrides(overridesFile)
         return _overrides
@@ -52,7 +63,7 @@ class InventoryReportRenderer implements ReportRenderer {
     void render(ProjectData data) {
         project = data.project
         if (name == null) name = project.name
-        config = (LicenseReportExtension) project.extensions.getByName("licenseReport")
+        config = data.extension
         output = new File(config.absoluteOutputDir, fileName)
         output.delete() // clear old output
         def inventory = buildLicenseInventory(data)
@@ -108,6 +119,7 @@ class InventoryReportRenderer implements ReportRenderer {
         return inventory
     }
 
+    @SuppressWarnings('GrMethodMayBeStatic') // may be overridden
     protected Map<String, Map<String, List<ImportedModuleData>>> buildExternalInventories(ProjectData data) {
         Map<String, Map<String, List<ImportedModuleData>>> results = [:]
         data.importedModules.each { ImportedModuleBundle module ->

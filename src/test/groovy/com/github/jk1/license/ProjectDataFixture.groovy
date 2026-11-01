@@ -28,6 +28,12 @@ class ProjectDataFixture {
         project
     }
 
+    /** The {@link ProjectInfo} of {@link #GRADLE_PROJECT()}, with the current settings of its extension. */
+    static ProjectInfo PROJECT_INFO() {
+        def project = GRADLE_PROJECT()
+        ProjectInfo.of(project, LicenseReportSettings.of(project.extensions.getByType(LicenseReportExtension)))
+    }
+
     static License APACHE2_LICENSE() {
         new License(
                 name: "Apache License, Version 2.0",

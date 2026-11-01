@@ -16,11 +16,10 @@
 package com.github.jk1.license.reader
 
 import com.github.jk1.license.License
-import com.github.jk1.license.LicenseReportExtension
+import com.github.jk1.license.LicenseReportSettings
 import com.github.jk1.license.ManifestData
 import com.github.jk1.license.task.ReportTask
 import com.github.jk1.license.util.Files
-import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 
@@ -34,38 +33,38 @@ import java.util.zip.ZipFile
 class ManifestReader {
     private Logger LOGGER = Logging.getLogger(ReportTask.class)
 
-    private LicenseReportExtension config
+    private LicenseReportSettings config
 
-    ManifestReader(LicenseReportExtension config) {
+    ManifestReader(LicenseReportSettings config) {
         this.config = config
     }
 
-    ManifestData readManifestData(ResolvedArtifact artifact) {
-        String fileExtension = Files.getExtension(artifact.file.name)?.toLowerCase()
+    ManifestData readManifestData(File artifact) {
+        String fileExtension = Files.getExtension(artifact.name)?.toLowerCase()
         if (!fileExtension) {
-            LOGGER.debug("No file extension found for file: $artifact.file")
+            LOGGER.debug("No file extension found for file: $artifact")
             return null
         }
         switch (fileExtension) {
             case "mf":
-                LOGGER.debug("Processing manifest file: $artifact.file")
-                Manifest mf = new Manifest(artifact.file.newInputStream())
-                return manifestToData(mf)
-            case "jar":
-            case "zip":
-                LOGGER.debug("Processing manifest from archive file: $artifact.file")
-                Manifest mf = lookupManifest(artifact.file)
+                LOGGER.debug("Processing manifest file: $artifact")
+                try (InputStream input = artifact.newInputStream()) {
+                    return manifestToData(new Manifest(input))
+                }
+            case ["jar", "zip"]:
+                LOGGER.debug("Processing manifest from archive file: $artifact")
+                Manifest mf = lookupManifest(artifact)
                 if (mf) {
                     ManifestData data = manifestToData(mf)
                     data.licenses.each { License license ->
                         if (!license.name) return
-                        def path = findLicenseFile(artifact.file, license.name)
+                        def path = findLicenseFile(artifact, license.name)
                         if (path != null) {
                             data.hasPackagedLicense = true
-                            String relativeUrl = "${artifact.file.name}/${license.name}.html"
+                            String relativeUrl = "${artifact.name}/${license.name}.html"
                             data.licenses.remove(license)
                             data.licenses << new License(name: license.name, url: relativeUrl)
-                            writeLicenseFile(artifact.file, path, new File(config.absoluteOutputDir, relativeUrl))
+                            writeLicenseFile(artifact, path, new File(config.absoluteOutputDir, relativeUrl))
                         }
                     }
                     return data

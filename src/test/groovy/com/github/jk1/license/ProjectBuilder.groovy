@@ -19,7 +19,7 @@ import com.github.jk1.license.render.RawProjectDataJsonRenderer
 import com.github.jk1.license.util.Files
 import groovy.json.JsonBuilder
 
-import static com.github.jk1.license.ProjectDataFixture.GRADLE_PROJECT
+import static com.github.jk1.license.ProjectDataFixture.PROJECT_INFO
 
 class ProjectBuilder extends BuilderSupport {
 
@@ -38,12 +38,12 @@ class ProjectBuilder extends BuilderSupport {
     @Override
     protected Object createNode(Object name, Object id) {
         switch(name) {
-            case "configuration": return addConfiguration(id)
-            case "module": return addModule(id)
-            case "pom": return addPom(id)
-            case "manifest": return addManifest(id)
+            case "configuration": return addConfiguration(id as String)
+            case "module": return addModule(id as String)
+            case "pom": return addPom(id as String)
+            case "manifest": return addManifest(id as String)
             case "license": return addLicense(id, null)
-            case "importedModulesBundle": return addImportedModulesBundle(id)
+            case "importedModulesBundle": return addImportedModulesBundle(id as String)
             default: throw new IllegalArgumentException("Invalid keyword $name")
         }
     }
@@ -67,9 +67,9 @@ class ProjectBuilder extends BuilderSupport {
     }
 
 
-    private ProjectData createProject() {
+    private static ProjectData createProject() {
         new ProjectData(
-            project: GRADLE_PROJECT()
+            project: PROJECT_INFO()
         )
     }
 

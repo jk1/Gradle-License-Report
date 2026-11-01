@@ -55,14 +55,17 @@ class LicenseBundleNormalizerSpec extends Specification {
 
     def "normalizer constructor can be called with named parameters"() {
         when:
-        new LicenseBundleNormalizer()
-        new LicenseBundleNormalizer(bundlePath: null)
-        new LicenseBundleNormalizer(bundleStream: null)
-        new LicenseBundleNormalizer(createDefaultTransformationRules: false)
-        new LicenseBundleNormalizer(bundlePath: null, createDefaultTransformationRules: false)
+        def normalizers = [
+            new LicenseBundleNormalizer(),
+            new LicenseBundleNormalizer(bundlePath: null),
+            new LicenseBundleNormalizer(bundleStream: null),
+            new LicenseBundleNormalizer(createDefaultTransformationRules: false),
+            new LicenseBundleNormalizer(bundlePath: null, createDefaultTransformationRules: false),
+        ]
 
         then:
         noExceptionThrown()
+        normalizers.size() == 5
     }
 
     def "normalize license of manifest by matching license name"() {
@@ -193,7 +196,7 @@ class LicenseBundleNormalizerSpec extends Specification {
               ]
             }"""
 
-        ProjectData projectData = new ProjectData(project: GRADLE_PROJECT(), importedModules:
+        ProjectData projectData = new ProjectData(project: PROJECT_INFO(), importedModules:
             [
                 new ImportedModuleBundle('name', [
                     new ImportedModuleData(
@@ -208,7 +211,7 @@ class LicenseBundleNormalizerSpec extends Specification {
             ]
         )
 
-        ProjectData expected = new ProjectData(project: GRADLE_PROJECT(), importedModules:
+        ProjectData expected = new ProjectData(project: PROJECT_INFO(), importedModules:
             [
                 new ImportedModuleBundle('name', [
                     new ImportedModuleData(

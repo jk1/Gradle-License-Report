@@ -18,37 +18,53 @@ package com.github.jk1.license
 import groovy.transform.Canonical
 import groovy.transform.Sortable
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ConfigurationContainer
-import org.gradle.api.artifacts.dsl.DependencyHandler
-import org.gradle.api.plugins.PluginContainer
 
+/**
+ * Configuration-cache compatible description of the Gradle project a report is generated for.
+ * Replaces the live {@link Project} instance, which cannot be used at task execution time.
+ */
 @Canonical
-class GradleProject {
-    String name
-    ConfigurationContainer configurations
-    DependencyHandler dependencies
-    PluginContainer plugins
-    boolean isBuildScript
+class ProjectInfo implements Serializable {
+    private static final long serialVersionUID = 1L
 
-    static GradleProject ofProject(Project project) {
-        return new GradleProject(project.getName(), project.getConfigurations(), project.getDependencies(), project.getPlugins(), false);
+    String name
+    String path
+    String group
+    String version
+    String description
+
+    /**
+     * Report settings for the current execution. Transient, as it carries the absolute output directory which must
+     * not become part of the (relocatable) task input fingerprint.
+     */
+    transient LicenseReportSettings settings
+
+    static ProjectInfo of(Project project, LicenseReportSettings settings = null) {
+        new ProjectInfo(
+            name: project.name,
+            path: project.path,
+            group: String.valueOf(project.group),
+            version: String.valueOf(project.version),
+            description: project.description,
+            settings: settings
+        )
     }
 
-    static GradleProject ofScript(Project project) {
-        return new GradleProject(project.name + "/buildScript", project.buildscript.getConfigurations(), project.buildscript.getDependencies(), project.getPlugins(), true);
+    ProjectInfo withSettings(LicenseReportSettings settings) {
+        new ProjectInfo(name: name, path: path, group: group, version: version, description: description, settings: settings)
     }
 }
 
 @Canonical
 class ProjectData {
-    Project project
+    ProjectInfo project
     Set<ConfigurationData> configurations = new TreeSet<ConfigurationData>()
     List<ImportedModuleBundle> importedModules = new ArrayList<ImportedModuleBundle>()
     Set<ModuleData> getAllDependencies() {
         new TreeSet<ModuleData>(configurations*.dependencies.flatten() as List<ModuleData>)
     }
-    def getExtension() {
-        project.getExtensions().findByType(LicenseReportExtension)
+    LicenseReportSettings getExtension() {
+        project?.settings
     }
 }
 
@@ -57,6 +73,8 @@ class ProjectData {
 class ConfigurationData {
     String name
     Set<ModuleData> dependencies = new TreeSet<ModuleData>()
+    /** Coordinates ({@code group:name:version}) of the dependencies declared directly in this configuration. */
+    Set<String> directDependencies = new TreeSet<String>()
 }
 
 @Sortable(includes = ["group", "name", "version"])

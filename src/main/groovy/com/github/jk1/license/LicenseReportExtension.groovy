@@ -20,12 +20,11 @@ import com.github.jk1.license.importer.DependencyDataImporter
 import com.github.jk1.license.render.ReportRenderer
 import com.github.jk1.license.render.SimpleHtmlReportRenderer
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ResolvedDependency
-import org.gradle.api.initialization.dsl.ScriptHandler
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Nested
 
+/**
+ * Build script DSL of the plugin. Only read at configuration time: tasks receive a configuration-cache compatible
+ * snapshot of it (see {@link LicenseReportSettings}).
+ */
 class LicenseReportExtension {
 
     public static final String[] ALL = []
@@ -44,7 +43,10 @@ class LicenseReportExtension {
     public boolean unionParentPomLicenses
     public Object allowedLicensesFile
 
+    private final Project project
+
     LicenseReportExtension(Project project) {
+        this.project = project
         unionParentPomLicenses = true
         outputDir = project.layout.buildDirectory.dir("reports/dependency-license").get().asFile.absolutePath
         projects = [project] + project.subprojects
@@ -59,84 +61,16 @@ class LicenseReportExtension {
         filters = []
     }
 
-    @Nested
-    ReportRenderer[] getRenderers() {
-        return renderers
-    }
-
-    @Nested
-    DependencyDataImporter[] getImporters() {
-        return importers
-    }
-
-    @Nested
-    DependencyFilter[] getFilters() {
-        return filters
-    }
-
-    @Internal
     String getAbsoluteOutputDir(){
         if (new File(outputDir).isAbsolute()) {
             return outputDir
         } else {
-            return projects.first().layout.projectDirectory.dir(outputDir).asFile.absolutePath
+            return reportedProject.layout.projectDirectory.dir(outputDir).asFile.absolutePath
         }
     }
 
-    @Input
-    String getLicenseReportExtensionSnapshot() {
-        def snapshot = []
-        snapshot << 'projects'
-        snapshot += projects.collect { it.path }
-        snapshot << 'buildScriptProjects'
-        snapshot += buildScriptProjects.collect { it.path }
-        snapshot << 'renderers'
-        snapshot += renderers.collect { it.class.name }
-        snapshot << 'importers'
-        snapshot += importers.collect { it.class.name }
-        snapshot << 'filters'
-        snapshot += filters.collect { it.class.name }
-        snapshot << 'configurations '
-        snapshot += configurations?.collect()
-        snapshot << 'excludeOwnGroup'
-        snapshot += String.valueOf(excludeOwnGroup)
-        snapshot << 'excludeBoms'
-        snapshot += String.valueOf(excludeBoms)
-        snapshot << 'exclude'
-        snapshot += excludeGroups?.collect()
-        snapshot << 'excludes'
-        snapshot += excludes?.collect()
-        snapshot << 'unionParentPomLicenses'
-        snapshot += String.valueOf(unionParentPomLicenses)
-        snapshot << 'allowedLicensesFile'
-        snapshot += String.valueOf(allowedLicensesFile)
-        snapshot.join("!")
-    }
-
-    // todo: migrate me to a filter
-    boolean isExcluded(ResolvedDependency module) {
-        return shouldExcludeOwnGroup(module) ||
-            shouldExcludeGroup(module) ||
-            shouldExcludeBom(module) ||
-            shouldExcludeArtifact(module)
-    }
-
-    private boolean shouldExcludeOwnGroup(ResolvedDependency module) {
-        excludeOwnGroup && projects.any { module.moduleGroup == it.group }
-    }
-
-    private boolean shouldExcludeGroup(ResolvedDependency module) {
-        excludeGroups.contains(module.moduleGroup) || excludeGroups.any { module.moduleGroup.matches(it) }
-    }
-
-    private boolean shouldExcludeBom(ResolvedDependency module) {
-        excludeBoms &&
-            (module.getModuleName().endsWith("-bom") || module.getModuleName() == "bom") &&
-            module.getModuleArtifacts().isEmpty()
-    }
-
-    private boolean shouldExcludeArtifact(ResolvedDependency module) {
-        def coordinates = "$module.moduleGroup:$module.moduleName"
-        excludes.contains(coordinates) || excludes.any { coordinates.matches(it) }
+    /** The project the report is named after: the first of the configured {@link #projects}. */
+    Project getReportedProject() {
+        projects ? projects.first() : project
     }
 }
