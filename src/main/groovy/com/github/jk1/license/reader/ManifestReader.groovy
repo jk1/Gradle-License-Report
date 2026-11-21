@@ -57,7 +57,8 @@ class ManifestReader {
                 Manifest mf = lookupManifest(artifact.file)
                 if (mf) {
                     ManifestData data = manifestToData(mf)
-                    data.licenses.each { License license ->
+                    // iterate a copy: the loop replaces entries in data.licenses
+                    data.licenses.toList().each { License license ->
                         if (!license.name) return
                         def path = findLicenseFile(artifact.file, license.name)
                         if (path != null) {

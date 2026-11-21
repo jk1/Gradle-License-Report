@@ -15,10 +15,16 @@
  */
 package com.github.jk1.license.reader
 
+import com.github.jk1.license.LicenseReportExtension
 import com.github.jk1.license.ManifestData
 import org.gradle.api.artifacts.ResolvedArtifact
+import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 import spock.lang.TempDir
+
+import java.util.jar.JarOutputStream
+import java.util.jar.Manifest
+import java.util.zip.ZipEntry
 
 class ManifestReaderTest extends Specification {
 
@@ -295,6 +301,32 @@ Bundle-License: Apache License, Version 2.0; see: http://www.apache.or
 
         then:
         data.name == "Mixed Case Extension"
+    }
+
+    def "links every packaged license file when the jar declares several licenses"() {
+        given:
+        LicenseReportExtension config = new LicenseReportExtension(ProjectBuilder.builder().withProjectDir(new File(tempDir, "project")).build())
+        config.outputDir = new File(tempDir, "out").absolutePath
+        File jar = new File(tempDir, "multi.jar")
+        Manifest manifest = new Manifest()
+        manifest.mainAttributes.putValue("Manifest-Version", "1.0")
+        manifest.mainAttributes.putValue("Bundle-License", "LICENSE-A,LICENSE-B")
+        new JarOutputStream(jar.newOutputStream(), manifest).withCloseable { out ->
+            ["META-INF/LICENSE-A", "META-INF/LICENSE-B"].each { name ->
+                out.putNextEntry(new ZipEntry(name))
+                out.write(name.bytes)
+                out.closeEntry()
+            }
+        }
+
+        when:
+        ManifestData data = new ManifestReader(config).readManifestData(artifactWith(jar))
+
+        then:
+        data.hasPackagedLicense
+        data.licenses*.name == ["LICENSE-A", "LICENSE-B"]
+        data.licenses*.url == ["multi.jar/LICENSE-A.html", "multi.jar/LICENSE-B.html"]
+        new File(config.absoluteOutputDir, "multi.jar/LICENSE-B.html").text == "META-INF/LICENSE-B"
     }
 
     private File manifestFile(String contents) {
