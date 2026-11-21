@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.1.6 (2026-11-21)
+
+## What's Changed
+* chore(master): release 3.1.6-SNAPSHOT by @github-actions[bot] in https://github.com/jk1/Gradle-License-Report/pull/431
+* fix: avoid ConcurrentModificationException when a jar packages several license files by @costajohnt in https://github.com/jk1/Gradle-License-Report/pull/434
+
+## New Contributors
+* @costajohnt made their first contribution in https://github.com/jk1/Gradle-License-Report/pull/434
+
+**Full Changelog**: https://github.com/jk1/Gradle-License-Report/compare/v3.1.5...v3.1.6
+
 ## 3.1.5 (2026-11-01)
 
 ## What's Changed
